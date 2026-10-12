@@ -1,0 +1,87 @@
+# Node
+node_modules/
+dist/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Build outputs
+/.turbo
+/.next
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Prisma
+prisma/*.sqlite
+prisma/*.sqlite-journal
+
+# Logs
+logs
+*.log
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Instrumented libs
+lib-cov
+
+# Coverage directory used by tools like istanbul
+coverage
+*.lcov
+
+# nyc test coverage
+.nyc_output
+
+# Grunt intermediate storage
+.grunt
+
+# Bower components
+bower_components
+
+# node-waf configuration
+.lock-wscript
+
+# Compiled binary addons
+build/Release
+
+# Dependency directories
+jspm_packages
+
+# TypeScript v1 definition files
+typings/
+
+# TypeScript cache
+*.tsbuildinfo
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Microbundle cache
+.rpt2_cache
+.rts2_cache_CJ
+.rts2_cache_RT
+.rts2_cache_CJ
+
+# Storybook
+.out
+.storybook-out
+
+# Vercel
+.vercel
+
+# Vitest
+.vitest
+
+# Windows
+Thumbs.db
+Desktop.ini

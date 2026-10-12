@@ -1,0 +1,219 @@
+// Prisma schema for SKYLINE - Abidjan District
+// This defines the database structure for player data, missions, economy, etc.
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// Core user and profile system
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relationships
+  characters   Character[]
+  wallet       Wallet?
+  sessions     AuthSession[]
+
+  @@index([email])
+}
+
+model Character {
+  id           String   @id @default(uuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Character data
+  name         String   @default("Joueur")
+  health       Int      @default(100)
+  maxHealth    Int      @default(100)
+  level        Int      @default(1)
+  experience   Int      @default(0)
+
+  // Game state
+  djaiBalance  Int      @default(0)
+  reputation   Int      @default(0)
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relationships
+  wallet       Wallet?          @relation("CharacterWallet", onDelete: SetNull)
+  inventory    InventoryItem[]  @relation("CharacterInventory")
+  missions     MissionProgress[]@relation("CharacterMissions")
+  activities   ActivityProgress[]@relation("CharacterActivities")
+
+  @@index([userId])
+}
+
+model Wallet {
+  id           String   @id @default(uuid())
+  characterId  String   @unique
+  character    Character @relation("CharacterWallet", fields: [characterId], references: [id])
+
+  balance      Int      @default(0)
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([characterId])
+}
+
+model WalletTransaction {
+  id           String   @id @default(uuid())
+  walletId     String
+  wallet       Wallet   @relation(fields: [walletId], references: [id], onDelete: Cascade)
+
+  amount       Int      // Positive for credit, negative for debit
+  type         String   // EARNING, SPENDING, REWARD, PURCHASE, etc.
+  description  String?
+
+  // For idempotency
+  idempotencyKey String @unique
+
+  createdAt    DateTime @default(now())
+
+  @@index([walletId])
+  @@index([idempotencyKey])
+}
+
+model AuthSession {
+  id           String   @id @default(uuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  token        String   @unique
+  expiresAt    DateTime
+  createdAt    DateTime @default(now())
+
+  @@index([userId])
+  @@index([token])
+}
+
+// Inventory system
+model InventoryItem {
+  id           String   @id @default(uuid())
+  characterId  String
+  character    Character @relation("CharacterInventory", fields: [characterId], references: [id])
+
+  itemId       String   // Reference to item definition (ammo, weapon, etc.)
+  quantity     Int      @default(1)
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([characterId])
+  @@index([characterId, itemId])
+}
+
+// Mission system
+model Mission {
+  id           String   @id @default(uuid())
+  missionId    String   // Unique identifier like "MS-01"
+  title        String
+  description  String?
+
+  // Rewards
+  rewardDjai   Int      @default(0)
+  rewardReputation Int @default(0)
+
+  // Completion rules
+  firstCompletionOnly Boolean @default(false)
+
+  createdAt    DateTime @default(now())
+
+  @@unique([missionId])
+}
+
+model MissionProgress {
+  id           String   @id @default(uuid())
+  characterId  String
+  character    Character @relation("CharacterMissions", fields: [characterId], references: [id])
+
+  missionId    String
+  mission      Mission  @relation(fields: [missionId], references: [missionId])
+
+  // Progress tracking
+  status       String   @default("NOT_STARTED") // NOT_STARTED, IN_PROGRESS, COMPLETED, FAILED
+  currentStep  Int      @default(0)
+
+  // Completion data
+  completedAt  DateTime?
+  completionCount Int  @default(0) // For repeatable missions
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([characterId])
+  @@index([characterId, missionId])
+  @@unique([characterId, missionId], map: "unique_character_mission")
+}
+
+// Activity system (secondary activities)
+model Activity {
+  id           String   @id @default(uuid())
+  activityId   String   // Unique identifier like "LIV-01", "OBJ-02", etc.
+  title        String
+  description  String?
+
+  // Type: delivery, search, service
+  type         String
+
+  // Rewards
+  rewardAmount Int      @default(0)
+
+  // Repeatability
+  isRepeatable Boolean  @default(true)
+  cooldownSeconds Int   @default(300) // 5 minutes
+
+  createdAt    DateTime @default(now())
+
+  @@unique([activityId])
+}
+
+model ActivityProgress {
+  id           String   @id @default(uuid())
+  characterId  String
+  character    Character @relation("CharacterActivities", fields: [characterId], references: [id])
+
+  activityId   String
+  activity     Activity  @relation(fields: [activityId], references: [activityId])
+
+  // Progress tracking
+  status       String   @default("NOT_STARTED") // NOT_STARTED, IN_PROGRESS, COMPLETED
+
+  // Timing
+  startedAt    DateTime?
+  completedAt  DateTime?
+  lastCompletedAt DateTime? // For cooldown tracking
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([characterId])
+  @@index([characterId, activityId])
+  @@unique([characterId, activityId], map: "unique_character_activity")
+}
+
+// Game configuration (static data)
+model GameConfig {
+  id           String   @id @default(uuid())
+  key          String   @unique
+  value        Json
+
+  description  String?
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([key])
+}
+
+// Initial data setup would go here in a migration

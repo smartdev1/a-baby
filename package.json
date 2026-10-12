@@ -1,0 +1,27 @@
+{
+  "name": "skyline-abidjan-district",
+  "version": "0.1.0",
+  "description": "Un jeu d'action 3D en monde ouvert inspiré de GTA, situé dans un quartier urbain fictif d'Abidjan",
+  "private": true,
+  "workspaces": [
+    "apps/web",
+    "apps/server",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm:dev-web\" \"npm:dev-server\"",
+    "dev-web": "npm run dev --prefix apps/web",
+    "dev-server": "npm run dev --prefix apps/server",
+    "build": "npm run build --prefix apps/web && npm run build --prefix apps/server",
+    "start": "npm run start --prefix apps/server",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.0",
+    "vitest": "^1.2.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
