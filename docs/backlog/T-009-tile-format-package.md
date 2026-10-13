@@ -1,8 +1,8 @@
 ---
 id: T-009
 title: Create @skyline/tile-format v0: meta and manifest schemas, collision codec
-status: review
-owner: fullstack-devops
+status: done
+owner: backend
 author_of_code: backend-dev (Claude, for Ky-Wilson)
 priority: P0
 size: M
@@ -40,7 +40,7 @@ Toute exécution de commande (install, build, test, git) doit être demandée au
 - Tests: 17 (300-run round-trip property, 10 000-case fuzz on random/mutated/truncated buffers, schema accept/reject, names); package coverage 100 % lines, 90 % branches.
 
 ## Review
-(filled by tech-lead-po)
+- Reviewed and merged by smartdev1 in PR #5.
 
 ## QA report
 (filled by the QA agent)

@@ -2,7 +2,7 @@
 id: T-020
 title: Client performance harness and reference machines
 status: todo
-owner: fullstack-qa
+owner: frontend
 author_of_code:
 priority: P0
 size: M

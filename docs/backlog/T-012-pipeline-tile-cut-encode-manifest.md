@@ -1,8 +1,8 @@
 ---
 id: T-012
 title: Pipeline stages tile-cut, encode and manifest on the fixture
-status: review
-owner: fullstack-devops
+status: done
+owner: backend
 author_of_code: backend-dev (Claude, for Ky-Wilson)
 priority: P0
 size: L
@@ -44,7 +44,7 @@ Toute exécution de commande (install, build, test, git) doit être demandée au
 - Not done (out of scope): facade kits (J1-03), LOD L1+ (J1-09), relief / water, display names (naming stage).
 
 ## Review
-(filled by tech-lead-po)
+- Reviewed and merged by smartdev1 in PR #5.
 
 ## QA report
 (filled by the QA agent)

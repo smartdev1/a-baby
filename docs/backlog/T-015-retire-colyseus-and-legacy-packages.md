@@ -2,7 +2,7 @@
 id: T-015
 title: Retire Colyseus server skeleton, contracts, game-config and archive the Prisma schema
 status: review
-owner: fullstack-devops
+owner: backend
 author_of_code: backend-dev (Claude, for Ky-Wilson)
 priority: P1
 size: S

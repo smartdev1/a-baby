@@ -15,6 +15,11 @@ export default defineConfig({
       provider: 'v8',
       include: ['{apps,packages,tools}/*/src/**/*.{ts,tsx}'],
       exclude: ['**/*.test.{ts,tsx}', '**/*.d.ts'],
+      // ≥ 85 % lines on pure packages that hold code (add each pure package here when it gets code).
+      thresholds: {
+        'packages/geo/src/**': { lines: 85 },
+        'packages/tile-format/src/**': { lines: 85 },
+      },
     },
   },
 });

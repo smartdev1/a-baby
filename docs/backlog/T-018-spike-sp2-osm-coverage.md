@@ -1,8 +1,8 @@
 ---
 id: T-018
 title: Spike SP2: OSM coverage audit of Yopougon
-status: review
-owner: fullstack-devops
+status: done
+owner: backend
 author_of_code: backend-dev (Claude, for Ky-Wilson)
 priority: P0
 size: M
@@ -41,7 +41,7 @@ Toute exécution de commande (install, build, test, git) doit être demandée au
 - Tests: 41 in the package.
 
 ## Review
-(filled by tech-lead-po)
+- Reviewed and merged by smartdev1 in PR #5.
 
 ## QA report
 (filled by the QA agent)

@@ -1,8 +1,8 @@
 ---
 id: T-001
 title: Remove debug scripts, compiled artifacts and dead files
-status: todo
-owner: fullstack-devops
+status: done
+owner: backend
 author_of_code:
 priority: P0
 size: S
@@ -17,10 +17,10 @@ Jalon : **J0 — Assainissement & fondations** (`docs/roadmap.md`). Dépend de :
 En tant que développeur, je veux un dépôt sans fichiers morts afin de comprendre immédiatement ce qui est réellement utilisé.
 
 ## Acceptance criteria
-- [ ] Given le dépôt actuel, When la tâche est livrée, Then les fichiers suivants n'existent plus : `check_buildings.js`, `check_buildings2.js`, `check_road.js`, `check_road.bat`, `debug_buildings.js`, `debug_roads.js`, `debug_roads2.js`, `test_sector_gen.js`, `test_world_gen.js`, `test_output.txt`, `apps/server/src/index.ts.bak`, `packages/world-generator/scripts/*.js|*.d.ts|*.map` (15 fichiers), `packages/game-config/buildings.json`, `packages/game-config/road-prop-config.json`.
-- [ ] Given `.claude/scheduled_tasks.lock`, When la tâche est livrée, Then il n'est plus suivi par git et figure dans `.gitignore`.
-- [ ] Given le nouveau `.gitignore`, Then il ignore `node_modules/`, `dist/`, `data/cache/`, `data/build/`, `*.js.map`, les `*.js` et `*.d.ts` générés à côté des sources TypeScript des paquets, `.env`, `.claude/*.lock`.
-- [ ] Given un `grep` des chemins `C:\\Users` dans le dépôt (hors `docs/` et `package-lock.json`), Then il ne renvoie plus rien, à l'exception de `packages/game-config/world.json`, traité par T-015.
+- [x] Given le dépôt actuel, When la tâche est livrée, Then les fichiers suivants n'existent plus : `check_buildings.js`, `check_buildings2.js`, `check_road.js`, `check_road.bat`, `debug_buildings.js`, `debug_roads.js`, `debug_roads2.js`, `test_sector_gen.js`, `test_world_gen.js`, `test_output.txt`, `apps/server/src/index.ts.bak`, `packages/world-generator/scripts/*.js|*.d.ts|*.map` (15 fichiers), `packages/game-config/buildings.json`, `packages/game-config/road-prop-config.json`.
+- [x] Given `.claude/scheduled_tasks.lock`, When la tâche est livrée, Then il n'est plus suivi par git et figure dans `.gitignore`.
+- [x] Given le nouveau `.gitignore`, Then il ignore `node_modules/`, `dist/`, `data/cache/`, `data/build/`, `*.js.map`, les `*.js` et `*.d.ts` générés à côté des sources TypeScript des paquets, `.env`, `.claude/*.lock`.
+- [x] Given un `grep` des chemins `C:\\Users` dans le dépôt (hors `docs/` et `package-lock.json`), Then il ne renvoie plus rien, à l'exception de `packages/game-config/world.json`, traité par T-015.
 
 ## Out of scope
 - Supprimer `world.json`, `props.json`, `road-network.json` (T-015).
@@ -32,10 +32,10 @@ Suppression de fichiers : **accord explicite du propriétaire requis** (CLAUDE.m
 Toute exécution de commande (install, build, test, git) doit être demandée au propriétaire (CLAUDE.md). Règles de modularité : ARCHITECTURE.md §9.
 
 ## Implementation log
-(filled by the implementer)
+- Done in PR #2 (J0 foundations): debug scripts, compiled artifacts, `.bak`, empty/dead config files and `.claude/scheduled_tasks.lock` removed (owner approval 2026-10-13); `.gitignore` rewritten (cache, build, local role).
 
 ## Review
-(filled by tech-lead-po)
+- Reviewed and merged by smartdev1 in PR #2.
 
 ## QA report
 (filled by the QA agent)

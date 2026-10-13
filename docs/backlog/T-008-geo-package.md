@@ -1,8 +1,8 @@
 ---
 id: T-008
 title: Create @skyline/geo: UTM 30N projection and fixed tile grid
-status: review
-owner: fullstack-devops
+status: done
+owner: backend
 author_of_code: backend-dev (Claude, for Ky-Wilson)
 priority: P0
 size: M
@@ -44,7 +44,7 @@ Toute exécution de commande (install, build, test, git) doit être demandée au
 - Note: the "3 published reference points" criterion uses PROJ-computed values (the reference implementation), documented in the test file.
 
 ## Review
-(filled by tech-lead-po)
+- Reviewed and merged by smartdev1 in PR #3.
 
 ## QA report
 (filled by the QA agent)
