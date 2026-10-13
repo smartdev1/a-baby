@@ -5,6 +5,11 @@ export default defineConfig({
   root: '.',
   base: '',
   publicDir: false,
+  resolve: {
+    alias: {
+      'world-generator': resolve(__dirname, '../../packages/world-generator/src/index.ts')
+    }
+  },
   build: {
     outDir: '../dist',
     emptyOutDir: true,

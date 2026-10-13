@@ -106,7 +106,7 @@ export class BuildingPlacer {
 
     for (const raw of rawBuildings) {
       // Calculate footprint area
-      const area = this.calculateFootprintArea(raw.footprint);
+      const area = this.calculateFootprintArea(raw.footprint[0]);
 
       // Filter by minimum area
       if (area < (this.options.minArea || 10)) continue;
@@ -141,14 +141,14 @@ export class BuildingPlacer {
       const materialKey = this.determineMaterialKey(raw.buildingType, raw.originalId);
 
       // Calculate centroid
-      const center = this.calculateCentroid(raw.footprint);
+      const center = this.calculateCentroid(raw.footprint[0]);
 
       // Calculate bounding box
-      const bounds = this.calculateBounds(raw.footprint);
+      const bounds = this.calculateBounds(raw.footprint[0]);
 
       instances.push({
         id: raw.id,
-        footprint: raw.footprint, // Already projected
+        footprint: raw.footprint[0], // Already projected exterior ring
         height,
         levels,
         materialKey,

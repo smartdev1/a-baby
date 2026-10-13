@@ -211,11 +211,11 @@ export class GeoJSONImporter {
     const pois: RawPOI[] = [];
 
     for (const feature of geojson.features) {
-      if (feature.geometry.type === 'Polygon' && feature.properties.building) {
+      if (feature.geometry.type === 'Polygon' && feature.properties?.building) {
         buildings.push(this.parseBuilding(feature));
-      } else if (feature.geometry.type === 'LineString' && feature.properties.highway) {
+      } else if (feature.geometry.type === 'LineString' && feature.properties?.highway) {
         roads.push(this.parseRoad(feature));
-      } else if (feature.geometry.type === 'Point' && this.isPOI(feature.properties)) {
+      } else if (feature.geometry.type === 'Point' && this.isPOI(feature.properties || {})) {
         pois.push(this.parsePOI(feature));
       }
       // Note: MultiPolygon buildings handled in parseBuilding
@@ -282,7 +282,7 @@ export class GeoJSONImporter {
   }
 
   private parseBuilding(feature: GeoJSON.Feature): RawBuilding {
-    const props = feature.properties as Record<string, any>;
+    const props = feature.properties || {};
     const geometry = feature.geometry as GeoJSON.Polygon;
 
     // Project polygon (handles holes)
@@ -290,34 +290,34 @@ export class GeoJSONImporter {
 
     // Determine levels
     const levels = props['building:levels']
-      ? parseInt(props['building:levels'], 10)
+      ? parseInt(String(props['building:levels']), 10)
       : DEFAULT_BUILDING_LEVELS;
 
     return {
-      id: `bldg_${feature.id?.replace(/[^\w]/g, '_') || Math.random().toString(36).slice(2,9)}`,
+      id: `bldg_${String((feature.id as string)?.replace(/[^\w]/g, '_') || Math.random().toString(36).slice(2,9))}`,
       footprint: projectedRings,
       levels: Math.max(1, levels),
       height: levels * DEFAULT_FLOOR_HEIGHT,
       buildingType: props.building || 'yes',
-      originalId: props['@id'] || feature.id || ''
+      originalId: String(props['@id'] || feature.id || '')
     };
   }
 
   private parseRoad(feature: GeoJSON.Feature): RawRoad {
-    const props = feature.properties as Record<string, any>;
+    const props = feature.properties || {};
     const geometry = feature.geometry as GeoJSON.LineString;
 
     const projectedPath = this.projection.projectLineString(geometry.coordinates);
     const highwayType = props.highway || 'unclassified';
 
     return {
-      id: `road_${feature.id?.replace(/[^\w]/g, '_') || Math.random().toString(36).slice(2,9)}`,
+      id: `road_${String((feature.id as string)?.replace(/[^\w]/g, '_') || Math.random().toString(36).slice(2,9))}`,
       path: projectedPath,
       roadType: highwayType,
       name: props.name,
       surface: props.surface,
       width: ROAD_TYPE_WIDTH[highwayType] || 5,
-      originalId: props['@id'] || feature.id || ''
+      originalId: props['@id'] || String(feature.id) || ''
     };
   }
 
@@ -362,14 +362,14 @@ export class GeoJSONImporter {
     }
 
     return {
-      id: `poi_${feature.id?.replace(/[^\w]/g, '_') || Math.random().toString(36).slice(2,9)}`,
+      id: `poi_${String((feature.id as string)?.replace(/[^\w]/g, '_') || Math.random().toString(36).slice(2,9))}`,
       position: projectedPos,
       poiType,
       osmType,
       osmValue,
       name: props.name,
       tags,
-      originalId: props['@id'] || feature.id || ''
+      originalId: props['@id'] || String(feature.id) || ''
     };
   }
 }

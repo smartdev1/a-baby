@@ -24,15 +24,15 @@ export interface PropInstance {
 
 export interface PropPlacerOptions {
   /** Density of trees per road meter (default: 0.05 = 1 tree per 20m) */
-  treeDensity?: number;
+  treeDensity: number;
   /** Density of street lights per road meter (default: 0.1 = 1 light per 10m) */
-  streetLightDensity?: number;
+  streetLightDensity: number;
   /** Whether to place props at POI locations */
-  placeAtPOIs?: boolean;
+  placeAtPOIs: boolean;
   /** Maximum number of props total (safety limit) */
-  maxProps?: number;
+  maxProps: number;
   /** Offset from road center for side-props */
-  sideOffset?: number;
+  sideOffset: number;
 }
 
 const DEFAULT_OPTIONS: PropPlacerOptions = {
@@ -57,7 +57,7 @@ const PROP_CONFIGS: Record<string, { scale: number; materialKey: string; height?
 // --- Main class ---
 
 export class PropPlacer {
-  private options: PropPlacerOptions;
+  options: PropPlacerOptions; // public for world-generator access
   private rawWorldData: RawWorldData;
   private roadNetworkEdges: Array<{ id: string; fromNode: string; toNode: string; roadType: string; name?: string; surface?: string; width: number; lanes: number; direction: 'both' | 'forward' | 'backward'; geometry: Vec2[]; length: number; originalRoadId: string }>;
 
@@ -68,7 +68,7 @@ export class PropPlacer {
    * @param roadNetworkJson The road-network.json content (edges as [id, props] arrays)
    * @param options PropPlacer options
    */
-  constructor(rawWorldData: RawWorldData, roadNetworkInput: any, options: PropPlacerOptions = {}) {
+  constructor(rawWorldData: RawWorldData, roadNetworkInput: any, options: PropPlacerOptions = DEFAULT_OPTIONS) {
     this.options = { ...DEFAULT_OPTIONS, ...options };
     this.rawWorldData = rawWorldData;
 
@@ -202,7 +202,7 @@ export class PropPlacer {
    */
   public placeAlongRoads(): PropInstance[] {
     const props: PropInstance[] = [];
-    const { treeDensity, streetLightDensity, placeAtPOIs, maxProps, sideOffset } = this.options;
+    const { treeDensity: treeDensityVal = this.options.treeDensity, streetLightDensity: streetLightDensityVal = this.options.streetLightDensity, placeAtPOIs, maxProps, sideOffset } = this.options;
 
     if (this.roadNetworkEdges.length === 0) return props;
 
@@ -210,16 +210,16 @@ export class PropPlacer {
     let placedCount = 0;
 
     // 1. Place trees along roads
-    if (treeDensity > 0) {
-      const trees = this.placeTreesAlongRoads(treeDensity);
+    if (treeDensityVal > 0) {
+      const trees = this.placeTreesAlongRoads(treeDensityVal);
       props.push(...trees);
       placedCount += trees.length;
       console.log(`   🌳 Trees placed: ${trees.length}`);
     }
 
     // 2. Place street lights along roads
-    if (streetLightDensity > 0) {
-      const lights = this.placeStreetLightsAlongRoads(streetLightDensity);
+    if (streetLightDensityVal > 0) {
+      const lights = this.placeStreetLightsAlongRoads(streetLightDensityVal);
       props.push(...lights);
       placedCount += lights.length;
       console.log(`   💡 Street lights placed: ${lights.length}`);
@@ -267,7 +267,7 @@ export class PropPlacer {
 
         // Random offset from road (left/right side)
         const side = Math.random() > 0.5 ? 1 : -1;
-        const offsetX = (Math.random() * this.options.sideOffset!) * side;
+        const offsetX = (Math.random() * (this.options.sideOffset ?? 3)) * side;
         const offsetY = Math.random() * 2; // small perpendicular offset
 
         const positionedPos: Vec2 = {

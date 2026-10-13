@@ -11,7 +11,8 @@
   "dependencies": {
     "babylonjs": "^7.0.0",
     "babylonjs-gui": "^7.0.0",
-    "colyseus.js": "^0.15.0"
+    "colyseus.js": "^0.15.0",
+    "world-generator": "../../packages/world-generator"
   },
   "devDependencies": {
     "typescript": "^5.0.0",

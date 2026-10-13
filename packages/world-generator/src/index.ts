@@ -5,7 +5,9 @@ import { RoadNetwork } from './roads';
 import { BuildingPlacer } from './buildings';
 import { PropPlacer } from './props';
 import { TerrainProjection } from './projection';
-import type { RawWorldData, RoadNetworkData } from './importers/GeoJSONImporter';
+import type { RawWorldData } from './importers/GeoJSONImporter';
+import { Vec2 } from './projection/TerrainProjection';
+import { RoadNetworkData } from './roads';
 
 // --- Sector grid configuration ---
 
@@ -120,7 +122,13 @@ export class WorldGenerator {
     this.terrainProjection = new TerrainProjection();
     this.roadNetwork = new RoadNetwork();
     this.buildingPlacer = new BuildingPlacer();
-    this.propPlacer = new PropPlacer();
+    this.propPlacer = new PropPlacer(rawWorldData, { edges: new Map() }, {
+      treeDensity: 0.05,
+      streetLightDensity: 0.1,
+      placeAtPOIs: true,
+      maxProps: 500,
+      sideOffset: 3
+    });
     this.rawWorldData = rawWorldData;
   }
 
@@ -191,7 +199,7 @@ export class WorldGenerator {
 
     // 4. Place props and details for this sector
     // Create a sector-specific PropPlacer
-    const sectorPropPlacer = new PropPlacer(this.rawWorldData, sectorRoads, {
+    const sectorPropPlacer = new PropPlacer(this.rawWorldData, { edges: sectorRoads }, {
       treeDensity: this.propPlacer.options.treeDensity,
       streetLightDensity: this.propPlacer.options.streetLightDensity,
       placeAtPOIs: this.propPlacer.options.placeAtPOIs,
@@ -204,7 +212,7 @@ export class WorldGenerator {
     // 5. Place props at POIs for this sector
     if (this.propPlacer.options.placeAtPOIs && sectorPOIs && sectorPOIs.length > 0) {
       // Create sector-specific prop placer for POIs
-      const poiPlacer = new PropPlacer(this.rawWorldData, sectorRoads, {
+      const poiPlacer = new PropPlacer(this.rawWorldData, { edges: sectorRoads }, {
         treeDensity: this.propPlacer.options.treeDensity,
         streetLightDensity: this.propPlacer.options.streetLightDensity,
         placeAtPOIs: true,
