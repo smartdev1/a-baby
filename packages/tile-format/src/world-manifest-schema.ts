@@ -13,8 +13,8 @@ const ManifestTileSchema = z
   .object({
     geom: ContentHashSchema.optional(),
     instances: ContentHashSchema.optional(),
-    collision: ContentHashSchema,
-    meta: ContentHashSchema,
+    collision: ContentHashSchema.optional(),
+    meta: ContentHashSchema.optional(),
     nav: ContentHashSchema.optional(),
   })
   .strict();
@@ -41,7 +41,14 @@ export const WorldManifestSchema = z
     attribution: z.string().min(1),
     tiles: z.record(TileKeySchema, ManifestTileSchema),
   })
-  .strict();
+  .strict()
+  .superRefine((manifest, ctx) => {
+    for (const [key, files] of Object.entries(manifest.tiles)) {
+      // L0 tiles are playable (collision + meta); coarser levels are render-only (geom).
+      const ok = key.startsWith('L0_') ? files.collision !== undefined && files.meta !== undefined : files.geom !== undefined;
+      if (!ok) ctx.addIssue({ code: 'custom', path: ['tiles', key], message: key.startsWith('L0_') ? 'L0 tile needs collision and meta' : 'LOD tile needs geom' });
+    }
+  });
 
 export type WorldManifest = z.infer<typeof WorldManifestSchema>;
 export type ManifestTile = z.infer<typeof ManifestTileSchema>;

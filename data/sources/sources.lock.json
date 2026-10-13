@@ -16,5 +16,15 @@
       "osmRelationId": 3377881,
       "note": "admin_level=8, name=Yopougon, wikidata Q1470529 — confirmed by spike SP2 (T-018)"
     }
+  },
+  "dem": {
+    "provider": "copernicus",
+    "product": "GLO-30",
+    "url": "https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_N05_00_W005_00_DEM/Copernicus_DSM_COG_10_N05_00_W005_00_DEM.tif",
+    "fileName": "Copernicus_DSM_COG_10_N05_00_W005_00_DEM.tif",
+    "sizeBytes": 40164044,
+    "sha256": "3063f5c23673719b272bda462fb7283f38795ac9938bb12a3ccffb5ccc206015",
+    "licence": "Copernicus DEM licence (free use with attribution) — legal review pending (Q8)",
+    "attribution": "Produced using Copernicus WorldDEM-30 © DLR e.V. 2010-2014 and © Airbus Defence and Space GmbH 2014-2018 provided under COPERNICUS by the European Union and ESA; all rights reserved"
   }
 }

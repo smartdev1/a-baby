@@ -1,0 +1,6 @@
+{
+  "note": "Example override (inactive: no such OSM id). One file per OSM object: displayName replaces the computed name, null hides it (removal on request).",
+  "id": "osm:node/1",
+  "displayName": null,
+  "reason": "example"
+}

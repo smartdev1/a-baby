@@ -5,4 +5,5 @@
 
 export type { MessageBus, Unsubscribe } from './message-bus.ts';
 export { InMemoryBus } from './in-memory-bus.ts';
-export { subjects, type CellInput, type CellJoin, type CellLeave, type SessionOut } from './world-subjects.ts';
+export { NatsBus } from './nats-bus.ts';
+export { subjects, type CellHandoff, type CellInput, type CellJoin, type CellSnapshot, type SessionClosed, type SessionOut } from './world-subjects.ts';

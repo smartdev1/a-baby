@@ -13,7 +13,7 @@
     "dev:services": "pnpm --filter @skyline/services dev",
     "dev:server": "pnpm --filter @skyline/all-in-one dev",
     "map:build": "tsx tools/map-pipeline/src/cli/main.ts build",
-    "map:osmium-image": "docker build -t skyline/osmium:1.18.0 infra/docker/osmium",
+    "map:osmium-image": "docker build -t skyline/osm-tools:2 infra/docker/osmium",
     "build": "pnpm -r --if-present build",
     "typecheck": "pnpm -r --if-present typecheck",
     "lint": "eslint . && depcruise apps packages tools --config .dependency-cruiser.cjs && node tools/repo-checks/src/run-all.mjs",

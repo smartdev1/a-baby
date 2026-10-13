@@ -6,6 +6,7 @@
 import { join } from 'node:path';
 import type { FastifyInstance } from 'fastify';
 import type { Logger } from '@skyline/observability';
+import { registerInternalTicketRoutes } from '../modules/session-tickets/api/internal-ticket-routes.ts';
 import { registerSessionTicketRoutes } from '../modules/session-tickets/api/session-ticket-routes.ts';
 import { TicketService } from '../modules/session-tickets/application/ticket-service.ts';
 import { registerWorldClockRoutes } from '../modules/world-clock/api/world-clock-routes.ts';
@@ -38,6 +39,7 @@ export const buildServices = async ({ config, logger, extraRoutes }: BuildServic
     registerRoutes: (app) => {
       registerWorldClockRoutes(app, worldClock, now);
       registerSessionTicketRoutes(app, tickets, config.ticketsPerMin);
+      if (config.internalRoutes) registerInternalTicketRoutes(app, tickets);
       extraRoutes?.(app);
     },
   });

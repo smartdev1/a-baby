@@ -16,6 +16,7 @@ Source code of `@skyline/tile-format`.
 | `world-manifest-schema.ts` | Release manifest schema |
 | `parse-tile-json.ts` | Validation with readable errors (`TileFormatError`) |
 | `collision/` | `collision.bin` codec |
+| `instances/` | `instances.bin` codec and module catalogue |
 
 ## Rules
 

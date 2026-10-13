@@ -8,7 +8,7 @@ import { parseTileMeta, parseWorldManifest, TileFormatError } from './parse-tile
 import { parseTileFileName, tileDirectory, tileFilePath, worldManifestFileName } from './tile-file-names.ts';
 
 const META = {
-  formatVersion: 0,
+  formatVersion: 1,
   tileKey: 'L0_325_199',
   buildings: [{ id: 'osm:way/558265139', type: 'apartments', levels: 4, heightM: 12.5, heightSource: 'heuristic' }],
   places: [{ id: 'osm:node/42', category: 'food.maquis', displayName: 'Maquis Le Pigeon', position: { x: 12, z: 80 }, buildingId: null }],
@@ -16,7 +16,7 @@ const META = {
 };
 
 const MANIFEST = {
-  formatVersion: 0,
+  formatVersion: 1,
   release: 'yopougon-2026-10-01',
   commune: 'Yopougon',
   bboxUtm: { minEastingM: 371_000, minNorthingM: 578_500, maxEastingM: 384_000, maxNorthingM: 597_000 },
@@ -39,11 +39,17 @@ describe('tile JSON schemas', () => {
   });
 
   it.each([
-    ['another format version', { ...META, formatVersion: 1 }],
+    ['another format version', { ...META, formatVersion: 0 }],
     ['an unknown key', { ...META, extra: 1 }],
     ['a raw OSM id', { ...META, places: [{ ...META.places[0], id: '42' }] }],
   ])('should reject a meta with %s', (_label, value) => {
     expect(() => parseTileMeta(value)).toThrow(TileFormatError);
+  });
+
+  it('should require collision and meta for L0 tiles and geom for LOD tiles', () => {
+    expect(() => parseWorldManifest({ ...MANIFEST, tiles: { L0_1_1: { geom: '0123456789abcdef' } } })).toThrow(TileFormatError);
+    expect(parseWorldManifest({ ...MANIFEST, tiles: { L1_1_1: { geom: '0123456789abcdef' } } }).tiles['L1_1_1']?.geom).toBe('0123456789abcdef');
+    expect(() => parseWorldManifest({ ...MANIFEST, tiles: { L1_1_1: {} } })).toThrow(TileFormatError);
   });
 
   it('should reject a manifest whose licence is not ODbL', () => {

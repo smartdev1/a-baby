@@ -14,6 +14,7 @@
   "backend": [
     "apps/gateway/",
     "apps/zone/",
+    "apps/all-in-one/",
     "apps/services/",
     "packages/geo/",
     "packages/tile-format/",

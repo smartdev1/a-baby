@@ -13,7 +13,7 @@ import { pointInRing, pushCircleOut } from './polygon-math.ts';
 
 const box = ([x, z, w, d]: readonly [number, number, number, number], topYM: number): Prism => ({ baseYM: 0, topYM, ring: Float32Array.from([x, z, x + w, z, x + w, z + d, x, z + d]) });
 const worldOf = (prisms: Prism[]): CollisionWorld => {
-  const data: CollisionData = { heightField: { resolution: 2, cellSizeM: 250, heightsM: new Float32Array(4) }, prisms };
+  const data: CollisionData = { heightField: { resolution: 2, cellSizeM: 250, heightsM: new Float32Array(4) }, prisms, water: null };
   const world = new CollisionWorld();
   world.addTile(data, 0, 0);
   return world;
@@ -64,6 +64,15 @@ describe('stepCharacter', () => {
     const landed = run(world, up, { ...forward, moveZ: 0 }, 30);
     expect(landed.grounded).toBe(true);
     expect(landed.position.y).toBe(0);
+  });
+
+  it('should not walk into water', () => {
+    const water = { levelM: 0, cellsPerSide: 2, mask: Uint8Array.from([0b1100]) }; // northern half of the tile is water
+    const world = new CollisionWorld();
+    world.addTile({ heightField: { resolution: 2, cellSizeM: 250, heightsM: new Float32Array(4) }, prisms: [], water }, 0, 0);
+    const s = run(world, standing(100, 124), forward, 40); // 3.2 m of walking towards z = 125
+    expect(s.position.z).toBeLessThan(125);
+    expect(s.position.z).toBeGreaterThan(124.8);
   });
 
   it('should be deterministic', () => {

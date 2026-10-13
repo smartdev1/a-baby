@@ -1,7 +1,7 @@
 # `packages/bus/`
 
 - **Owner:** backend developer
-- **Status:** Active — in-memory bus + typed world subjects (T-108); NATS in J5
+- **Status:** Active — in-memory bus + typed world subjects (T-108); NATS bus (T-110)
 
 ## Role
 
@@ -9,7 +9,7 @@ MessageBus interface with typed subjects; in-memory implementation (tests, all-i
 
 ## How it works
 
-Public API is exported from `src/index.ts` only. Profile: `node`. First implementation: J5.
+Public API is exported from `src/index.ts` only. Profile: `node`. `InMemoryBus` serves tests and the all-in-one process; `NatsBus` (JSON payloads, core NATS, no persistence) serves the multi-process mode.
 
 ## Rules
 

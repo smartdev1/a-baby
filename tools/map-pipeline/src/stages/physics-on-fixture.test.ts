@@ -4,7 +4,7 @@
  */
 
 import { readdirSync, readFileSync } from 'node:fs';
-import { copyFile, mkdir, mkdtemp, rm } from 'node:fs/promises';
+import { copyFile, cp, mkdir, mkdtemp, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -27,6 +27,7 @@ beforeAll(async () => {
   root = await mkdtemp(join(tmpdir(), 'physics-fixture-'));
   await mkdir(join(root, dirname(FIXTURE)), { recursive: true });
   await copyFile(join(packageDir, 'test/fixtures/pigeons-sample.geojson'), join(root, FIXTURE));
+  await cp(join(packageDir, '../../content/place-names'), join(root, 'content/place-names'), { recursive: true });
   const config = await loadPipelineConfig(join(packageDir, 'config/fixture.pipeline.json'));
   await runPipeline({ repoRoot: root, config, stages: stagesFor(config), logger: createLogger({ service: 'test', level: 'silent' }) });
 

@@ -5,4 +5,4 @@
 
 ## Role
 
-`buildings.ndjson` + `classified.ndjson` → `tiles.ndjson` (one L0 tile per line). Logic in `src/tiling/`.
+`buildings.ndjson` + `classified.ndjson` + place names + terrain + `props.ndjson` (12) + `facades.ndjson` / `roofs.ndjson` (11) → `tiles.ndjson` (one L0 tile per line). Logic in `src/tiling/`.

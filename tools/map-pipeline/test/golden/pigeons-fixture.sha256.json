@@ -4,7 +4,13 @@
   "06-heights/buildings.ndjson": "ffad5003f47d4870c205fb058066ddfe70523f00bd9b4c1b715f782fb129c7a4",
   "08-roads/road-edges.ndjson": "463949f08b0b080ac8c6864ca08b4a5d7624c0e43c090f8e486859019c953b51",
   "08-roads/road-stats.json": "b40a1326daf94cf256beec0fa3d7d79bd05b7687b5f762748a84eca0e16cdc96",
-  "14-tile-cut/tiles.ndjson": "0badd68d3ed2c8520b2419238c3d377c2d7e328d75f1d7bcb3d8fa2a4f7260d2",
-  "16-encode/encode-index.json": "dc6140b222fc67ec29be59ecd31d9467436a1d63b3d81b03acb35a7d1828c66e",
-  "17-manifest/world-manifest.pigeons-fixture-2026-10-13.json": "5ec81487e31af222245d18bd948bdd4c54e642ffbd913fa0a0926583d18c265d"
+  "09-naming/place-names.ndjson": "c2ca374ee83f525730fc6e6aceea074b73d0d660f35246609560f1ba915fd714",
+  "10-terrain/terrain-tiles.ndjson": "418cfad132174da7d2c0299da66407998bf082d1236f8b4925d6d2c6e0085722",
+  "11-facades-roofs/facades.ndjson": "26cf8d0f5ccc7243973c196e3ffa62fe20ff2db96c02ccc596c4660d110d7349",
+  "11-facades-roofs/roofs.ndjson": "f88defad06f25df8c0c0aee35838b9c3d00e9a170562540da08b2ed6be67cad1",
+  "12-props/props.ndjson": "82b0dbdcd19d524a9e3aadb4a9c0f26585e825f0923a71e3d6616c323b3ce376",
+  "14-tile-cut/tiles.ndjson": "bd8813d06e99ef8bc777b49d2ac44e5095b14d7d15f3c1e469438b3433886e56",
+  "15-lod-build/lod-index.json": "f2ead8ff2a5f0d830142b3dbb211da5197fb8d3b78124706afff67d1927381a7",
+  "16-encode/encode-index.json": "49545b140e29338510a0977b9cecd653c3d26d45b164c6080d982bf5e63098cf",
+  "17-manifest/world-manifest.pigeons-fixture-2026-10-13.json": "2208961de4b448fa7bde70f7c222f57c79fad4c98af7fd51ba26e521b2d79d49"
 }
