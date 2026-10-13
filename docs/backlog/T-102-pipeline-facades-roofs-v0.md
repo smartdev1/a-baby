@@ -1,7 +1,7 @@
 ---
 id: T-102
 title: Pipeline stage `facades-roofs` v0: facade bays, profile grammar, instance lists, flat and sheet-metal roofs
-status: review
+status: done
 owner: backend
 author_of_code: backend-dev (Claude, for Ky-Wilson)
 priority: P0

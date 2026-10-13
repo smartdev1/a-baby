@@ -1,7 +1,7 @@
 ---
 id: T-019
 title: Spike SP4: network latency from Abidjan to candidate regions
-status: blocked
+status: done
 owner: backend
 author_of_code: backend-dev (Claude, for Ky-Wilson)
 priority: P1

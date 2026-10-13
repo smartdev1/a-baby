@@ -1,7 +1,7 @@
 ---
 id: T-023
 title: Frontend Design Roadmap — Vie Virtuelle Yopougon
-status: todo
+status: done
 owner: frontend-dev
 priority: P0
 size: L

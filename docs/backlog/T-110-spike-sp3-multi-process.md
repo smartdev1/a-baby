@@ -1,7 +1,7 @@
 ---
 id: T-110
 title: Spike SP3 (start): 2 zone processes + NATS, entity handoff
-status: review
+status: done
 owner: backend
 author_of_code: backend-dev (Claude, for Ky-Wilson)
 priority: P1
