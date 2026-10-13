@@ -10,7 +10,14 @@ import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
   {
-    ignores: ['**/node_modules/**', '**/dist/**', 'docs/archive/**', 'data/**', 'coverage/**'],
+    ignores: [
+      '**/node_modules/**',
+      '**/dist/**',
+      'docs/archive/**',
+      'data/**',
+      'coverage/**',
+      'packages/test-rules/**',
+    ],
   },
   js.configs.recommended,
   ...tseslint.configs.recommendedTypeChecked,
@@ -27,10 +34,7 @@ export default tseslint.config(
       'max-lines-per-function': ['error', { max: 80, skipBlankLines: true, skipComments: true }],
       complexity: ['error', 12],
       'max-params': ['error', 4],
-      'no-restricted-properties': [
-        'error',
-        { object: 'Math', property: 'random', message: 'Use SeededRng (ARCHITECTURE §9.2).' },
-      ],
+      'no-restricted-properties': ['error', { object: 'Math', property: 'random', message: 'Use SeededRng (ARCHITECTURE §9.2).' }],
       '@typescript-eslint/no-explicit-any': 'error',
       '@typescript-eslint/no-floating-promises': 'error',
       '@typescript-eslint/consistent-type-imports': 'error',
@@ -57,11 +61,6 @@ export default tseslint.config(
   {
     files: ['tools/latency-probe/page/**/*.mjs'],
     languageOptions: { globals: { ...globals.browser } },
-  },
-  {
-    files: ['apps/web/**/*.{ts,tsx}'],
-    languageOptions: { globals: { ...globals.browser } },
-    rules: { 'no-restricted-properties': 'off' },
   },
   {
     files: ['**/*.test.ts', '**/*.test.tsx'],

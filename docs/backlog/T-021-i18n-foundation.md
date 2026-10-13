@@ -1,6 +1,8 @@
 ## T-021: i18n foundation — COMPLETE
 
-**Status**: PRÊT POUR REVUE | awaiting tech-lead-po validation
+**Status**: done
+**Owner**: fullstack-devops
+**Owner of code**: fullstack-devops
 
 ### Ce qui a été fait
 

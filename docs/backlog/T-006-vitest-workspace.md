@@ -1,8 +1,8 @@
 ---
 id: T-006
 title: Vitest workspace with coverage and fast-check
-status: review
-owner: backend
+status: done
+owner: fullstack-qa
 author_of_code:
 priority: P0
 size: S
