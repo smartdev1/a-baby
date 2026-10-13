@@ -17,6 +17,7 @@ test-results/
 # Map pipeline: downloads and generated tiles are never committed (only data/sources/sources.lock.json)
 data/cache/
 data/build/
+data/runtime/
 
 # Local Claude Code state (each developer declares their own role)
 .claude/role.local
