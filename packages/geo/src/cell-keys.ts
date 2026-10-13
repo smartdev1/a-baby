@@ -32,7 +32,12 @@ export const cellBounds = (key: string): UtmBounds => {
   const { i, j } = parseCellKey(key);
   const minEastingM = GRID_ORIGIN.eastingM + i * CELL_SIZE_M;
   const minNorthingM = GRID_ORIGIN.northingM + j * CELL_SIZE_M;
-  return { minEastingM, minNorthingM, maxEastingM: minEastingM + CELL_SIZE_M, maxNorthingM: minNorthingM + CELL_SIZE_M };
+  return {
+    minEastingM,
+    minNorthingM,
+    maxEastingM: minEastingM + CELL_SIZE_M,
+    maxNorthingM: minNorthingM + CELL_SIZE_M,
+  };
 };
 
 /** The L0 tiles owned by a cell, south-west first, row by row. */

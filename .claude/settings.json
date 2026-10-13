@@ -11,7 +11,14 @@
       "Bash(git diff:*)",
       "Bash(git log:*)"
     ],
-    "ask": ["Bash(pnpm add:*)", "Bash(pnpm remove:*)", "Bash(git push:*)", "Bash(git commit:*)", "Bash(rm:*)", "Bash(git rm:*)"],
+    "ask": [
+      "Bash(pnpm add:*)",
+      "Bash(pnpm remove:*)",
+      "Bash(git push:*)",
+      "Bash(git commit:*)",
+      "Bash(rm:*)",
+      "Bash(git rm:*)"
+    ],
     "deny": ["Read(./.env)", "Read(./.env.*)", "Bash(git push --force:*)", "Bash(git push -f:*)"]
   },
   "hooks": {

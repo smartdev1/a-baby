@@ -39,7 +39,12 @@ export const bboxOf = (g: Geometry): BboxLonLat => {
 
 /** Average of the vertices (outer ring for areas): cheap and good enough to place a feature in a tile. */
 export const representativePoint = (g: Geometry): Position => {
-  const pts = g.type === 'Polygon' ? (g.coordinates[0] ?? []) : g.type === 'MultiPolygon' ? (g.coordinates[0]?.[0] ?? []) : allPositions(g);
+  const pts =
+    g.type === 'Polygon'
+      ? (g.coordinates[0] ?? [])
+      : g.type === 'MultiPolygon'
+        ? (g.coordinates[0]?.[0] ?? [])
+        : allPositions(g);
   const n = Math.max(pts.length, 1);
   return [pts.reduce((s, p) => s + p[0], 0) / n, pts.reduce((s, p) => s + p[1], 0) / n];
 };
@@ -74,7 +79,10 @@ const ringAreaM2 = (ring: Ring): number => {
 /** Area in m² (outer rings minus holes), measured in UTM 30N. */
 export const areaM2 = (g: Geometry): number => {
   const polygons = g.type === 'Polygon' ? [g.coordinates] : g.type === 'MultiPolygon' ? g.coordinates : [];
-  return polygons.reduce((sum, [outer, ...holes]) => sum + (outer ? ringAreaM2(outer) : 0) - holes.reduce((h, r) => h + ringAreaM2(r), 0), 0);
+  return polygons.reduce(
+    (sum, [outer, ...holes]) => sum + (outer ? ringAreaM2(outer) : 0) - holes.reduce((h, r) => h + ringAreaM2(r), 0),
+    0,
+  );
 };
 
 /** Length in metres of a (Multi)LineString, measured in UTM 30N. */

@@ -7,11 +7,11 @@
 
 Encoding a cut tile into its files, through `@skyline/tile-format`.
 
-| File | Role |
-|---|---|
-| `tile-encoder.ts` | `geom` + `collision` + `meta` of a tile, 16-hex content hashes, triangle and draw-call counts |
-| `tile-glb.ts` | glTF binary: one mesh per material (ground, road, path, walls, roofs), `KHR_mesh_quantization` + `EXT_meshopt_compression` |
-| `tile-budgets.ts` | ARCHITECTURE §10.4 maxima (1.5 MB, 400 k triangles, 40 draw calls); violations name the tile |
+| File              | Role                                                                                                                       |
+| ----------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `tile-encoder.ts` | `geom` + `collision` + `meta` of a tile, 16-hex content hashes, triangle and draw-call counts                              |
+| `tile-glb.ts`     | glTF binary: one mesh per material (ground, road, path, walls, roofs), `KHR_mesh_quantization` + `EXT_meshopt_compression` |
+| `tile-budgets.ts` | ARCHITECTURE §10.4 maxima (1.5 MB, 400 k triangles, 40 draw calls); violations name the tile                               |
 
 ## Notes for the client (frontend)
 

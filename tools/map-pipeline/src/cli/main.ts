@@ -18,10 +18,13 @@ const main = async (): Promise<void> => {
   const logger = createLogger({ service: 'map-pipeline' }).child({ commune: config.commune });
 
   const reports = await runPipeline({ repoRoot, config, stages: stagesFor(config), logger, force });
-  for (const r of reports) process.stdout.write(`${r.id.padEnd(24)} ${r.status.padEnd(7)} ${r.durationMs.toFixed(0)} ms\n`);
+  for (const r of reports)
+    process.stdout.write(`${r.id.padEnd(24)} ${r.status.padEnd(7)} ${r.durationMs.toFixed(0)} ms\n`);
 };
 
 main().catch((error: unknown) => {
-  process.stderr.write(`map-pipeline failed: ${error instanceof Error ? (process.env['DEBUG'] ? (error.stack ?? error.message) : error.message) : String(error)}\n`);
+  process.stderr.write(
+    `map-pipeline failed: ${error instanceof Error ? (process.env['DEBUG'] ? (error.stack ?? error.message) : error.message) : String(error)}\n`,
+  );
   process.exitCode = 1;
 });

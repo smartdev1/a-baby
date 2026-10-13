@@ -17,16 +17,16 @@ Le propriétaire veut un module d'actions **complet et ambitieux** : des dizaine
 
 ## Alternatives écartées
 
-| Option | Raison du rejet |
-|---|---|
-| Une classe par action | Explosion du code, duplication, chaque ajout exige un développeur |
+| Option                                      | Raison du rejet                                                                          |
+| ------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| Une classe par action                       | Explosion du code, duplication, chaque ajout exige un développeur                        |
 | Langage de script embarqué (Lua, JS évalué) | Surface d'attaque, difficile à valider et à tester, inutile pour des règles déclaratives |
-| Arbre de comportement générique | Surdimensionné pour des actions joueur ; à réserver éventuellement aux PNJ |
-| Tables en base de données | Pas de revue de code, pas de versionnement Git, déploiement plus complexe |
+| Arbre de comportement générique             | Surdimensionné pour des actions joueur ; à réserver éventuellement aux PNJ               |
+| Tables en base de données                   | Pas de revue de code, pas de versionnement Git, déploiement plus complexe                |
 
 ## Conséquences
 
 - Ajouter une action avec des effets existants = 1 fichier JSON + des clés i18n, **0 ligne de code** (critère de recette J3).
-- Un nouveau *type* d'effet ou de condition = un gestionnaire enregistré (Open/Closed).
+- Un nouveau _type_ d'effet ou de condition = un gestionnaire enregistré (Open/Closed).
 - Le combat et les missions de la v2 s'ajoutent par de nouveaux gestionnaires (`damage`, `mission_progress`), sans réécrire le moteur.
 - Le contenu devient un livrable à part entière, porté par le propriétaire (rédaction, équilibrage, dialogues en nouchi).

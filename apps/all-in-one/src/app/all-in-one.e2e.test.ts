@@ -41,7 +41,12 @@ describe('all-in-one', () => {
     await new Promise((resolve) => socket.once('open', resolve));
     socket.send(encodeClientMessage({ type: 'hello', body: { protocolVersion: 1, ticket, clientBuild: 'e2e' } }));
     for (let seq = 1; seq <= 10; seq++) {
-      socket.send(encodeClientMessage({ type: 'input', body: { seq, moveX: 0, moveZ: 1, yawRad: 0, flags: { run: false, jump: false, interact: false } } }));
+      socket.send(
+        encodeClientMessage({
+          type: 'input',
+          body: { seq, moveX: 0, moveZ: 1, yawRad: 0, flags: { run: false, jump: false, interact: false } },
+        }),
+      );
       await new Promise((r) => setTimeout(r, 50));
     }
     await new Promise((r) => setTimeout(r, 300));

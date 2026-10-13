@@ -11,7 +11,13 @@ import { describe, expect, it } from 'vitest';
 import { ZoneCell } from './zone-cell.ts';
 
 const CELL = 'C_81_49';
-const forward = (seq: number): InputMessage => ({ seq, moveX: 0, moveZ: 1, yawRad: 0, flags: { run: false, jump: false, interact: false } });
+const forward = (seq: number): InputMessage => ({
+  seq,
+  moveX: 0,
+  moveZ: 1,
+  yawRad: 0,
+  flags: { run: false, jump: false, interact: false },
+});
 
 describe('ZoneCell', () => {
   it('should welcome a joining player with the frame origin and the world clock', async () => {
@@ -31,7 +37,10 @@ describe('ZoneCell', () => {
     bus.publish(subjects.cellJoin(CELL), { sessionId: 's1' });
     await new Promise((r) => setTimeout(r, 0));
     cell.stop();
-    expect(got[0]).toMatchObject({ type: 'welcome', body: { playerEntityId: 1, tickRateHz: 20, cellKey: CELL, frameOrigin: { eastingM: 381_000 } } });
+    expect(got[0]).toMatchObject({
+      type: 'welcome',
+      body: { playerEntityId: 1, tickRateHz: 20, cellKey: CELL, frameOrigin: { eastingM: 381_000 } },
+    });
     expect(got[1]).toMatchObject({ type: 'worldClock', body: { ratio: 12 } });
   });
 

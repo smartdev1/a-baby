@@ -8,7 +8,15 @@ import type { BboxLonLat } from '../../geometry/expand-bbox.ts';
 import type { OsmFeature } from './feature-stream.ts';
 
 /** Cover classes in priority order (first match wins). `unmapped` = probable mapping gap. */
-export const COVER_CLASSES = ['water', 'wetland', 'forest', 'industrial', 'farmland', 'other-landuse', 'unmapped'] as const;
+export const COVER_CLASSES = [
+  'water',
+  'wetland',
+  'forest',
+  'industrial',
+  'farmland',
+  'other-landuse',
+  'unmapped',
+] as const;
 export type CoverClass = (typeof COVER_CLASSES)[number];
 
 interface CoverPolygon {
@@ -22,9 +30,19 @@ const has = (tags: Tags, key: string, values: readonly string[]): boolean => val
 
 /** Land-cover rules in priority order (first match wins). */
 const COVER_RULES: readonly [CoverPolygon['cover'], (tags: Tags) => boolean][] = [
-  ['water', (t) => has(t, 'natural', ['water']) || t['water'] !== undefined || has(t, 'landuse', ['basin', 'reservoir'])],
+  [
+    'water',
+    (t) => has(t, 'natural', ['water']) || t['water'] !== undefined || has(t, 'landuse', ['basin', 'reservoir']),
+  ],
   ['wetland', (t) => has(t, 'natural', ['wetland', 'mud'])],
-  ['forest', (t) => has(t, 'natural', ['wood']) || has(t, 'landuse', ['forest']) || has(t, 'leisure', ['nature_reserve']) || has(t, 'boundary', ['protected_area'])],
+  [
+    'forest',
+    (t) =>
+      has(t, 'natural', ['wood']) ||
+      has(t, 'landuse', ['forest']) ||
+      has(t, 'leisure', ['nature_reserve']) ||
+      has(t, 'boundary', ['protected_area']),
+  ],
   ['industrial', (t) => has(t, 'landuse', ['industrial', 'port', 'railway'])],
   ['farmland', (t) => has(t, 'landuse', ['farmland', 'orchard', 'plantation', 'meadow'])],
   ['other-landuse', (t) => t['landuse'] !== undefined || has(t, 'natural', ['scrub', 'grassland', 'sand', 'beach'])],
@@ -45,7 +63,12 @@ export class GapCover {
   classify(point: Position): CoverClass {
     const [lon, lat] = point;
     const hits = this.polygons.filter(
-      (p) => lon >= p.bbox[0] && lon <= p.bbox[2] && lat >= p.bbox[1] && lat <= p.bbox[3] && containsPoint(p.geometry, point),
+      (p) =>
+        lon >= p.bbox[0] &&
+        lon <= p.bbox[2] &&
+        lat >= p.bbox[1] &&
+        lat <= p.bbox[3] &&
+        containsPoint(p.geometry, point),
     );
     return COVER_CLASSES.find((c) => hits.some((h) => h.cover === c)) ?? 'unmapped';
   }

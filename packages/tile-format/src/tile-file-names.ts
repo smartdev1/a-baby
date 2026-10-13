@@ -20,7 +20,8 @@ const EXTENSION: Record<TileFileKind, string> = {
 export const CONTENT_HASH_PATTERN = /^[0-9a-f]{16}$/;
 
 const assertHash = (hash: string): void => {
-  if (!CONTENT_HASH_PATTERN.test(hash)) throw new SyntaxError(`invalid content hash "${hash}" (16 lowercase hex chars expected)`);
+  if (!CONTENT_HASH_PATTERN.test(hash))
+    throw new SyntaxError(`invalid content hash "${hash}" (16 lowercase hex chars expected)`);
 };
 
 /** Folder of a tile: `tiles/L0/325_199`. */
@@ -36,7 +37,8 @@ export const tileFileName = (kind: TileFileKind, hash: string): string => {
 };
 
 /** Repository/CDN-relative path of a tile file. */
-export const tileFilePath = (key: TileKey, kind: TileFileKind, hash: string): string => `${tileDirectory(key)}/${tileFileName(kind, hash)}`;
+export const tileFilePath = (key: TileKey, kind: TileFileKind, hash: string): string =>
+  `${tileDirectory(key)}/${tileFileName(kind, hash)}`;
 
 const FILE_NAME_PATTERN = /^(geom|instances|collision|meta|nav)\.([0-9a-f]{16})\.(glb|bin|json)$/;
 

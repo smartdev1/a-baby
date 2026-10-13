@@ -13,7 +13,9 @@ import { isOpenAt, minutesUntilOpen, parseClockTime } from './time-windows.ts';
 const START: ClockSegment = { realStartMs: 1_000_000, gameStartMin: 360, ratio: 12, paused: false };
 const CALENDAR: GameCalendar = {
   hoursPerDay: 24,
-  weekdays: ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'].map((d) => `calendar.weekday.${d}`),
+  weekdays: ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'].map(
+    (d) => `calendar.weekday.${d}`,
+  ),
   monthDays: Array.from({ length: 12 }, () => 30),
   firstWeekday: 0,
   startYear: 2026,
@@ -29,7 +31,10 @@ describe('clock segments', () => {
       fc.property(fc.nat(10_000_000), fc.double({ min: 0.5, max: 100, noNaN: true }), (elapsed, ratio) => {
         const at = START.realStartMs + elapsed;
         const before = gameMinutesAt(START, at);
-        return Math.abs(gameMinutesAt(changeRatio(START, ratio, at), at) - before) < 1e-9 && gameMinutesAt(pause(START, at), at + 999_999) === before;
+        return (
+          Math.abs(gameMinutesAt(changeRatio(START, ratio, at), at) - before) < 1e-9 &&
+          gameMinutesAt(pause(START, at), at + 999_999) === before
+        );
       }),
     );
     const paused = pause(START, 2_000_000);
@@ -43,11 +48,23 @@ describe('clock segments', () => {
 
 describe('gameDateOf', () => {
   it('should give day 0 at 06:00 for 360 minutes', () => {
-    expect(gameDateOf(360, CALENDAR)).toMatchObject({ year: 2026, month: 1, day: 1, hour: 6, minute: 0, weekdayKey: 'calendar.weekday.monday' });
+    expect(gameDateOf(360, CALENDAR)).toMatchObject({
+      year: 2026,
+      month: 1,
+      day: 1,
+      hour: 6,
+      minute: 0,
+      weekdayKey: 'calendar.weekday.monday',
+    });
   });
 
   it('should roll weekdays, months and years', () => {
-    expect(gameDateOf(1440 * 8 + 75, CALENDAR)).toMatchObject({ day: 9, weekdayKey: 'calendar.weekday.tuesday', hour: 1, minute: 15 });
+    expect(gameDateOf(1440 * 8 + 75, CALENDAR)).toMatchObject({
+      day: 9,
+      weekdayKey: 'calendar.weekday.tuesday',
+      hour: 1,
+      minute: 15,
+    });
     expect(gameDateOf(1440 * 30, CALENDAR)).toMatchObject({ month: 2, day: 1 });
     expect(gameDateOf(1440 * 360, CALENDAR)).toMatchObject({ year: 2027, month: 1, day: 1 });
   });

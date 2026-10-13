@@ -8,14 +8,14 @@ Choisir la région d'hébergement des serveurs de jeu sur des mesures réelles :
 
 ## Régions candidates (à déployer temporairement, coût et disponibilité à vérifier)
 
-| Id | Région | Pourquoi la tester |
-|---|---|---|
-| `eu-west-mrs` | Marseille (France) | Arrivée de nombreux câbles sous-marins africains |
-| `eu-west-par` | Paris (France) | Grande offre d'hébergeurs à trafic inclus |
-| `eu-south-lis` | Lisbonne (Portugal) | Arrivée de câbles récents vers l'Afrique de l'Ouest |
-| `af-west-lag` | Lagos (Nigeria) | Proximité géographique |
-| `af-west-abj` | Abidjan (centre de données local) | Aucun transfert de données hors de Côte d'Ivoire (voir § ARTCI) |
-| `af-south-jnb` | Johannesburg (Afrique du Sud) | Grandes régions cloud africaines, à titre de comparaison |
+| Id             | Région                            | Pourquoi la tester                                              |
+| -------------- | --------------------------------- | --------------------------------------------------------------- |
+| `eu-west-mrs`  | Marseille (France)                | Arrivée de nombreux câbles sous-marins africains                |
+| `eu-west-par`  | Paris (France)                    | Grande offre d'hébergeurs à trafic inclus                       |
+| `eu-south-lis` | Lisbonne (Portugal)               | Arrivée de câbles récents vers l'Afrique de l'Ouest             |
+| `af-west-lag`  | Lagos (Nigeria)                   | Proximité géographique                                          |
+| `af-west-abj`  | Abidjan (centre de données local) | Aucun transfert de données hors de Côte d'Ivoire (voir § ARTCI) |
+| `af-south-jnb` | Johannesburg (Afrique du Sud)     | Grandes régions cloud africaines, à titre de comparaison        |
 
 Trois ou quatre régions suffisent. **Aucune dépense ni aucun déploiement n'est fait par un agent.**
 
@@ -30,11 +30,11 @@ Trois ou quatre régions suffisent. **Aucune dépense ni aucun déploiement n'es
 
 ## Résultats
 
-*À compléter : coller la sortie de l'agrégateur.*
+_À compléter : coller la sortie de l'agrégateur._
 
 | Opérateur | Accès | Créneau | Région | Mesures | p50 (ms) | p95 (ms) | Gigue (ms) | Perte (%) |
-|---|---|---|---|---:|---:|---:|---:|---:|
-| — | — | — | — | — | — | — | — | — |
+| --------- | ----- | ------- | ------ | ------: | -------: | -------: | ---------: | --------: |
+| —         | —     | —       | —      |       — |        — |        — |          — |         — |
 
 ## Règle de décision proposée
 
@@ -51,4 +51,4 @@ Trois ou quatre régions suffisent. **Aucune dépense ni aucun déploiement n'es
 
 ## Recommandation
 
-*En attente des mesures.* Les distances physiques ne prédisent pas le routage réel en Afrique de l'Ouest, d'où ce spike.
+_En attente des mesures._ Les distances physiques ne prédisent pas le routage réel en Afrique de l'Ouest, d'où ce spike.

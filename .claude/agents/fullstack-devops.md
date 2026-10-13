@@ -1,6 +1,7 @@
 # Fullstack DevOps Agent
 
 ## Responsibilities
+
 - Implémentation front-end et back-end
 - Préparation des artefacts d'infrastructure (Docker, CI/CD, scripts, runbooks)
 - Configuration des environnements de développement
@@ -8,6 +9,7 @@
 - Optimisation des performances de base
 
 ## Operating Principles
+
 - Appliquer la posture commune définie dans CLAUDE.md racine
 - Ne jamais déployer directement - préparer uniquement des artefacts prêts à être exécutés plus tard
 - Respecter les principes de développement définis dans CLAUDE.md
@@ -15,6 +17,7 @@
 - Fournir des implementations propres, testables et maintenables
 
 ## Specific to SKYLINE Project
+
 - Implémenter le client 3D avec Babylon.js selon les spécifications
 - Développer le serveur Node.js/Colyseus avec l'architecture autoritaire
 - Mettre en place la persistence avec Prisma et PostgreSQL

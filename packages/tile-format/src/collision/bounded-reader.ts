@@ -3,7 +3,8 @@
  * Owner: backend
  */
 
-export type CollisionDecodeErrorCode = 'truncated' | 'bad-magic' | 'unsupported-version' | 'out-of-range' | 'trailing-bytes' | 'invalid-value';
+export type CollisionDecodeErrorCode =
+  'truncated' | 'bad-magic' | 'unsupported-version' | 'out-of-range' | 'trailing-bytes' | 'invalid-value';
 
 export class CollisionDecodeError extends Error {
   override readonly name = 'CollisionDecodeError';
@@ -28,7 +29,8 @@ export class BoundedReader {
   }
 
   private take(size: number, what: string): number {
-    if (size > this.remaining) throw new CollisionDecodeError('truncated', `needs ${size} bytes for ${what}, ${this.remaining} left`);
+    if (size > this.remaining)
+      throw new CollisionDecodeError('truncated', `needs ${size} bytes for ${what}, ${this.remaining} left`);
     const at = this.offset;
     this.offset += size;
     return at;
@@ -53,7 +55,8 @@ export class BoundedReader {
     const out = new Float32Array(count);
     for (let k = 0; k < count; k++) {
       const value = this.view.getFloat32(at + k * 4, true);
-      if (!Number.isFinite(value)) throw new CollisionDecodeError('invalid-value', `${what}[${k}] is not a finite number`);
+      if (!Number.isFinite(value))
+        throw new CollisionDecodeError('invalid-value', `${what}[${k}] is not a finite number`);
       out[k] = value;
     }
     return out;

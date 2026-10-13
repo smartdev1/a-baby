@@ -23,7 +23,9 @@ export const computeInputHash = async (stage: PipelineStage, ctx: StageContext):
   const files = [...stage.inputFiles(ctx)].sort();
   const fileHashes = await Promise.all(files.map(async (f) => [f, await sha256OfFile(f)] as const));
   const contentOnly = fileHashes.map(([, hash]) => hash);
-  return sha256OfText(stableStringify({ id: stage.id, version: stage.version, params: stage.params(ctx), inputs: contentOnly }));
+  return sha256OfText(
+    stableStringify({ id: stage.id, version: stage.version, params: stage.params(ctx), inputs: contentOnly }),
+  );
 };
 
 const readCache = async (outDir: string): Promise<CacheRecord | null> => {
@@ -34,7 +36,12 @@ const readCache = async (outDir: string): Promise<CacheRecord | null> => {
 };
 
 /** True when the cache matches the input hash and every output still has its recorded content. */
-export const isUpToDate = async (stage: PipelineStage, ctx: StageContext, outDir: string, inputHash: string): Promise<boolean> => {
+export const isUpToDate = async (
+  stage: PipelineStage,
+  ctx: StageContext,
+  outDir: string,
+  inputHash: string,
+): Promise<boolean> => {
   const cache = await readCache(outDir);
   if (!cache || cache.inputHash !== inputHash) return false;
   for (const name of outputsOf(stage, ctx)) {
@@ -44,7 +51,12 @@ export const isUpToDate = async (stage: PipelineStage, ctx: StageContext, outDir
   return stage.extraOutputsPresent ? stage.extraOutputsPresent(outDir) : true;
 };
 
-export const writeCache = async (stage: PipelineStage, ctx: StageContext, outDir: string, inputHash: string): Promise<void> => {
+export const writeCache = async (
+  stage: PipelineStage,
+  ctx: StageContext,
+  outDir: string,
+  inputHash: string,
+): Promise<void> => {
   const outputs: Record<string, string> = {};
   for (const name of outputsOf(stage, ctx)) {
     const path = join(outDir, name);

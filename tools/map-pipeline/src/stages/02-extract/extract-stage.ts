@@ -33,7 +33,12 @@ const snapshotFile = (ctx: StageContext): string => {
 };
 
 /** Writes boundary.geojson and returns the commune bbox (from the relation, or the provisional bbox). */
-const resolveBoundary = async (ctx: StageContext, osmium: RunOsmium, mounts: OsmiumMounts, snapshot: string): Promise<BboxLonLat> => {
+const resolveBoundary = async (
+  ctx: StageContext,
+  osmium: RunOsmium,
+  mounts: OsmiumMounts,
+  snapshot: string,
+): Promise<BboxLonLat> => {
   const { osmRelationId, provisionalBboxLonLat } = ctx.config.boundary;
   const boundaryPath = join(mounts.outputDir, BOUNDARY_FILE);
   if (osmRelationId === null) {
@@ -55,7 +60,12 @@ export const createExtractStage = (osmium: RunOsmium = runOsmium, checkImage = e
   version: 2,
   outputs: [COMMUNE_PBF_FILE, BOUNDARY_FILE],
   inputFiles: (ctx) => [snapshotFile(ctx)],
-  params: (ctx) => ({ boundary: ctx.config.boundary, marginM: ctx.config.marginM, filters: OSM_TAG_FILTERS, image: OSMIUM_IMAGE }),
+  params: (ctx) => ({
+    boundary: ctx.config.boundary,
+    marginM: ctx.config.marginM,
+    filters: OSM_TAG_FILTERS,
+    image: OSMIUM_IMAGE,
+  }),
   run: async (ctx, outDir) => {
     await checkImage();
     const snapshot = snapshotFile(ctx);

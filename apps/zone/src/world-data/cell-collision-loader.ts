@@ -6,7 +6,15 @@
 import { existsSync, readdirSync } from 'node:fs';
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
-import { CELL_SIZE_IN_TILES, cellBounds, formatTileKey, parseCellKey, tileBounds, type TileKey, type UtmPosition } from '@skyline/geo';
+import {
+  CELL_SIZE_IN_TILES,
+  cellBounds,
+  formatTileKey,
+  parseCellKey,
+  tileBounds,
+  type TileKey,
+  type UtmPosition,
+} from '@skyline/geo';
 import { CollisionWorld } from '@skyline/physics';
 import { decodeCollision, parseWorldManifest, tileFilePath } from '@skyline/tile-format';
 
@@ -22,7 +30,9 @@ export const loadCellCollision = async (releaseDir: string, cellKey: string): Pr
   const frameOrigin = { eastingM: bounds.minEastingM, northingM: bounds.minNorthingM };
   const world = new CollisionWorld();
   const manifestDir = join(releaseDir, '17-manifest');
-  const manifestFile = existsSync(manifestDir) ? readdirSync(manifestDir).find((f) => f.startsWith('world-manifest.')) : undefined;
+  const manifestFile = existsSync(manifestDir)
+    ? readdirSync(manifestDir).find((f) => f.startsWith('world-manifest.'))
+    : undefined;
   if (!manifestFile) return { world, frameOrigin, tilesLoaded: 0 };
 
   const manifest = parseWorldManifest(JSON.parse(await readFile(join(manifestDir, manifestFile), 'utf8')));
@@ -35,7 +45,11 @@ export const loadCellCollision = async (releaseDir: string, cellKey: string): Pr
       if (!hash) continue;
       const bytes = await readFile(join(releaseDir, '16-encode', tileFilePath(key, 'collision', hash)));
       const tb = tileBounds(key);
-      world.addTile(decodeCollision(new Uint8Array(bytes)), tb.minEastingM - frameOrigin.eastingM, tb.minNorthingM - frameOrigin.northingM);
+      world.addTile(
+        decodeCollision(new Uint8Array(bytes)),
+        tb.minEastingM - frameOrigin.eastingM,
+        tb.minNorthingM - frameOrigin.northingM,
+      );
       tilesLoaded++;
     }
   }

@@ -31,15 +31,26 @@ export const hash16 = (bytes: Uint8Array): string => createHash('sha256').update
 const file = (bytes: Uint8Array): EncodedFile => ({ hash: hash16(bytes), bytes });
 
 const meshGroups = (tile: TileContent): MeshGroups => {
-  const groups = { ground: new MeshBuffer(), road: new MeshBuffer(), path: new MeshBuffer(), walls: new MeshBuffer(), roofs: new MeshBuffer() };
+  const groups = {
+    ground: new MeshBuffer(),
+    road: new MeshBuffer(),
+    path: new MeshBuffer(),
+    walls: new MeshBuffer(),
+    roofs: new MeshBuffer(),
+  };
   addGroundQuad(groups.ground, TILE_SIZE_M);
-  for (const road of tile.roads) for (const line of road.lines) addRoadRibbon(isPathClass(road.roadClass) ? groups.path : groups.road, line, road.roadClass);
+  for (const road of tile.roads)
+    for (const line of road.lines)
+      addRoadRibbon(isPathClass(road.roadClass) ? groups.path : groups.road, line, road.roadClass);
   for (const part of tile.buildingParts) extrudeBuilding(part.polygons, part.heightM, groups.walls, groups.roofs);
   return groups;
 };
 
 const flatRing = (ring: readonly LocalPoint[]): Float32Array => {
-  const open = ring.length > 1 && ring[0]?.[0] === ring.at(-1)?.[0] && ring[0]?.[1] === ring.at(-1)?.[1] ? ring.slice(0, -1) : ring;
+  const open =
+    ring.length > 1 && ring[0]?.[0] === ring.at(-1)?.[0] && ring[0]?.[1] === ring.at(-1)?.[1]
+      ? ring.slice(0, -1)
+      : ring;
   return Float32Array.from(open.flat());
 };
 
@@ -58,9 +69,21 @@ const metaOf = (tile: TileContent, existing: ReadonlySet<string>): TileMeta =>
   parseTileMeta({
     formatVersion: 0,
     tileKey: tile.key,
-    buildings: tile.buildingMeta.map((b) => ({ id: b.id, type: b.type, levels: b.levels, heightM: b.heightM, heightSource: b.heightSource })),
+    buildings: tile.buildingMeta.map((b) => ({
+      id: b.id,
+      type: b.type,
+      levels: b.levels,
+      heightM: b.heightM,
+      heightSource: b.heightSource,
+    })),
     // displayName is produced by the naming stage (ADR 0010, J2); null until then.
-    places: tile.places.map((p) => ({ id: p.id, category: p.category, displayName: null, position: { x: p.position[0], z: p.position[1] }, buildingId: p.buildingId })),
+    places: tile.places.map((p) => ({
+      id: p.id,
+      category: p.category,
+      displayName: null,
+      position: { x: p.position[0], z: p.position[1] },
+      buildingId: p.buildingId,
+    })),
     neighbours: neighbourKeys(tile.key).filter((k) => existing.has(k)),
   });
 

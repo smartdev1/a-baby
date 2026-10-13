@@ -28,7 +28,14 @@ const toBuilding = (record: ClassifiedRecord, seed: string): BuildingRecord | nu
     },
     rngFor(seed, record.id),
   );
-  return { id: record.id, type, ...height, footprintAreaM2, footprint: record.geometry, placeCategory: record.placeCategory };
+  return {
+    id: record.id,
+    type,
+    ...height,
+    footprintAreaM2,
+    footprint: record.geometry,
+    placeCategory: record.placeCategory,
+  };
 };
 
 async function* buildingsOf(path: string, seed: string): AsyncGenerator<BuildingRecord> {
@@ -46,7 +53,10 @@ export const heightsStage: PipelineStage = {
   inputFiles: (ctx) => [ctx.outputOf(CLASSIFY_STAGE_ID, CLASSIFIED_FILE)],
   params: (ctx) => ({ seed: ctx.config.seed }),
   run: async (ctx, outDir) => {
-    const count = await writeNdjson(join(outDir, BUILDINGS_FILE), buildingsOf(ctx.outputOf(CLASSIFY_STAGE_ID, CLASSIFIED_FILE), ctx.config.seed));
+    const count = await writeNdjson(
+      join(outDir, BUILDINGS_FILE),
+      buildingsOf(ctx.outputOf(CLASSIFY_STAGE_ID, CLASSIFIED_FILE), ctx.config.seed),
+    );
     ctx.logger.info({ count }, 'building heights resolved');
   },
 };

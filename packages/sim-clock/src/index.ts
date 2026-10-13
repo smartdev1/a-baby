@@ -7,4 +7,9 @@ export { changeRatio, gameMinutesAt, pause, realMsForGameMinutes, resume, type C
 export { gameDateOf, type GameCalendar, type GameDate } from './game-calendar.ts';
 export { isOpenAt, minutesUntilOpen, parseClockTime, type TimeWindow } from './time-windows.ts';
 export { estimateServerOffsetMs, type SyncSample } from './clock-sync.ts';
-export { CalendarConfigSchema, ClockConfigSchema, type CalendarConfig, type ClockConfig } from './clock-config-schema.ts';
+export {
+  CalendarConfigSchema,
+  ClockConfigSchema,
+  type CalendarConfig,
+  type ClockConfig,
+} from './clock-config-schema.ts';

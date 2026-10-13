@@ -54,7 +54,10 @@ const DECODERS: Record<number, (r: FrameReader) => ServerMessage> = {
   [SERVER_MESSAGE.welcome]: (r) => ({ type: 'welcome', body: decodeControl(r.rest(), WelcomeSchema, 'welcome') }),
   [SERVER_MESSAGE.inputAck]: (r) => ({ type: 'inputAck', body: decodeInputAck(r) }),
   [SERVER_MESSAGE.snapshot]: (r) => ({ type: 'snapshot', body: decodeSnapshot(r) }),
-  [SERVER_MESSAGE.worldClock]: (r) => ({ type: 'worldClock', body: decodeControl(r.rest(), WorldClockSchema, 'world_clock') }),
+  [SERVER_MESSAGE.worldClock]: (r) => ({
+    type: 'worldClock',
+    body: decodeControl(r.rest(), WorldClockSchema, 'world_clock'),
+  }),
   [SERVER_MESSAGE.pong]: (r) => ({ type: 'pong', body: decodePong(r) }),
   [SERVER_MESSAGE.error]: (r) => ({ type: 'error', body: decodeControl(r.rest(), ServerErrorSchema, 'error') }),
 };

@@ -9,8 +9,8 @@ Everything that keeps the pipeline reproducible: same snapshot + same config ⇒
 
 ## Contents
 
-| File | Role |
-|---|---|
+| File            | Role                                                                                           |
+| --------------- | ---------------------------------------------------------------------------------------------- |
 | `seeded-rng.ts` | `createSeededRng(seed)` (xmur3 + sfc32) and `rngFor(pipelineSeed, osmId)` for per-object draws |
 
 ## Rules

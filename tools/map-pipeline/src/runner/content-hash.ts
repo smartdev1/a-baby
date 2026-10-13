@@ -7,7 +7,9 @@ import { createHash } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 
 export const sha256OfFile = async (path: string): Promise<string> =>
-  createHash('sha256').update(await readFile(path)).digest('hex');
+  createHash('sha256')
+    .update(await readFile(path))
+    .digest('hex');
 
 export const sha256OfText = (text: string): string => createHash('sha256').update(text).digest('hex');
 

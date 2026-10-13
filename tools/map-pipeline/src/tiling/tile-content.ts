@@ -47,4 +47,10 @@ export interface TileContent {
   readonly places: TilePlaceEntry[];
 }
 
-export const emptyTileContent = (key: string): TileContent => ({ key, buildingParts: [], buildingMeta: [], roads: [], places: [] });
+export const emptyTileContent = (key: string): TileContent => ({
+  key,
+  buildingParts: [],
+  buildingMeta: [],
+  roads: [],
+  places: [],
+});

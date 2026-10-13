@@ -29,7 +29,10 @@ export const normalizeStage: PipelineStage = {
   params: () => ({}),
   run: async (ctx, outDir) => {
     const dropped = { count: 0 };
-    const kept = await writeNdjson(join(outDir, NORMALIZED_FILE), normalizeAll(ctx.outputOf(EXPORT_STAGE_ID, FEATURES_FILE), dropped));
+    const kept = await writeNdjson(
+      join(outDir, NORMALIZED_FILE),
+      normalizeAll(ctx.outputOf(EXPORT_STAGE_ID, FEATURES_FILE), dropped),
+    );
     ctx.logger.info({ kept, dropped: dropped.count }, 'features normalized');
   },
 };

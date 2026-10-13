@@ -31,28 +31,110 @@ const FIXED_HEIGHT_M: Readonly<Record<string, readonly [number, number]>> = {
 };
 
 const BY_TYPE: Readonly<Record<string, LevelDistribution>> = {
-  apartments: [[3, 2], [4, 3], [5, 3], [6, 1]],
-  residential: [[1, 4], [2, 3], [3, 2], [4, 1]],
-  house: [[1, 7], [2, 3]],
-  detached: [[1, 7], [2, 3]],
-  terrace: [[1, 6], [2, 4]],
-  commercial: [[1, 3], [2, 4], [3, 2], [4, 1]],
-  retail: [[1, 4], [2, 4], [3, 2]],
-  office: [[2, 3], [3, 3], [4, 2], [6, 1]],
-  school: [[1, 5], [2, 4], [3, 1]],
-  college: [[1, 3], [2, 4], [3, 3]],
-  university: [[2, 4], [3, 4], [4, 2]],
-  hospital: [[1, 3], [2, 4], [3, 2], [4, 1]],
-  construction: [[1, 6], [2, 3], [3, 1]],
+  apartments: [
+    [3, 2],
+    [4, 3],
+    [5, 3],
+    [6, 1],
+  ],
+  residential: [
+    [1, 4],
+    [2, 3],
+    [3, 2],
+    [4, 1],
+  ],
+  house: [
+    [1, 7],
+    [2, 3],
+  ],
+  detached: [
+    [1, 7],
+    [2, 3],
+  ],
+  terrace: [
+    [1, 6],
+    [2, 4],
+  ],
+  commercial: [
+    [1, 3],
+    [2, 4],
+    [3, 2],
+    [4, 1],
+  ],
+  retail: [
+    [1, 4],
+    [2, 4],
+    [3, 2],
+  ],
+  office: [
+    [2, 3],
+    [3, 3],
+    [4, 2],
+    [6, 1],
+  ],
+  school: [
+    [1, 5],
+    [2, 4],
+    [3, 1],
+  ],
+  college: [
+    [1, 3],
+    [2, 4],
+    [3, 3],
+  ],
+  university: [
+    [2, 4],
+    [3, 4],
+    [4, 2],
+  ],
+  hospital: [
+    [1, 3],
+    [2, 4],
+    [3, 2],
+    [4, 1],
+  ],
+  construction: [
+    [1, 6],
+    [2, 3],
+    [3, 1],
+  ],
 };
 
 /** `building=yes` (96 % of Yopougon): distribution by footprint area. */
 const BY_AREA: readonly { maxAreaM2: number; levels: LevelDistribution }[] = [
   { maxAreaM2: 40, levels: [[1, 1]] },
-  { maxAreaM2: 150, levels: [[1, 7], [2, 3]] },
-  { maxAreaM2: 400, levels: [[1, 4], [2, 4], [3, 2]] },
-  { maxAreaM2: 1000, levels: [[2, 4], [3, 4], [4, 2]] },
-  { maxAreaM2: Infinity, levels: [[1, 3], [2, 3], [3, 2], [4, 2]] },
+  {
+    maxAreaM2: 150,
+    levels: [
+      [1, 7],
+      [2, 3],
+    ],
+  },
+  {
+    maxAreaM2: 400,
+    levels: [
+      [1, 4],
+      [2, 4],
+      [3, 2],
+    ],
+  },
+  {
+    maxAreaM2: 1000,
+    levels: [
+      [2, 4],
+      [3, 4],
+      [4, 2],
+    ],
+  },
+  {
+    maxAreaM2: Infinity,
+    levels: [
+      [1, 3],
+      [2, 3],
+      [3, 2],
+      [4, 2],
+    ],
+  },
 ];
 
 export interface HeightInput {
@@ -71,7 +153,8 @@ export interface HeightResult {
 const round2 = (v: number): number => Math.round(v * 100) / 100;
 
 export const heightFromLevels = (levels: number): number => round2(GROUND_FLOOR_M + (levels - 1) * UPPER_FLOOR_M);
-const levelsFromHeight = (heightM: number): number => Math.max(1, Math.round((heightM - GROUND_FLOOR_M) / UPPER_FLOOR_M) + 1);
+const levelsFromHeight = (heightM: number): number =>
+  Math.max(1, Math.round((heightM - GROUND_FLOOR_M) / UPPER_FLOOR_M) + 1);
 
 const drawLevels = (distribution: LevelDistribution, rng: SeededRng): number => {
   const total = distribution.reduce((s, [, w]) => s + w, 0);
@@ -85,7 +168,8 @@ const drawLevels = (distribution: LevelDistribution, rng: SeededRng): number => 
 
 const heuristic = ({ type, footprintAreaM2 }: HeightInput, rng: SeededRng): HeightResult => {
   const fixed = FIXED_HEIGHT_M[type];
-  if (fixed) return { levels: 1, heightM: round2(fixed[0] + rng.next() * (fixed[1] - fixed[0])), heightSource: 'heuristic' };
+  if (fixed)
+    return { levels: 1, heightM: round2(fixed[0] + rng.next() * (fixed[1] - fixed[0])), heightSource: 'heuristic' };
   const distribution = BY_TYPE[type] ?? BY_AREA.find((b) => footprintAreaM2 <= b.maxAreaM2)?.levels ?? [[1, 1]];
   const levels = drawLevels(distribution, rng);
   return { levels, heightM: heightFromLevels(levels), heightSource: 'heuristic' };
@@ -94,8 +178,13 @@ const heuristic = ({ type, footprintAreaM2 }: HeightInput, rng: SeededRng): Heig
 /** `rng` must be derived from the pipeline seed and the building OSM id (same building ⇒ same height). */
 export const resolveHeight = (input: HeightInput, rng: SeededRng): HeightResult => {
   if (input.osmHeightM !== undefined) {
-    return { levels: input.osmLevels ?? levelsFromHeight(input.osmHeightM), heightM: input.osmHeightM, heightSource: 'osm' };
+    return {
+      levels: input.osmLevels ?? levelsFromHeight(input.osmHeightM),
+      heightM: input.osmHeightM,
+      heightSource: 'osm',
+    };
   }
-  if (input.osmLevels !== undefined) return { levels: input.osmLevels, heightM: heightFromLevels(input.osmLevels), heightSource: 'osm' };
+  if (input.osmLevels !== undefined)
+    return { levels: input.osmLevels, heightM: heightFromLevels(input.osmLevels), heightSource: 'osm' };
   return heuristic(input, rng);
 };

@@ -64,4 +64,5 @@ export const createSeededRng = (seed: string): SeededRng => {
 };
 
 /** Derives a per-object generator, e.g. `rngFor(config.seed, 'osm:way/558265139')`. */
-export const rngFor = (pipelineSeed: string, objectId: string): SeededRng => createSeededRng(`${pipelineSeed}|${objectId}`);
+export const rngFor = (pipelineSeed: string, objectId: string): SeededRng =>
+  createSeededRng(`${pipelineSeed}|${objectId}`);

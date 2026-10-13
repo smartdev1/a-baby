@@ -13,6 +13,7 @@ Headless load-test clients.
 SESSION_TICKETS_PER_MIN=1000 pnpm dev:server
 pnpm --filter @skyline/bots start -- --bots 50 --seconds 30
 ```
+
 Each bot: ticket → hello → random seeded walk at 20 Hz + 1 ping/s. Prints welcomes, acks per second, RTT p50/p95, errors and the zone tick statistics.
 
 ## Rules

@@ -40,3 +40,42 @@ export const assertInsideGrid = (position: UtmPosition): void => {
     throw new RangeError(`position E ${position.eastingM} N ${position.northingM} is outside the Abidjan world grid`);
   }
 };
+
+/** Normalizes a UTM position to the grid bounds (clamping if outside). */
+export const normalizeToBounds = (position: UtmPosition): UtmPosition => {
+  const clampedEasting = Math.max(
+    GRID_BOUNDS.minEastingM,
+    Math.min(position.eastingM, GRID_BOUNDS.maxEastingM - 0.001),
+  );
+  const clampedNorthing = Math.max(
+    GRID_BOUNDS.minNorthingM,
+    Math.min(position.northingM, GRID_BOUNDS.maxNorthingM - 0.001),
+  );
+  return { eastingM: clampedEasting, northingM: clampedNorthing };
+};
+
+/** Generates a sector tile key for a given position and LOD level.
+ *  A sector groups 4×4 tiles at the given level, providing a coarser granularity.
+ *  The sector key format is `S{level}_{i}_{j}` where i,j are sector coordinates.
+ */
+export const generateSector = (position: UtmPosition, level: TileLevel): `S${number}_${number}_${number}` => {
+  assertInsideGrid(position);
+  const size = tileSizeM(level);
+  const sectorSize = size * 4; // 4 tiles per sector side
+  const i = Math.floor((position.eastingM - GRID_ORIGIN.eastingM) / sectorSize);
+  const j = Math.floor((position.northingM - GRID_ORIGIN.northingM) / sectorSize);
+  return `S${level}_${i}_${j}` as `S${number}_${number}_${number}`;
+};
+
+/** Returns the world grid metadata: origin, extent, and available LOD levels. */
+export const generateWorld = (): {
+  origin: UtmPosition;
+  bounds: UtmBounds;
+  levels: readonly TileLevel[];
+  defaultLevel: TileLevel;
+} => ({
+  origin: GRID_ORIGIN,
+  bounds: GRID_BOUNDS,
+  levels: TILE_LEVELS,
+  defaultLevel: TILE_LEVELS[0],
+});

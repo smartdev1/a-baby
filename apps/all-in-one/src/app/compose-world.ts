@@ -20,18 +20,24 @@ export interface World {
   close(): Promise<void>;
 }
 
-export const composeWorld = async (config: AllInOneConfig, servicesConfig: ServicesConfig, logger: Logger): Promise<World> => {
+export const composeWorld = async (
+  config: AllInOneConfig,
+  servicesConfig: ServicesConfig,
+  logger: Logger,
+): Promise<World> => {
   const bus = new InMemoryBus((subject, error) => logger.error({ subject, err: error }, 'bus handler failed'));
   const spawnUtm = toUtm30n(config.spawn);
   const cellKey = cellKeyOf(spawnUtm);
   const { world, frameOrigin, tilesLoaded } = await loadCellCollision(config.worldDir, cellKey);
-  if (tilesLoaded === 0) logger.warn({ worldDir: config.worldDir }, 'no world tiles found: flat empty cell (run pnpm map:build first)');
+  if (tilesLoaded === 0)
+    logger.warn({ worldDir: config.worldDir }, 'no world tiles found: flat empty cell (run pnpm map:build first)');
 
   let cell: ZoneCell | null = null;
   const services = await buildServices({
     config: servicesConfig,
     logger: logger.child({ module: 'services' }),
-    extraRoutes: (server) => server.get('/api/v1/dev/zone-stats', (_req, reply) => reply.send({ cellKey, tilesLoaded, ...cell?.tickStats() })),
+    extraRoutes: (server) =>
+      server.get('/api/v1/dev/zone-stats', (_req, reply) => reply.send({ cellKey, tilesLoaded, ...cell?.tickStats() })),
   });
   cell = new ZoneCell({
     cellKey,
@@ -43,7 +49,13 @@ export const composeWorld = async (config: AllInOneConfig, servicesConfig: Servi
     logger: logger.child({ module: 'zone', cellKey }),
   });
   cell.start();
-  const gateway = startGateway({ port: config.gatewayPort, bus, tickets: services.tickets, spawnCell: cellKey, logger: logger.child({ module: 'gateway' }) });
+  const gateway = startGateway({
+    port: config.gatewayPort,
+    bus,
+    tickets: services.tickets,
+    spawnCell: cellKey,
+    logger: logger.child({ module: 'gateway' }),
+  });
   const activeCell = cell;
 
   return {

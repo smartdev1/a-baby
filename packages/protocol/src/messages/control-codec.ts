@@ -7,7 +7,14 @@ import { decode, encode } from '@msgpack/msgpack';
 import { z } from 'zod';
 import { ProtocolDecodeError } from '../protocol-errors.ts';
 
-const DECODE_LIMITS = { maxStrLength: 1024, maxBinLength: 0, maxArrayLength: 64, maxMapLength: 16, maxExtLength: 0, maxDepth: 4 } as const;
+const DECODE_LIMITS = {
+  maxStrLength: 1024,
+  maxBinLength: 0,
+  maxArrayLength: 64,
+  maxMapLength: 16,
+  maxExtLength: 0,
+  maxDepth: 4,
+} as const;
 
 export const encodeControl = (type: number, payload: unknown): Uint8Array => {
   const body = encode(payload);

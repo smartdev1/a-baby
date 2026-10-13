@@ -7,10 +7,32 @@ import { describe, expect, it } from 'vitest';
 import type { NormalizedRecord } from '../records/map-records.ts';
 import { classifyRecord, placeCategoryOf } from './classify-record.ts';
 
-const AREA: NormalizedRecord['geometry'] = { type: 'MultiPolygon', coordinates: [[[[0, 0], [10, 0], [10, 10], [0, 0]]]] };
-const LINE: NormalizedRecord['geometry'] = { type: 'LineString', coordinates: [[0, 0], [10, 0]] };
+const AREA: NormalizedRecord['geometry'] = {
+  type: 'MultiPolygon',
+  coordinates: [
+    [
+      [
+        [0, 0],
+        [10, 0],
+        [10, 10],
+        [0, 0],
+      ],
+    ],
+  ],
+};
+const LINE: NormalizedRecord['geometry'] = {
+  type: 'LineString',
+  coordinates: [
+    [0, 0],
+    [10, 0],
+  ],
+};
 const POINT: NormalizedRecord['geometry'] = { type: 'Point', coordinates: [0, 0] };
-const rec = (geometry: NormalizedRecord['geometry'], tags: Record<string, string>): NormalizedRecord => ({ id: 'osm:way/1', geometry, tags });
+const rec = (geometry: NormalizedRecord['geometry'], tags: Record<string, string>): NormalizedRecord => ({
+  id: 'osm:way/1',
+  geometry,
+  tags,
+});
 
 describe('placeCategoryOf', () => {
   it.each([
@@ -27,19 +49,28 @@ describe('placeCategoryOf', () => {
     expect(placeCategoryOf(tags)).toBe(expected);
   });
 
-  it.each([[{ building: 'yes' }], [{ highway: 'residential' }], [{ natural: 'tree' }]])('should not make %o a place', (tags) => {
-    expect(placeCategoryOf(tags)).toBeNull();
-  });
+  it.each([[{ building: 'yes' }], [{ highway: 'residential' }], [{ natural: 'tree' }]])(
+    'should not make %o a place',
+    (tags) => {
+      expect(placeCategoryOf(tags)).toBeNull();
+    },
+  );
 });
 
 describe('classifyRecord', () => {
   it('should keep an areal school as both a building and a place', () => {
-    expect(classifyRecord(rec(AREA, { building: 'school', amenity: 'school' }))).toMatchObject({ isBuilding: true, placeCategory: 'education.school' });
+    expect(classifyRecord(rec(AREA, { building: 'school', amenity: 'school' }))).toMatchObject({
+      isBuilding: true,
+      placeCategory: 'education.school',
+    });
   });
 
   it('should detect roads only on lines', () => {
     expect(classifyRecord(rec(LINE, { highway: 'residential' })).roadClass).toBe('residential');
-    expect(classifyRecord(rec(POINT, { highway: 'bus_stop' }))).toMatchObject({ roadClass: null, placeCategory: 'transport.stop' });
+    expect(classifyRecord(rec(POINT, { highway: 'bus_stop' }))).toMatchObject({
+      roadClass: null,
+      placeCategory: 'transport.stop',
+    });
   });
 
   it('should not count building=no or point buildings', () => {

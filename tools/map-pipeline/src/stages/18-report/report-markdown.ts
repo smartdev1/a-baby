@@ -30,7 +30,16 @@ const int = (n: number): string => n.toLocaleString('en-US').replace(/,/g, ' ');
 const table = (header: string, rows: [string, string][]): string =>
   [`| ${header} | |`, '|---|---:|', ...rows.map(([a, b]) => `| ${a} | ${b} |`)].join('\n');
 
-export const renderReportMarkdown = ({ commune, snapshot, boundaryRelation, areaKm2, stats, busRoutes, gapTilesByCover, roadGraph }: ReportFacts): string => {
+export const renderReportMarkdown = ({
+  commune,
+  snapshot,
+  boundaryRelation,
+  areaKm2,
+  stats,
+  busRoutes,
+  gapTilesByCover,
+  roadGraph,
+}: ReportFacts): string => {
   const roads = topEntries(stats.roadKmByClass, 20).map(([k, km]): [string, string] => [k, `${km.toFixed(1)} km`]);
   const totalKm = Object.values(stats.roadKmByClass).reduce((a, b) => a + b, 0);
   const tilesWithBuildings = Object.keys(stats.buildingsPerTile).length;
@@ -46,7 +55,10 @@ export const renderReportMarkdown = ({ commune, snapshot, boundaryRelation, area
       ['Features read / inside the commune', `${int(stats.featuresRead)} / ${int(stats.featuresInside)}`],
       ['Buildings', int(stats.buildings)],
       ['… with `height`', `${int(stats.buildingsWithHeight)} (${pct(stats.buildingsWithHeight, stats.buildings)})`],
-      ['… with `building:levels`', `${int(stats.buildingsWithLevels)} (${pct(stats.buildingsWithLevels, stats.buildings)})`],
+      [
+        '… with `building:levels`',
+        `${int(stats.buildingsWithLevels)} (${pct(stats.buildingsWithLevels, stats.buildings)})`,
+      ],
       ['L0 tiles (250 m) with at least one building', int(tilesWithBuildings)],
       ['Roads and paths', `${totalKm.toFixed(1)} km`],
       ['POIs / named', `${int(stats.pois)} / ${int(stats.poisNamed)} (${pct(stats.poisNamed, stats.pois)})`],
@@ -57,13 +69,19 @@ export const renderReportMarkdown = ({ commune, snapshot, boundaryRelation, area
     '',
     gapTilesByCover === null
       ? 'No boundary: not computed.'
-      : table('Land cover at tile centre', topEntries(gapTilesByCover, 10).map(([k, n]) => [k, int(n)])),
+      : table(
+          'Land cover at tile centre',
+          topEntries(gapTilesByCover, 10).map(([k, n]) => [k, int(n)]),
+        ),
     '',
     '`unmapped` = no building and no land-cover polygon: probable OSM gap (or lagoon water drawn only as coastline).',
     '',
     '## Building types (top 15)',
     '',
-    table('`building=`', topEntries(stats.buildingTypes, 15).map(([k, n]) => [k, `${int(n)} (${pct(n, stats.buildings)})`])),
+    table(
+      '`building=`',
+      topEntries(stats.buildingTypes, 15).map(([k, n]) => [k, `${int(n)} (${pct(n, stats.buildings)})`]),
+    ),
     '',
     '## Road length by `highway` class',
     '',
@@ -71,7 +89,10 @@ export const renderReportMarkdown = ({ commune, snapshot, boundaryRelation, area
     '',
     '## POI categories (top 30)',
     '',
-    table('Tag', topEntries(stats.poiCategories, 30).map(([k, n]) => [k, int(n)])),
+    table(
+      'Tag',
+      topEntries(stats.poiCategories, 30).map(([k, n]) => [k, int(n)]),
+    ),
     '',
     '## Road graph',
     '',
@@ -87,7 +108,13 @@ export const renderReportMarkdown = ({ commune, snapshot, boundaryRelation, area
     '',
     routes.length === 0
       ? 'None in the snapshot.'
-      : table('`route` · `network`', topEntries(countBy(routes, (r) => `${r.route} · ${r.network ?? '(none)'}`), 30).map(([k, n]) => [k, int(n)])),
+      : table(
+          '`route` · `network`',
+          topEntries(
+            countBy(routes, (r) => `${r.route} · ${r.network ?? '(none)'}`),
+            30,
+          ).map(([k, n]) => [k, int(n)]),
+        ),
     '',
     'Full list (id, ref, name) in `coverage-report.json`. Relations crossing the extract are counted even when most of the route is outside the commune.',
     '',

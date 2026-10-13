@@ -7,10 +7,10 @@
 
 Turns OSM tags into game place categories `domain.kind` (`food.maquis`, `finance.mobile_money`, `worship.mosque`, `beauty.hairdresser`, `transport.stop`…).
 
-| File | Role |
-|---|---|
-| `place-taxonomy.ts` | The table (key → value → category), defaults per key, worship by `religion` — extended from the legacy importer |
-| `classify-record.ts` | `placeCategoryOf(tags)` and `classifyRecord` (building flag, place category for points AND areas, road class) |
+| File                 | Role                                                                                                            |
+| -------------------- | --------------------------------------------------------------------------------------------------------------- |
+| `place-taxonomy.ts`  | The table (key → value → category), defaults per key, worship by `religion` — extended from the legacy importer |
+| `classify-record.ts` | `placeCategoryOf(tags)` and `classifyRecord` (building flag, place category for points AND areas, road class)   |
 
 ## Rules
 

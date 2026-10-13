@@ -39,7 +39,12 @@ const probeRegion = (region) =>
   });
 
 const run = async (regions) => {
-  const context = { operator: $('operator').value, access: $('access').value, slot: $('slot').value, startedAt: new Date().toISOString() };
+  const context = {
+    operator: $('operator').value,
+    access: $('access').value,
+    slot: $('slot').value,
+    startedAt: new Date().toISOString(),
+  };
   for (const region of regions) {
     const raw = await probeRegion(region);
     const summary = summarize(raw.rttsMs, raw.sent);
@@ -59,6 +64,9 @@ $('start').onclick = () => {
 };
 $('download').onclick = () => {
   const blob = new Blob([JSON.stringify(results, null, 2)], { type: 'application/json' });
-  const a = Object.assign(document.createElement('a'), { href: URL.createObjectURL(blob), download: `latency-${results[0]?.operator}-${results[0]?.access}-${results[0]?.slot}.json` });
+  const a = Object.assign(document.createElement('a'), {
+    href: URL.createObjectURL(blob),
+    download: `latency-${results[0]?.operator}-${results[0]?.access}-${results[0]?.slot}.json`,
+  });
   a.click();
 };

@@ -18,4 +18,5 @@ const parseWith = <T>(schema: z.ZodType<T>, value: unknown, label: string): T =>
 };
 
 export const parseTileMeta = (value: unknown): TileMeta => parseWith(TileMetaSchema, value, 'tile meta');
-export const parseWorldManifest = (value: unknown): WorldManifest => parseWith(WorldManifestSchema, value, 'world manifest');
+export const parseWorldManifest = (value: unknown): WorldManifest =>
+  parseWith(WorldManifestSchema, value, 'world manifest');

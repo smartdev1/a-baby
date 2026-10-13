@@ -47,13 +47,16 @@ const config = parsePipelineConfig(
   'test',
 );
 
-const fakeDownload = (calls: string[]): DownloadFile => async (url, destination) => {
-  calls.push(url);
-  await mkdir(join(destination, '..'), { recursive: true });
-  await writeFile(destination, PBF_BYTES);
-};
+const fakeDownload =
+  (calls: string[]): DownloadFile =>
+  async (url, destination) => {
+    calls.push(url);
+    await mkdir(join(destination, '..'), { recursive: true });
+    await writeFile(destination, PBF_BYTES);
+  };
 
-const run = (stage: ReturnType<typeof createAcquireStage>) => runPipeline({ repoRoot, config, stages: [stage], logger });
+const run = (stage: ReturnType<typeof createAcquireStage>) =>
+  runPipeline({ repoRoot, config, stages: [stage], logger });
 
 beforeEach(async () => {
   repoRoot = await mkdtemp(join(tmpdir(), 'acquire-'));

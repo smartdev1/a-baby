@@ -21,7 +21,9 @@ export const aggregate = (runs) => {
     group.runs += 1;
     groups.set(key, group);
   }
-  return [...groups.entries()].sort(([a], [b]) => (a < b ? -1 : 1)).map(([key, g]) => ({ key, runs: g.runs, ...summarize(g.rtts, g.sent) }));
+  return [...groups.entries()]
+    .sort(([a], [b]) => (a < b ? -1 : 1))
+    .map(([key, g]) => ({ key, runs: g.runs, ...summarize(g.rtts, g.sent) }));
 };
 
 export const toMarkdown = (rows) =>

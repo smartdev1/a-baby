@@ -16,11 +16,11 @@ Le propriétaire veut une connexion **sans inscription** au MVP (identifiant d'a
 
 ## Alternatives écartées
 
-| Option | Raison du rejet |
-|---|---|
-| Compte e-mail dès le MVP | Écarté par le propriétaire (friction à l'entrée) ; reste l'extension prévue |
-| Connexion par SMS OTP | Coût par SMS, collecte du numéro de téléphone |
-| Invité sans code de récupération | Perte définitive des biens au moindre nettoyage du navigateur |
+| Option                           | Raison du rejet                                                             |
+| -------------------------------- | --------------------------------------------------------------------------- |
+| Compte e-mail dès le MVP         | Écarté par le propriétaire (friction à l'entrée) ; reste l'extension prévue |
+| Connexion par SMS OTP            | Coût par SMS, collecte du numéro de téléphone                               |
+| Invité sans code de récupération | Perte définitive des biens au moindre nettoyage du navigateur               |
 
 ## Conséquences
 

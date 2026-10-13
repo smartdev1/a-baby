@@ -24,7 +24,12 @@ export class WorldClockService {
   async current(): Promise<ClockSegment> {
     const stored = await this.store.load();
     if (stored) return stored;
-    const first: ClockSegment = { realStartMs: this.now(), gameStartMin: this.config.initialGameMin, ratio: this.config.ratio, paused: false };
+    const first: ClockSegment = {
+      realStartMs: this.now(),
+      gameStartMin: this.config.initialGameMin,
+      ratio: this.config.ratio,
+      paused: false,
+    };
     await this.store.save(first);
     return first;
   }

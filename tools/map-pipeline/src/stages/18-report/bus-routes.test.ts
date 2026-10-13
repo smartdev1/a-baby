@@ -8,7 +8,8 @@ import { parseRouteRelations } from './bus-routes.ts';
 
 describe('parseRouteRelations', () => {
   it('should decode OPL escapes and read route, ref, name and network', () => {
-    const opl = "r10173633 v1 dV c0 t i0 u Tname=Bus%20%37:%20%Gare%20%Sud,network=Gbaka%20%d'Adjamé,ref=37,route=bus,type=route Mw1@";
+    const opl =
+      "r10173633 v1 dV c0 t i0 u Tname=Bus%20%37:%20%Gare%20%Sud,network=Gbaka%20%d'Adjamé,ref=37,route=bus,type=route Mw1@";
     expect(parseRouteRelations(opl)).toEqual([
       { id: 'r10173633', route: 'bus', ref: '37', name: 'Bus 37: Gare Sud', network: "Gbaka d'Adjamé" },
     ]);

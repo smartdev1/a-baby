@@ -29,7 +29,13 @@ export const createStageContext = (repoRoot: string, config: PipelineConfig, log
   fromRepo: (relativePath) => resolve(repoRoot, relativePath),
 });
 
-export const runPipeline = async ({ repoRoot, config, stages, logger, force = false }: RunPipelineOptions): Promise<StageReport[]> => {
+export const runPipeline = async ({
+  repoRoot,
+  config,
+  stages,
+  logger,
+  force = false,
+}: RunPipelineOptions): Promise<StageReport[]> => {
   const ctx = createStageContext(repoRoot, config, logger);
   const reports: StageReport[] = [];
 

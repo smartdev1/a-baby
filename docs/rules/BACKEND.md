@@ -9,14 +9,14 @@ Tout ce qui fait **exister et tourner le monde** : pipeline carte OSM → tuiles
 
 ## 2. Périmètre
 
-| Peut modifier | Peut lire, ne modifie pas (demande au frontend) | Ne touche jamais |
-|---|---|---|
-| `apps/gateway/**`, `apps/zone/**`, `apps/services/**` | `apps/web/**` | `assets-src/`, `tools/asset-pipeline` |
-| `packages/{geo,tile-format,protocol,physics,content-schema,sim-*,economy-rules,business-rules,bus,observability,db}/**` | `packages/i18n` | `content/i18n`, `content/dialogues`, `content/appearance`, `content/interiors` |
-| `tools/{map-pipeline,content-cli,bots}/**` | | `CLAUDE.md`, `ARCHITECTURE.md`, `docs/adr`, `docs/rules`, `.claude/` (propriétaire uniquement) |
-| `content/{actions,jobs,items,place-types,transport,needs,housing,businesses,place-names,game-config}/**` | | |
-| `data/**`, `infra/**` (préparé, **jamais exécuté** par l'agent), `tests/{integration,load}/**` | | |
-| Partagé : `docs/backlog`, `docs/spikes`, `docs/runbooks`, `tools/repo-checks`, configs racine (relecture de l'autre dev obligatoire) | | |
+| Peut modifier                                                                                                                        | Peut lire, ne modifie pas (demande au frontend) | Ne touche jamais                                                                               |
+| ------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| `apps/gateway/**`, `apps/zone/**`, `apps/services/**`                                                                                | `apps/web/**`                                   | `assets-src/`, `tools/asset-pipeline`                                                          |
+| `packages/{geo,tile-format,protocol,physics,content-schema,sim-*,economy-rules,business-rules,bus,observability,db}/**`              | `packages/i18n`                                 | `content/i18n`, `content/dialogues`, `content/appearance`, `content/interiors`                 |
+| `tools/{map-pipeline,content-cli,bots}/**`                                                                                           |                                                 | `CLAUDE.md`, `ARCHITECTURE.md`, `docs/adr`, `docs/rules`, `.claude/` (propriétaire uniquement) |
+| `content/{actions,jobs,items,place-types,transport,needs,housing,businesses,place-names,game-config}/**`                             |                                                 |                                                                                                |
+| `data/**`, `infra/**` (préparé, **jamais exécuté** par l'agent), `tests/{integration,load}/**`                                       |                                                 |                                                                                                |
+| Partagé : `docs/backlog`, `docs/spikes`, `docs/runbooks`, `tools/repo-checks`, configs racine (relecture de l'autre dev obligatoire) |                                                 |                                                                                                |
 
 **Contrats partagés** (`protocol`, `tile-format`, `physics`, `content-schema`, `geo`) : le backend en est propriétaire, mais **tout changement est relu par le frontend**, qui les consomme. Un changement incompatible incrémente `protocolVersion`.
 

@@ -7,15 +7,15 @@
 
 Source code of `@skyline/tile-format`.
 
-| File | Role |
-|---|---|
-| `index.ts` | Public API |
-| `format-version.ts` | `TILE_FORMAT_VERSION` |
-| `tile-file-names.ts` | Tile folder / file / manifest names (build and parse) |
-| `tile-meta-schema.ts` | `meta.json` schema (buildings, places, neighbours) |
-| `world-manifest-schema.ts` | Release manifest schema |
-| `parse-tile-json.ts` | Validation with readable errors (`TileFormatError`) |
-| `collision/` | `collision.bin` codec |
+| File                       | Role                                                  |
+| -------------------------- | ----------------------------------------------------- |
+| `index.ts`                 | Public API                                            |
+| `format-version.ts`        | `TILE_FORMAT_VERSION`                                 |
+| `tile-file-names.ts`       | Tile folder / file / manifest names (build and parse) |
+| `tile-meta-schema.ts`      | `meta.json` schema (buildings, places, neighbours)    |
+| `world-manifest-schema.ts` | Release manifest schema                               |
+| `parse-tile-json.ts`       | Validation with readable errors (`TileFormatError`)   |
+| `collision/`               | `collision.bin` codec                                 |
 
 ## Rules
 

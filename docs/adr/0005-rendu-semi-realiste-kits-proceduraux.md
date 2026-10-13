@@ -19,13 +19,13 @@ Le propriétaire veut un rendu **semi-réaliste** (PBR) sur une commune entière
 
 ## Alternatives écartées
 
-| Option | Raison du rejet |
-|---|---|
-| Modéliser chaque bâtiment | Infaisable à l'échelle d'une commune |
-| Photogrammétrie ou maillages 3D réels | Pas de données ouvertes adaptées pour Yopougon ; volume et licence prohibitifs |
+| Option                                            | Raison du rejet                                                                                           |
+| ------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| Modéliser chaque bâtiment                         | Infaisable à l'échelle d'une commune                                                                      |
+| Photogrammétrie ou maillages 3D réels             | Pas de données ouvertes adaptées pour Yopougon ; volume et licence prohibitifs                            |
 | Extrusions simples texturées (style « maquette ») | Rejeté par le propriétaire (semi-réaliste demandé) ; reste le repli des LOD lointains et du profil Mobile |
-| Style stylisé ou low-poly | Moins coûteux, mais contraire au choix du propriétaire |
-| Maillages fusionnés par tuile pour les façades | Tuiles 5 à 10 fois plus lourdes ; perte du bénéfice de l'instanciation |
+| Style stylisé ou low-poly                         | Moins coûteux, mais contraire au choix du propriétaire                                                    |
+| Maillages fusionnés par tuile pour les façades    | Tuiles 5 à 10 fois plus lourdes ; perte du bénéfice de l'instanciation                                    |
 
 ## Conséquences et coût (réserve de l'architecte)
 

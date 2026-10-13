@@ -14,7 +14,10 @@ const fetchJson = async (url: string): Promise<unknown> => {
 };
 
 const isWorldData = (value: unknown): value is WorldData =>
-  typeof value === 'object' && value !== null && Array.isArray((value as WorldData).buildings) && Array.isArray((value as WorldData).roads);
+  typeof value === 'object' &&
+  value !== null &&
+  Array.isArray((value as WorldData).buildings) &&
+  Array.isArray((value as WorldData).roads);
 
 export const loadLegacyBlockout = async (scene: Scene): Promise<BlockoutResult> => {
   const [world, props] = await Promise.all([

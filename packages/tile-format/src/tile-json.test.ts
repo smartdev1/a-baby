@@ -11,7 +11,15 @@ const META = {
   formatVersion: 0,
   tileKey: 'L0_325_199',
   buildings: [{ id: 'osm:way/558265139', type: 'apartments', levels: 4, heightM: 12.5, heightSource: 'heuristic' }],
-  places: [{ id: 'osm:node/42', category: 'food.maquis', displayName: 'Maquis Le Pigeon', position: { x: 12, z: 80 }, buildingId: null }],
+  places: [
+    {
+      id: 'osm:node/42',
+      category: 'food.maquis',
+      displayName: 'Maquis Le Pigeon',
+      position: { x: 12, z: 80 },
+      buildingId: null,
+    },
+  ],
   neighbours: ['L0_324_199', 'L0_326_199'],
 };
 
@@ -20,7 +28,12 @@ const MANIFEST = {
   release: 'yopougon-2026-10-01',
   commune: 'Yopougon',
   bboxUtm: { minEastingM: 371_000, minNorthingM: 578_500, maxEastingM: 384_000, maxNorthingM: 597_000 },
-  sourceSnapshot: { provider: 'geofabrik', fileName: 'ivory-coast-261001.osm.pbf', snapshotDate: '2026-10-01', sha256: 'a'.repeat(64) },
+  sourceSnapshot: {
+    provider: 'geofabrik',
+    fileName: 'ivory-coast-261001.osm.pbf',
+    snapshotDate: '2026-10-01',
+    sha256: 'a'.repeat(64),
+  },
   licence: 'ODbL-1.0',
   attribution: '© OpenStreetMap contributors',
   tiles: { L0_325_199: { collision: '0123456789abcdef', meta: 'fedcba9876543210' } },
@@ -54,7 +67,9 @@ describe('tile JSON schemas', () => {
 describe('tile file names', () => {
   it('should build and parse tile paths', () => {
     expect(tileDirectory('L0_325_199')).toBe('tiles/L0/325_199');
-    expect(tileFilePath('L0_325_199', 'collision', '0123456789abcdef')).toBe('tiles/L0/325_199/collision.0123456789abcdef.bin');
+    expect(tileFilePath('L0_325_199', 'collision', '0123456789abcdef')).toBe(
+      'tiles/L0/325_199/collision.0123456789abcdef.bin',
+    );
     expect(parseTileFileName('meta.0123456789abcdef.json')).toEqual({ kind: 'meta', hash: '0123456789abcdef' });
     expect(worldManifestFileName('yopougon-2026-10-01')).toBe('world-manifest.yopougon-2026-10-01.json');
   });

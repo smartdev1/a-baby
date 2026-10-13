@@ -4,7 +4,14 @@
  */
 
 import type { CollisionWorld, WorldPrism } from './collision-world.ts';
-import { DEFAULT_CHARACTER, FIXED_STEP_S, type CharacterConfig, type CharacterState, type MoveInput, type Vec3 } from './physics-types.ts';
+import {
+  DEFAULT_CHARACTER,
+  FIXED_STEP_S,
+  type CharacterConfig,
+  type CharacterState,
+  type MoveInput,
+  type Vec3,
+} from './physics-types.ts';
 import { pointInRing, pushCircleOut } from './polygon-math.ts';
 
 const RESOLVE_ITERATIONS = 4;
@@ -37,7 +44,8 @@ const horizontalVelocity = (input: MoveInput, cfg: CharacterConfig): FlatPoint =
   return { x: (cos * mx + sin * mz) * speed, z: (-sin * mx + cos * mz) * speed };
 };
 
-const blocks = (p: WorldPrism, feetY: number, cfg: CharacterConfig): boolean => p.topYM > feetY + cfg.stepUpM && p.baseYM < feetY + cfg.heightM;
+const blocks = (p: WorldPrism, feetY: number, cfg: CharacterConfig): boolean =>
+  p.topYM > feetY + cfg.stepUpM && p.baseYM < feetY + cfg.heightM;
 
 /** Pushes the capsule out of every blocking prism; null when it cannot be freed (tight corner). */
 const resolve = ({ world, cfg }: StepContext, at: FlatPoint, feetY: number): FlatPoint | null => {
@@ -54,7 +62,9 @@ const resolve = ({ world, cfg }: StepContext, at: FlatPoint, feetY: number): Fla
     }
     if (!moved) return { x, z };
   }
-  const stillInside = world.prismsNear(x, z, cfg.radiusM).some((p) => blocks(p, feetY, cfg) && pushCircleOut(p.ring, x, z, cfg.radiusM) !== null);
+  const stillInside = world
+    .prismsNear(x, z, cfg.radiusM)
+    .some((p) => blocks(p, feetY, cfg) && pushCircleOut(p.ring, x, z, cfg.radiusM) !== null);
   return stillInside ? null : { x, z };
 };
 
@@ -85,7 +95,12 @@ export interface StepOptions {
   readonly dt?: number;
 }
 
-export const stepCharacter = (world: CollisionWorld, state: CharacterState, input: MoveInput, options: StepOptions = {}): CharacterState => {
+export const stepCharacter = (
+  world: CollisionWorld,
+  state: CharacterState,
+  input: MoveInput,
+  options: StepOptions = {},
+): CharacterState => {
   const ctx: StepContext = { world, cfg: options.cfg ?? DEFAULT_CHARACTER };
   const dt = options.dt ?? FIXED_STEP_S;
   const hv = horizontalVelocity(input, ctx.cfg);

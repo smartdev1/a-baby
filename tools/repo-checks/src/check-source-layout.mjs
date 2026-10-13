@@ -16,7 +16,11 @@ export const checkSourceLayout = (files) => {
     const dir = f.slice(0, f.lastIndexOf('/'));
     perDir.set(dir, (perDir.get(dir) ?? 0) + 1);
   }
-  const crowded = [...perDir].filter(([, n]) => n > MAX_SOURCE_FILES_PER_DIR).map(([d, n]) => `${d}/: ${n} source files (max ${MAX_SOURCE_FILES_PER_DIR}), split by concept`);
-  const badNames = sources.filter((f) => FORBIDDEN_NAME.test(f)).map((f) => `${f}: catch-all file name, name it after what it does`);
+  const crowded = [...perDir]
+    .filter(([, n]) => n > MAX_SOURCE_FILES_PER_DIR)
+    .map(([d, n]) => `${d}/: ${n} source files (max ${MAX_SOURCE_FILES_PER_DIR}), split by concept`);
+  const badNames = sources
+    .filter((f) => FORBIDDEN_NAME.test(f))
+    .map((f) => `${f}: catch-all file name, name it after what it does`);
   return [...crowded, ...badNames];
 };

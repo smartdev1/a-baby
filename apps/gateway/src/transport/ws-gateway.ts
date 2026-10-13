@@ -24,7 +24,11 @@ export interface Gateway {
 }
 
 export const startGateway = (options: GatewayOptions): Gateway => {
-  const wss = new WebSocketServer({ ...(options.server ? { server: options.server } : { port: options.port ?? 2567 }), maxPayload: MAX_FRAME_BYTES, path: '/ws' });
+  const wss = new WebSocketServer({
+    ...(options.server ? { server: options.server } : { port: options.port ?? 2567 }),
+    maxPayload: MAX_FRAME_BYTES,
+    path: '/ws',
+  });
   wss.on('connection', (socket) => {
     const session = new ClientSession({ send: (frame) => socket.send(frame), close: () => socket.close() }, options);
     socket.on('message', (data, isBinary) => {

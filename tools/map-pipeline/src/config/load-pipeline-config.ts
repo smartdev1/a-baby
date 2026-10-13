@@ -13,7 +13,8 @@ export class PipelineConfigError extends Error {
 
 export const parsePipelineConfig = (raw: unknown, origin: string): PipelineConfig => {
   const result = PipelineConfigSchema.safeParse(raw);
-  if (!result.success) throw new PipelineConfigError(`invalid pipeline config ${origin}:\n${z.prettifyError(result.error)}`);
+  if (!result.success)
+    throw new PipelineConfigError(`invalid pipeline config ${origin}:\n${z.prettifyError(result.error)}`);
   return result.data;
 };
 

@@ -3,14 +3,16 @@
  * Owner: shared
  */
 
-const PURE = '^packages/(geo|tile-format|protocol|physics|content-schema|sim-[a-z]+|economy-rules|business-rules|i18n)/';
+const PURE =
+  '^packages/(geo|tile-format|protocol|physics|content-schema|sim-[a-z]+|economy-rules|business-rules|i18n)/';
 
 module.exports = {
   forbidden: [
     { name: 'no-circular', severity: 'error', from: {}, to: { circular: true } },
     {
       name: 'no-unresolvable',
-      comment: 'Every import must resolve (declare workspace packages in package.json). The probe page imports a file served at runtime.',
+      comment:
+        'Every import must resolve (declare workspace packages in package.json). The probe page imports a file served at runtime.',
       severity: 'error',
       from: { pathNot: '^tools/latency-probe/page/' },
       to: { couldNotResolve: true },

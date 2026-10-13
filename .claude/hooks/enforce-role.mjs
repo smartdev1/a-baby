@@ -13,7 +13,9 @@ const readStdin = () => readFileSync(0, 'utf8');
 
 const projectDir = process.env.CLAUDE_PROJECT_DIR ?? process.cwd();
 const roleFile = join(projectDir, '.claude', 'role.local');
-const role = (process.env.SKYLINE_ROLE ?? (existsSync(roleFile) ? readFileSync(roleFile, 'utf8').split('\n')[0] : '')).trim();
+const role = (
+  process.env.SKYLINE_ROLE ?? (existsSync(roleFile) ? readFileSync(roleFile, 'utf8').split('\n')[0] : '')
+).trim();
 
 if (role !== 'frontend' && role !== 'backend') process.exit(0); // no role declared: no restriction (owner session)
 

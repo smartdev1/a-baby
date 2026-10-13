@@ -20,7 +20,11 @@ const boxFromRing = (scene: Scene, id: string, ring: readonly Vec2[], heightM: n
   const xs = ring.map((p) => p.x);
   const ys = ring.map((p) => p.y);
   const [minX, maxX, minY, maxY] = [Math.min(...xs), Math.max(...xs), Math.min(...ys), Math.max(...ys)];
-  const box = CreateBox(id, { width: Math.max(maxX - minX, 1), height: heightM, depth: Math.max(maxY - minY, 1) }, scene);
+  const box = CreateBox(
+    id,
+    { width: Math.max(maxX - minX, 1), height: heightM, depth: Math.max(maxY - minY, 1) },
+    scene,
+  );
   box.position.set((minX + maxX) / 2, heightM / 2, (minY + maxY) / 2);
   return box;
 };
@@ -31,7 +35,12 @@ const extrude = (scene: Scene, building: BuildingData): Mesh | null => {
   const heightM = Math.max(building.height, MIN_HEIGHT_M);
   try {
     const shape = ring.map((p) => new Vector3(p.x, 0, p.y));
-    const mesh = ExtrudePolygon(building.id, { shape, depth: heightM, sideOrientation: Mesh.DOUBLESIDE }, scene, earcut);
+    const mesh = ExtrudePolygon(
+      building.id,
+      { shape, depth: heightM, sideOrientation: Mesh.DOUBLESIDE },
+      scene,
+      earcut,
+    );
     mesh.position.y = -mesh.getBoundingInfo().boundingBox.minimum.y;
     return mesh;
   } catch {
@@ -39,7 +48,11 @@ const extrude = (scene: Scene, building: BuildingData): Mesh | null => {
   }
 };
 
-export const buildBuildings = (scene: Scene, materials: BlockoutMaterials, buildings: readonly BuildingData[]): number => {
+export const buildBuildings = (
+  scene: Scene,
+  materials: BlockoutMaterials,
+  buildings: readonly BuildingData[],
+): number => {
   const groups = new Map<string, Mesh[]>();
   let count = 0;
   for (const building of buildings) {

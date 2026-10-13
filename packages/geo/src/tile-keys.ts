@@ -38,7 +38,8 @@ export const tileCoordOf = (position: UtmPosition, level: TileLevel): TileCoord 
   };
 };
 
-export const tileKeyOf = (position: UtmPosition, level: TileLevel): TileKey => formatTileKey(tileCoordOf(position, level));
+export const tileKeyOf = (position: UtmPosition, level: TileLevel): TileKey =>
+  formatTileKey(tileCoordOf(position, level));
 
 export const tileBounds = (key: string): UtmBounds => {
   const { level, i, j } = parseTileKey(key);

@@ -22,7 +22,8 @@ const OUTPUTS = ['road-nodes.ndjson', 'road-edges.ndjson', 'road-tiles.json', RO
 
 const tileIndex = (edges: readonly RoadEdge[]): Record<string, string[]> => {
   const index: Record<string, string[]> = {};
-  for (const edge of edges) for (const key of tilesOverlapping(boundsOfPoints(edge.geometry))) (index[key] ??= []).push(edge.id);
+  for (const edge of edges)
+    for (const key of tilesOverlapping(boundsOfPoints(edge.geometry))) (index[key] ??= []).push(edge.id);
   return Object.fromEntries(Object.entries(index).sort(([a], [b]) => (a < b ? -1 : 1)));
 };
 
@@ -35,7 +36,8 @@ export const roadsStage: PipelineStage = {
   params: () => ({}),
   run: async (ctx, outDir) => {
     const records: ClassifiedRecord[] = [];
-    for await (const r of readNdjson<ClassifiedRecord>(ctx.outputOf(CLASSIFY_STAGE_ID, CLASSIFIED_FILE))) if (r.roadClass) records.push(r);
+    for await (const r of readNdjson<ClassifiedRecord>(ctx.outputOf(CLASSIFY_STAGE_ID, CLASSIFIED_FILE)))
+      if (r.roadClass) records.push(r);
     const tagsByWay = new Map(records.map((r) => [r.id, r.tags]));
     const graph = buildRoadGraph(routableWays(records));
     const footways = new FootwayIndex(graph.edges.filter((e) => isPathClass(e.roadClass) && e.roadClass !== 'track'));

@@ -13,18 +13,18 @@ Le monde est généré depuis OpenStreetMap, sous licence **ODbL 1.0**. Les tuil
 2. **Deux couches jamais fusionnées dans une même table** :
    - `osm-derived` (ODbL) : emprises, hauteurs (dont heuristiques), routes, graphe, eau, POI, arrêts, géométrie des sites, noms affichés produits par l'étape `naming` ;
    - `game-authored` (propriétaire) : `content/**` (fiches d'actions, métiers, lignes, prix, gabarits, tables de parodie et de surcharges), assets 3D.
-   Le contenu de jeu **référence** des identifiants OSM sans les copier.
+     Le contenu de jeu **référence** des identifiants OSM sans les copier.
 3. **Publication** à chaque release publique : archive de la couche `osm-derived` sous ODbL, avec la description du pipeline et l'identifiant de l'instantané OSM (`sources.lock.json`).
 4. **Toute autre source** (MNT, jeux d'emprises issus d'imagerie) est déclarée dans `sources.lock.json` et `ATTRIBUTION.md` avec sa licence, et validée **avant** d'être mélangée aux données OSM.
 5. Aucune donnée locale (chemin, nom de poste) dans les artefacts générés.
 
 ## Alternatives écartées
 
-| Option | Raison du rejet |
-|---|---|
+| Option                                                   | Raison du rejet                                                                                                       |
+| -------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
 | Ne rien publier, en invoquant le « produit dérivé » seul | Une base dérivée utilisée publiquement doit être proposée sous ODbL (ou ses modifications) ; risque de non-conformité |
-| Publier toute la base du jeu sous ODbL | Inutile, et contaminerait le contenu propriétaire |
-| Données hors OSM uniquement | Aucune source ouverte équivalente pour Yopougon |
+| Publier toute la base du jeu sous ODbL                   | Inutile, et contaminerait le contenu propriétaire                                                                     |
+| Données hors OSM uniquement                              | Aucune source ouverte équivalente pour Yopougon                                                                       |
 
 ## Conséquences
 

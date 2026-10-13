@@ -27,7 +27,11 @@ export interface DensityMapInput {
 
 const fillFor = (count: number): string => [...BINS].reverse().find((b) => count >= b.min)?.fill ?? 'none';
 
-const tileCenterInside = (key: string, boundary: Geometry | null, toLonLat: (e: number, n: number) => [number, number]): boolean => {
+const tileCenterInside = (
+  key: string,
+  boundary: Geometry | null,
+  toLonLat: (e: number, n: number) => [number, number],
+): boolean => {
   if (!boundary) return false;
   const b = tileBounds(key);
   return containsPoint(boundary, toLonLat((b.minEastingM + b.maxEastingM) / 2, (b.minNorthingM + b.maxNorthingM) / 2));
@@ -39,8 +43,12 @@ const tileRange = (keys: string[], boundaryBounds: UtmBounds | null) => {
   const is = coords.map((c) => c[1]);
   const js = coords.map((c) => c[2]);
   if (boundaryBounds) {
-    const sw = tileKeyOf({ eastingM: boundaryBounds.minEastingM, northingM: boundaryBounds.minNorthingM }, 0).split('_').map(Number);
-    const ne = tileKeyOf({ eastingM: boundaryBounds.maxEastingM - 1, northingM: boundaryBounds.maxNorthingM - 1 }, 0).split('_').map(Number);
+    const sw = tileKeyOf({ eastingM: boundaryBounds.minEastingM, northingM: boundaryBounds.minNorthingM }, 0)
+      .split('_')
+      .map(Number);
+    const ne = tileKeyOf({ eastingM: boundaryBounds.maxEastingM - 1, northingM: boundaryBounds.maxNorthingM - 1 }, 0)
+      .split('_')
+      .map(Number);
     is.push(sw[1] ?? 0, ne[1] ?? 0);
     js.push(sw[2] ?? 0, ne[2] ?? 0);
   }
@@ -68,17 +76,24 @@ export const renderDensitySvg = (
       const x = (i - iMin) * PX_PER_TILE;
       const y = top + (jMax - j) * PX_PER_TILE; // north up
       if (count > 0) {
-        cells.push(`<rect x="${x}" y="${y}" width="${PX_PER_TILE - 1}" height="${PX_PER_TILE - 1}" rx="1" fill="${fillFor(count)}"><title>${key}: ${count} buildings</title></rect>`);
+        cells.push(
+          `<rect x="${x}" y="${y}" width="${PX_PER_TILE - 1}" height="${PX_PER_TILE - 1}" rx="1" fill="${fillFor(count)}"><title>${key}: ${count} buildings</title></rect>`,
+        );
       } else if (tileCenterInside(key, input.boundary, toLonLat)) {
         emptyInside++;
-        cells.push(`<rect x="${x}" y="${y}" width="${PX_PER_TILE - 1}" height="${PX_PER_TILE - 1}" fill="url(#hatch)" stroke="${EMPTY_STROKE}" stroke-width="0.5"><title>${key}: no building (inside the commune)</title></rect>`);
+        cells.push(
+          `<rect x="${x}" y="${y}" width="${PX_PER_TILE - 1}" height="${PX_PER_TILE - 1}" fill="url(#hatch)" stroke="${EMPTY_STROKE}" stroke-width="0.5"><title>${key}: no building (inside the commune)</title></rect>`,
+        );
       }
     }
   }
 
   const legendY = top + mapH + 20;
   const legend = [
-    ...BINS.map((b, k) => `<rect x="${k * 90}" y="${legendY}" width="12" height="12" rx="2" fill="${b.fill}"/><text x="${k * 90 + 18}" y="${legendY + 10}">${b.label}</text>`),
+    ...BINS.map(
+      (b, k) =>
+        `<rect x="${k * 90}" y="${legendY}" width="12" height="12" rx="2" fill="${b.fill}"/><text x="${k * 90 + 18}" y="${legendY + 10}">${b.label}</text>`,
+    ),
     `<rect x="${BINS.length * 90}" y="${legendY}" width="12" height="12" fill="url(#hatch)" stroke="${EMPTY_STROKE}"/><text x="${BINS.length * 90 + 18}" y="${legendY + 10}">0 (gap)</text>`,
   ];
   const width = Math.max(mapW, (BINS.length + 1) * 90 + 40);

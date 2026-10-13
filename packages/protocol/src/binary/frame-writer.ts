@@ -50,7 +50,8 @@ export class FrameWriter {
   }
 
   done(): Uint8Array {
-    if (this.offset !== this.bytes.byteLength) throw new Error(`frame size mismatch: wrote ${this.offset} of ${this.bytes.byteLength}`);
+    if (this.offset !== this.bytes.byteLength)
+      throw new Error(`frame size mismatch: wrote ${this.offset} of ${this.bytes.byteLength}`);
     return this.bytes;
   }
 }

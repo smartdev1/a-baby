@@ -37,7 +37,9 @@ const writeTile = async (outDir: string, t: EncodedTile): Promise<void> => {
 
 const indexPaths = (index: EncodeIndex): string[] =>
   Object.entries(index).flatMap(([key, e]) =>
-    (['geom', 'collision', 'meta'] as const).map((kind) => tileFilePath(key as Parameters<typeof tileFilePath>[0], kind, e[kind])),
+    (['geom', 'collision', 'meta'] as const).map((kind) =>
+      tileFilePath(key as Parameters<typeof tileFilePath>[0], kind, e[kind]),
+    ),
   );
 
 export const encodeStage: PipelineStage = {
@@ -63,7 +65,13 @@ export const encodeStage: PipelineStage = {
       const encoded = await encodeTile(tile, existing);
       violations.push(...budgetViolations(encoded));
       await writeTile(outDir, encoded);
-      index[tile.key] = { geom: encoded.geom.hash, collision: encoded.collision.hash, meta: encoded.meta.hash, bytes: tileBytes(encoded), triangles: encoded.triangles };
+      index[tile.key] = {
+        geom: encoded.geom.hash,
+        collision: encoded.collision.hash,
+        meta: encoded.meta.hash,
+        bytes: tileBytes(encoded),
+        triangles: encoded.triangles,
+      };
     }
     if (violations.length > 0) throw new Error(`${violations.length} tile(s) over budget:\n${violations.join('\n')}`);
     await writeFile(join(outDir, ENCODE_INDEX_FILE), `${JSON.stringify(index, null, 2)}\n`);

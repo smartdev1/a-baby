@@ -10,7 +10,9 @@ import { z } from 'zod';
 import type { ClockSegment } from '@skyline/sim-clock';
 import type { ClockSegmentStore } from '../application/world-clock-service.ts';
 
-const SegmentSchema = z.object({ realStartMs: z.number(), gameStartMin: z.number(), ratio: z.number().positive(), paused: z.boolean() }).strict();
+const SegmentSchema = z
+  .object({ realStartMs: z.number(), gameStartMin: z.number(), ratio: z.number().positive(), paused: z.boolean() })
+  .strict();
 
 export class InMemoryClockSegmentStore implements ClockSegmentStore {
   private segment: ClockSegment | null = null;

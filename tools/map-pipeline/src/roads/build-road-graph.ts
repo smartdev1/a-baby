@@ -9,10 +9,21 @@ import type { RoadEdge, RoadNode } from './road-graph-types.ts';
 import { layerOf, onewayOf } from './road-way-tags.ts';
 
 /** Ways not routable (planned, removed or not a surface). */
-const SKIPPED = new Set(['construction', 'proposed', 'abandoned', 'razed', 'corridor', 'elevator', 'platform', 'raceway', 'bus_stop']);
+const SKIPPED = new Set([
+  'construction',
+  'proposed',
+  'abandoned',
+  'razed',
+  'corridor',
+  'elevator',
+  'platform',
+  'raceway',
+  'bus_stop',
+]);
 
 const keyOf = ([e, n]: UtmPoint): string => `${e},${n}`;
-const lengthOf = (pts: readonly UtmPoint[]): number => pts.slice(1).reduce((sum, p, k) => sum + Math.hypot(p[0] - (pts[k]?.[0] ?? 0), p[1] - (pts[k]?.[1] ?? 0)), 0);
+const lengthOf = (pts: readonly UtmPoint[]): number =>
+  pts.slice(1).reduce((sum, p, k) => sum + Math.hypot(p[0] - (pts[k]?.[0] ?? 0), p[1] - (pts[k]?.[1] ?? 0)), 0);
 
 interface RoadWay {
   readonly record: ClassifiedRecord;
@@ -24,7 +35,12 @@ export const routableWays = (records: Iterable<ClassifiedRecord>): RoadWay[] => 
   const ways: RoadWay[] = [];
   for (const record of records) {
     if (!record.roadClass || SKIPPED.has(record.roadClass)) continue;
-    const lines = record.geometry.type === 'LineString' ? [record.geometry.coordinates] : record.geometry.type === 'MultiLineString' ? record.geometry.coordinates : [];
+    const lines =
+      record.geometry.type === 'LineString'
+        ? [record.geometry.coordinates]
+        : record.geometry.type === 'MultiLineString'
+          ? record.geometry.coordinates
+          : [];
     for (const line of lines) if (line.length >= 2) ways.push({ record, roadClass: record.roadClass, line });
   }
   return ways;
@@ -38,7 +54,8 @@ export interface RoadGraph {
 export const buildRoadGraph = (ways: readonly RoadWay[]): RoadGraph => {
   // A vertex is a node when it ends a way or is used more than once (junction).
   const uses = new Map<string, number>();
-  for (const { line } of ways) line.forEach((p, k) => uses.set(keyOf(p), (uses.get(keyOf(p)) ?? 0) + (k === 0 || k === line.length - 1 ? 2 : 1)));
+  for (const { line } of ways)
+    line.forEach((p, k) => uses.set(keyOf(p), (uses.get(keyOf(p)) ?? 0) + (k === 0 || k === line.length - 1 ? 2 : 1)));
 
   const nodeIds = new Map<string, string>();
   const nodes: RoadNode[] = [];

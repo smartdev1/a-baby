@@ -19,11 +19,11 @@ Le MVP comporte achats, salaires, transport, loyers, **achat de logements**, **c
 
 ## Alternatives écartées
 
-| Option | Raison du rejet |
-|---|---|
-| Un simple champ `balance` modifié directement | Pas d'audit, rejeux et doubles dépenses difficiles à empêcher |
-| Event sourcing complet | Surdimensionné ; le grand livre est déjà un journal |
-| Économie gérée en mémoire par les zones | Perte d'argent au plantage ; pas de transactions multi-entités |
+| Option                                        | Raison du rejet                                                |
+| --------------------------------------------- | -------------------------------------------------------------- |
+| Un simple champ `balance` modifié directement | Pas d'audit, rejeux et doubles dépenses difficiles à empêcher  |
+| Event sourcing complet                        | Surdimensionné ; le grand livre est déjà un journal            |
+| Économie gérée en mémoire par les zones       | Perte d'argent au plantage ; pas de transactions multi-entités |
 
 ## Conséquences
 

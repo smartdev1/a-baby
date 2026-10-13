@@ -8,12 +8,14 @@ import { ProtocolDecodeError } from '../protocol-errors.ts';
 const TAU = Math.PI * 2;
 
 const checkInt = (value: number, min: number, max: number, what: string): number => {
-  if (!Number.isInteger(value) || value < min || value > max) throw new ProtocolDecodeError('out-of-range', `${what} = ${value} outside ${min}..${max}`);
+  if (!Number.isInteger(value) || value < min || value > max)
+    throw new ProtocolDecodeError('out-of-range', `${what} = ${value} outside ${min}..${max}`);
   return value;
 };
 
 /** Metres ↔ integer millimetres (±2 147 km around the frame origin). */
-export const metresToMm = (m: number): number => checkInt(Math.round(m * 1000), -2_147_483_648, 2_147_483_647, 'position');
+export const metresToMm = (m: number): number =>
+  checkInt(Math.round(m * 1000), -2_147_483_648, 2_147_483_647, 'position');
 export const mmToMetres = (mm: number): number => mm / 1000;
 
 /** Radians ↔ u16 fraction of a turn (resolution ≈ 0.0055°). */

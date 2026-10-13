@@ -38,7 +38,12 @@ export const closestOnRing = (ring: Float32Array, x: number, z: number): { x: nu
 };
 
 /** Moves a circle (centre, radius) out of a polygon; returns null when there is no overlap. */
-export const pushCircleOut = (ring: Float32Array, x: number, z: number, radius: number): { x: number; z: number } | null => {
+export const pushCircleOut = (
+  ring: Float32Array,
+  x: number,
+  z: number,
+  radius: number,
+): { x: number; z: number } | null => {
   const inside = pointInRing(ring, x, z);
   const c = closestOnRing(ring, x, z);
   if (!inside && c.distance >= radius) return null;

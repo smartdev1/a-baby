@@ -13,7 +13,12 @@ const VALID = {
   commune: 'test-commune',
   displayName: 'Test',
   seed: 'test-v1',
-  source: { kind: 'local-file', format: 'geojson', path: 'tools/map-pipeline/test/fixtures/pigeons-sample.geojson', snapshotDate: '2026-10-13' },
+  source: {
+    kind: 'local-file',
+    format: 'geojson',
+    path: 'tools/map-pipeline/test/fixtures/pigeons-sample.geojson',
+    snapshotDate: '2026-10-13',
+  },
   boundary: { osmRelationId: null },
   marginM: 0,
   outputDir: 'data/build/test-commune',

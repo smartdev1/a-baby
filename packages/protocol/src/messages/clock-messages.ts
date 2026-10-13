@@ -16,8 +16,13 @@ export interface PongMessage {
   readonly serverTimeMs: number;
 }
 
-export const encodePing = (m: PingMessage): Uint8Array => new FrameWriter(9).u8(CLIENT_MESSAGE.ping).f64(m.clientTimeMs).done();
+export const encodePing = (m: PingMessage): Uint8Array =>
+  new FrameWriter(9).u8(CLIENT_MESSAGE.ping).f64(m.clientTimeMs).done();
 export const decodePing = (r: FrameReader): PingMessage => ({ clientTimeMs: r.f64('clientTimeMs') });
 
-export const encodePong = (m: PongMessage): Uint8Array => new FrameWriter(17).u8(SERVER_MESSAGE.pong).f64(m.clientTimeMs).f64(m.serverTimeMs).done();
-export const decodePong = (r: FrameReader): PongMessage => ({ clientTimeMs: r.f64('clientTimeMs'), serverTimeMs: r.f64('serverTimeMs') });
+export const encodePong = (m: PongMessage): Uint8Array =>
+  new FrameWriter(17).u8(SERVER_MESSAGE.pong).f64(m.clientTimeMs).f64(m.serverTimeMs).done();
+export const decodePong = (r: FrameReader): PongMessage => ({
+  clientTimeMs: r.f64('clientTimeMs'),
+  serverTimeMs: r.f64('serverTimeMs'),
+});

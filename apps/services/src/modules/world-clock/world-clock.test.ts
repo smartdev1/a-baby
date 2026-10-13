@@ -43,7 +43,10 @@ describe('WorldClockService', () => {
     const server = Fastify();
     registerWorldClockRoutes(server, new WorldClockService(new InMemoryClockSegmentStore(), CONFIG, () => 5), () => 42);
     const response = await server.inject({ method: 'GET', url: '/api/v1/world-clock' });
-    expect(response.json()).toEqual({ segment: { realStartMs: 5, gameStartMin: 360, ratio: 12, paused: false }, serverTimeMs: 42 });
+    expect(response.json()).toEqual({
+      segment: { realStartMs: 5, gameStartMin: 360, ratio: 12, paused: false },
+      serverTimeMs: 42,
+    });
     await server.close();
   });
 });

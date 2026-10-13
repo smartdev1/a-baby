@@ -1,7 +1,5 @@
 {
   "//": "Role: TypeScript settings of @skyline/db (node profile).",
   "extends": "../../tsconfig.node.json",
-  "include": [
-    "src/**/*.ts"
-  ]
+  "include": ["src/**/*.ts"]
 }

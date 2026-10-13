@@ -30,7 +30,11 @@ export interface BuildServicesOptions {
 
 export const buildServices = async ({ config, logger, extraRoutes }: BuildServicesOptions): Promise<Services> => {
   const now = (): number => Date.now();
-  const worldClock = new WorldClockService(new FileClockSegmentStore(join(config.runtimeDir, 'world-clock.json')), await loadClockConfig(config.contentDir), now);
+  const worldClock = new WorldClockService(
+    new FileClockSegmentStore(join(config.runtimeDir, 'world-clock.json')),
+    await loadClockConfig(config.contentDir),
+    now,
+  );
   const tickets = new TicketService(now);
   const server = await buildHttpServer({
     logger,

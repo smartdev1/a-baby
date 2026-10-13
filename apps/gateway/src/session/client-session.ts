@@ -6,7 +6,15 @@
 import { randomUUID } from 'node:crypto';
 import { type MessageBus, subjects, type Unsubscribe } from '@skyline/bus';
 import type { Logger } from '@skyline/observability';
-import { checkHello, decodeClientMessage, encodeServerMessage, ProtocolDecodeError, type ClientMessage, type ServerErrorCode, type ServerMessage } from '@skyline/protocol';
+import {
+  checkHello,
+  decodeClientMessage,
+  encodeServerMessage,
+  ProtocolDecodeError,
+  type ClientMessage,
+  type ServerErrorCode,
+  type ServerMessage,
+} from '@skyline/protocol';
 import type { TicketVerifier } from '../auth/ticket-verifier.ts';
 import { RateLimiter } from './rate-limiter.ts';
 
@@ -66,18 +74,21 @@ export class ClientSession {
   }
 
   private handle(message: ClientMessage): void {
-    if (message.type === 'ping') return this.send({ type: 'pong', body: { clientTimeMs: message.body.clientTimeMs, serverTimeMs: Date.now() } });
+    if (message.type === 'ping')
+      return this.send({ type: 'pong', body: { clientTimeMs: message.body.clientTimeMs, serverTimeMs: Date.now() } });
     if (this.phase === 'awaiting-hello') {
       if (message.type !== 'hello') return this.violation('malformed_message', 'hello expected first');
       return this.handshake(message.body);
     }
-    if (message.type === 'input' && this.cellKey) this.deps.bus.publish(subjects.cellInput(this.cellKey), { sessionId: this.sessionId, input: message.body });
+    if (message.type === 'input' && this.cellKey)
+      this.deps.bus.publish(subjects.cellInput(this.cellKey), { sessionId: this.sessionId, input: message.body });
   }
 
   private handshake(hello: Extract<ClientMessage, { type: 'hello' }>['body']): void {
     const versionError = checkHello(hello);
     if (versionError) return this.reject(versionError.code, versionError.message);
-    if (!this.deps.tickets.consume(hello.ticket)) return this.reject('invalid_ticket', 'invalid or expired session ticket');
+    if (!this.deps.tickets.consume(hello.ticket))
+      return this.reject('invalid_ticket', 'invalid or expired session ticket');
     this.phase = 'playing';
     this.cellKey = this.deps.spawnCell;
     this.unsubscribe = this.deps.bus.subscribe<ServerMessage>(subjects.sessionOut(this.sessionId), (m) => this.send(m));

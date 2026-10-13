@@ -55,7 +55,10 @@ const clipSegment = (a: LocalPoint, b: LocalPoint): [number, number] | null => {
   return [t0, t1];
 };
 
-const lerp = (a: LocalPoint, b: LocalPoint, t: number): LocalPoint => [toCm(a[0] + (b[0] - a[0]) * t), toCm(a[1] + (b[1] - a[1]) * t)];
+const lerp = (a: LocalPoint, b: LocalPoint, t: number): LocalPoint => [
+  toCm(a[0] + (b[0] - a[0]) * t),
+  toCm(a[1] + (b[1] - a[1]) * t),
+];
 
 /** Pieces of a polyline inside one tile, in local metres (a line leaving and re-entering gives several pieces). */
 export const clipPolylineToTile = (line: readonly UtmPoint[], origin: TileOrigin): LocalPoint[][] => {

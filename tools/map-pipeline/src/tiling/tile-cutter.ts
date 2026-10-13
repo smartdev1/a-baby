@@ -9,12 +9,26 @@ import { emptyTileContent, type TileContent } from './tile-content.ts';
 import { boundsOfPoints, tileOfPoint, tileOrigin, tilesOverlapping, toLocal } from './tile-frame.ts';
 
 /** Ways not drawn as roads (not built yet, or not walkable surfaces). */
-const SKIPPED_ROAD_CLASSES = new Set(['construction', 'proposed', 'abandoned', 'razed', 'corridor', 'elevator', 'platform', 'raceway']);
+const SKIPPED_ROAD_CLASSES = new Set([
+  'construction',
+  'proposed',
+  'abandoned',
+  'razed',
+  'corridor',
+  'elevator',
+  'platform',
+  'raceway',
+]);
 
 /** Vertex average of the outer ring (without its closing point) or of the line / point. */
 export const representativePoint = (g: UtmGeometry): UtmPoint => {
   if (g.type === 'Point') return g.coordinates;
-  const pts = g.type === 'MultiPolygon' ? (g.coordinates[0]?.[0] ?? []).slice(0, -1) : g.type === 'LineString' ? g.coordinates : g.coordinates.flat();
+  const pts =
+    g.type === 'MultiPolygon'
+      ? (g.coordinates[0]?.[0] ?? []).slice(0, -1)
+      : g.type === 'LineString'
+        ? g.coordinates
+        : g.coordinates.flat();
   const n = Math.max(pts.length, 1);
   return [pts.reduce((s, p) => s + p[0], 0) / n, pts.reduce((s, p) => s + p[1], 0) / n];
 };
@@ -41,7 +55,14 @@ export class TileCutter {
       if (clipped.length > 0) this.tile(key).buildingParts.push({ id: b.id, heightM: b.heightM, polygons: clipped });
     }
     const owner = tileOfPoint(representativePoint(b.footprint));
-    if (owner) this.tile(owner).buildingMeta.push({ id: b.id, type: b.type, levels: b.levels, heightM: b.heightM, heightSource: b.heightSource });
+    if (owner)
+      this.tile(owner).buildingMeta.push({
+        id: b.id,
+        type: b.type,
+        levels: b.levels,
+        heightM: b.heightM,
+        heightSource: b.heightSource,
+      });
   }
 
   /** Roads and places come from the classified records. */
@@ -51,7 +72,12 @@ export class TileCutter {
       const point = representativePoint(r.geometry);
       const key = tileOfPoint(point);
       if (key) {
-        this.tile(key).places.push({ id: r.id, category: r.placeCategory, position: toLocal(point, tileOrigin(key)), buildingId: r.isBuilding ? r.id : null });
+        this.tile(key).places.push({
+          id: r.id,
+          category: r.placeCategory,
+          position: toLocal(point, tileOrigin(key)),
+          buildingId: r.isBuilding ? r.id : null,
+        });
       }
     }
   }

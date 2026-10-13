@@ -5,13 +5,13 @@ Chaque projet peut le compléter dans sa propre section "Contexte projet" en bas
 
 ## Équipe
 
-| Agent | Fichier | Rôle |
-|---|---|---|
-| `frontend-dev` | `.claude/agents/frontend-dev.md` | Développement frontend (rendu 3D, UI, assets) — règles `docs/rules/FRONTEND.md` |
-| `backend-dev` | `.claude/agents/backend-dev.md` | Développement backend (pipeline, simulation, services) — règles `docs/rules/BACKEND.md` |
-| `tech-lead-po` | `.claude/agents/tech-lead-po.md` | Cadrage, backlog, architecture, revue, décision de livraison |
-| `fullstack-devops` | `.claude/agents/fullstack-devops.md` | Implémentation front/back, infra, CI/CD (préparation uniquement) |
-| `fullstack-qa` | `.claude/agents/fullstack-qa.md` | Stratégie de tests, recette, blocage qualité, développement |
+| Agent              | Fichier                              | Rôle                                                                                    |
+| ------------------ | ------------------------------------ | --------------------------------------------------------------------------------------- |
+| `frontend-dev`     | `.claude/agents/frontend-dev.md`     | Développement frontend (rendu 3D, UI, assets) — règles `docs/rules/FRONTEND.md`         |
+| `backend-dev`      | `.claude/agents/backend-dev.md`      | Développement backend (pipeline, simulation, services) — règles `docs/rules/BACKEND.md` |
+| `tech-lead-po`     | `.claude/agents/tech-lead-po.md`     | Cadrage, backlog, architecture, revue, décision de livraison                            |
+| `fullstack-devops` | `.claude/agents/fullstack-devops.md` | Implémentation front/back, infra, CI/CD (préparation uniquement)                        |
+| `fullstack-qa`     | `.claude/agents/fullstack-qa.md`     | Stratégie de tests, recette, blocage qualité, développement                             |
 
 Le propriétaire (l'utilisateur) a toujours le dernier mot.
 
@@ -61,15 +61,18 @@ L'équipe compte un développeur **frontend** et des agents dédiés. Sur chaque
 ## Autonomie et permissions
 
 **Libre (sans demander) :**
+
 - Lire n'importe quel fichier du projet (sauf secrets, voir plus bas).
 - Créer et modifier des fichiers de code, de test, de documentation et de backlog dans le périmètre de la tâche, dans la mesure où le résultat est optimal pour le projet.
 
 **Toujours demander la permission avant :**
+
 - Toute exécution de commande (Bash) : tests, build, install, lint, git, scripts.
 - Tout `git commit`, `git push`, création de branche, merge, rebase.
 - Toute action sensible (liste ci-dessous).
 
 **Actions sensibles : validation explicite de l'utilisateur, à chaque fois**
+
 - Suppression de fichiers, de dossiers ou de données.
 - Migrations de base de données, changement de schéma.
 - Ajout, mise à jour ou suppression de dépendances.
@@ -110,27 +113,35 @@ size: S | M | L
 ---
 
 ## Context
+
 Why this task exists. Business value.
 
 ## User story
+
 As a <who>, I want <what>, so that <why>.
 
 ## Acceptance criteria
+
 - [ ] Given / When / Then ...
 
 ## Out of scope
+
 What we deliberately do NOT do.
 
 ## Technical notes
+
 Constraints, links to ADRs.
 
 ## Implementation log
+
 (filled by the implementer)
 
 ## Review
+
 (filled by tech-lead-po)
 
 ## QA report
+
 (filled by the QA agent)
 ```
 
@@ -144,6 +155,7 @@ Constraints, links to ADRs.
 ## Définition de "terminé" (Definition of Done)
 
 Une tâche est `done` uniquement si :
+
 1. Tous les critères d'acceptation sont satisfaits.
 2. Le code a été relu par `tech-lead-po`.
 3. Les tests pertinents existent et passent (exécution demandée à l'utilisateur).
@@ -154,6 +166,7 @@ Une tâche est `done` uniquement si :
 ## Règle d'or de séparation des rôles
 
 **Personne ne valide son propre travail.**
+
 - Le code écrit par `fullstack-devops` est testé par `fullstack-qa` et relu par `tech-lead-po`.
 - Le code écrit par `fullstack-qa` est testé par `fullstack-devops` et relu par `tech-lead-po`.
 - Le champ `author_of_code` de la tâche fait foi.
@@ -214,6 +227,7 @@ docs/
 **Références** : `ARCHITECTURE.md` (architecture cible et règles), `docs/roadmap.md` (jalons J0→J7), `docs/adr/`, `docs/backlog/`, `docs/rules/`.
 
 ---
+
 ### Règles spécifiques au projet SKYLINE
 
 1. **Serveur autoritaire** : le client ne transmet que des intentions ; déplacements, actions, achats, salaires et loyers sont validés côté serveur.

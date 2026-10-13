@@ -33,7 +33,10 @@ const toUtmGeometry = (g: Geometry): UtmGeometry => {
     case 'Polygon':
       return { type: 'MultiPolygon', coordinates: [g.coordinates.map((ring) => ring.map(toUtmPoint))] };
     case 'MultiPolygon':
-      return { type: 'MultiPolygon', coordinates: g.coordinates.map((poly) => poly.map((ring) => ring.map(toUtmPoint))) };
+      return {
+        type: 'MultiPolygon',
+        coordinates: g.coordinates.map((poly) => poly.map((ring) => ring.map(toUtmPoint))),
+      };
   }
 };
 

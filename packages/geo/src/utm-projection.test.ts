@@ -43,7 +43,9 @@ describe('fromUtm30n', () => {
     fc.assert(
       fc.property(districtLonLat, (point) => {
         const back = fromUtm30n(toUtm30n(point));
-        return Math.abs(back.lonDeg - point.lonDeg) < CENTIMETRE_DEG && Math.abs(back.latDeg - point.latDeg) < CENTIMETRE_DEG;
+        return (
+          Math.abs(back.lonDeg - point.lonDeg) < CENTIMETRE_DEG && Math.abs(back.latDeg - point.latDeg) < CENTIMETRE_DEG
+        );
       }),
       { numRuns: 10_000 },
     );

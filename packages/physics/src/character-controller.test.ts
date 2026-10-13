@@ -11,14 +11,22 @@ import { CollisionWorld } from './collision-world.ts';
 import { DEFAULT_CHARACTER, type CharacterState, type MoveInput } from './physics-types.ts';
 import { pointInRing, pushCircleOut } from './polygon-math.ts';
 
-const box = ([x, z, w, d]: readonly [number, number, number, number], topYM: number): Prism => ({ baseYM: 0, topYM, ring: Float32Array.from([x, z, x + w, z, x + w, z + d, x, z + d]) });
+const box = ([x, z, w, d]: readonly [number, number, number, number], topYM: number): Prism => ({
+  baseYM: 0,
+  topYM,
+  ring: Float32Array.from([x, z, x + w, z, x + w, z + d, x, z + d]),
+});
 const worldOf = (prisms: Prism[]): CollisionWorld => {
   const data: CollisionData = { heightField: { resolution: 2, cellSizeM: 250, heightsM: new Float32Array(4) }, prisms };
   const world = new CollisionWorld();
   world.addTile(data, 0, 0);
   return world;
 };
-const standing = (x: number, z: number, y = 0): CharacterState => ({ position: { x, y, z }, velocity: { x: 0, y: 0, z: 0 }, grounded: true });
+const standing = (x: number, z: number, y = 0): CharacterState => ({
+  position: { x, y, z },
+  velocity: { x: 0, y: 0, z: 0 },
+  grounded: true,
+});
 const forward: MoveInput = { moveX: 0, moveZ: 1, yawRad: 0, run: false, jump: false };
 
 const run = (world: CollisionWorld, state: CharacterState, input: MoveInput, ticks: number): CharacterState => {
@@ -74,15 +82,30 @@ describe('stepCharacter', () => {
 
   it('should never end inside a tall building after 10 000 random moves in a dense city', () => {
     const buildings: Prism[] = [];
-    for (let i = 0; i < 20; i++) for (let j = 0; j < 20; j++) if ((i * 7 + j * 3) % 4 !== 0) buildings.push(box([10 + i * 12, 10 + j * 12, 8 + ((i + j) % 3), 7 + ((i * j) % 3)], 3.5 + ((i + j) % 4) * 3));
+    for (let i = 0; i < 20; i++)
+      for (let j = 0; j < 20; j++)
+        if ((i * 7 + j * 3) % 4 !== 0)
+          buildings.push(
+            box([10 + i * 12, 10 + j * 12, 8 + ((i + j) % 3), 7 + ((i * j) % 3)], 3.5 + ((i + j) % 4) * 3),
+          );
     const world = worldOf(buildings);
-    const move = fc.record({ moveX: fc.double({ min: -1, max: 1, noNaN: true }), moveZ: fc.double({ min: -1, max: 1, noNaN: true }), yawRad: fc.double({ min: 0, max: 6.28, noNaN: true }), run: fc.boolean(), jump: fc.boolean() });
+    const move = fc.record({
+      moveX: fc.double({ min: -1, max: 1, noNaN: true }),
+      moveZ: fc.double({ min: -1, max: 1, noNaN: true }),
+      yawRad: fc.double({ min: 0, max: 6.28, noNaN: true }),
+      run: fc.boolean(),
+      jump: fc.boolean(),
+    });
     let state = standing(5, 5);
     fc.assert(
       fc.property(move, (input) => {
         state = stepCharacter(world, state, input);
         const { x, y, z } = state.position;
-        return buildings.every((b) => b.topYM <= y + DEFAULT_CHARACTER.stepUpM || (!pointInRing(b.ring, x, z) && pushCircleOut(b.ring, x, z, DEFAULT_CHARACTER.radiusM - 0.01) === null));
+        return buildings.every(
+          (b) =>
+            b.topYM <= y + DEFAULT_CHARACTER.stepUpM ||
+            (!pointInRing(b.ring, x, z) && pushCircleOut(b.ring, x, z, DEFAULT_CHARACTER.radiusM - 0.01) === null),
+        );
       }),
       { numRuns: 10_000 },
     );

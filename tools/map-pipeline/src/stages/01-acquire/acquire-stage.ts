@@ -9,7 +9,12 @@ import { join } from 'node:path';
 import { sha256OfFile } from '../../runner/content-hash.ts';
 import type { PipelineStage, StageContext } from '../../runner/stage-contract.ts';
 import { type DownloadFile, downloadFile } from '../../sources/download-file.ts';
-import { loadSourcesLock, loadSourcesLockSync, OSM_CACHE_DIR, type OsmSnapshotLock } from '../../sources/sources-lock.ts';
+import {
+  loadSourcesLock,
+  loadSourcesLockSync,
+  OSM_CACHE_DIR,
+  type OsmSnapshotLock,
+} from '../../sources/sources-lock.ts';
 
 export const ACQUIRE_STAGE_ID = '01-acquire';
 export const SNAPSHOT_DESCRIPTOR_FILE = 'snapshot.json';
@@ -19,7 +24,8 @@ const lockPath = (ctx: StageContext): string => {
   return ctx.fromRepo(ctx.config.source.lockFile);
 };
 
-export const snapshotPath = (ctx: StageContext, lock: OsmSnapshotLock): string => ctx.fromRepo(`${OSM_CACHE_DIR}/${lock.fileName}`);
+export const snapshotPath = (ctx: StageContext, lock: OsmSnapshotLock): string =>
+  ctx.fromRepo(`${OSM_CACHE_DIR}/${lock.fileName}`);
 
 const verify = async (path: string, lock: OsmSnapshotLock): Promise<void> => {
   const actual = await sha256OfFile(path);

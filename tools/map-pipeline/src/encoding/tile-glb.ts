@@ -27,7 +27,8 @@ const getIo = async (): Promise<NodeIO> => {
     await MeshoptEncoder.ready;
     io = new NodeIO()
       .setLogger(new Logger(Logger.Verbosity.WARN))
-      .registerExtensions(ALL_EXTENSIONS).registerDependencies({ 'meshopt.encoder': MeshoptEncoder });
+      .registerExtensions(ALL_EXTENSIONS)
+      .registerDependencies({ 'meshopt.encoder': MeshoptEncoder });
   }
   return io;
 };
@@ -41,16 +42,31 @@ export const buildTileGlb = async (groups: MeshGroups, tileKey: string): Promise
   for (const [name, mesh] of Object.entries(groups)) {
     if (mesh.triangleCount === 0) continue;
     const [r, g, b] = MATERIALS[name] ?? [1, 1, 1];
-    const material = doc.createMaterial(name).setBaseColorFactor([r, g, b, 1]).setMetallicFactor(0).setRoughnessFactor(0.9).setDoubleSided(true);
+    const material = doc
+      .createMaterial(name)
+      .setBaseColorFactor([r, g, b, 1])
+      .setMetallicFactor(0)
+      .setRoughnessFactor(0.9)
+      .setDoubleSided(true);
     const primitive = doc
       .createPrimitive()
       .setMaterial(material)
-      .setAttribute('POSITION', doc.createAccessor().setType('VEC3').setArray(new Float32Array(mesh.positions)).setBuffer(buffer))
-      .setAttribute('NORMAL', doc.createAccessor().setType('VEC3').setArray(new Float32Array(mesh.normals)).setBuffer(buffer))
+      .setAttribute(
+        'POSITION',
+        doc.createAccessor().setType('VEC3').setArray(new Float32Array(mesh.positions)).setBuffer(buffer),
+      )
+      .setAttribute(
+        'NORMAL',
+        doc.createAccessor().setType('VEC3').setArray(new Float32Array(mesh.normals)).setBuffer(buffer),
+      )
       .setIndices(doc.createAccessor().setType('SCALAR').setArray(new Uint32Array(mesh.indices)).setBuffer(buffer));
     scene.addChild(doc.createNode(name).setMesh(doc.createMesh(name).addPrimitive(primitive)));
   }
 
-  await doc.transform(reorder({ encoder: MeshoptEncoder }), quantize(), meshopt({ encoder: MeshoptEncoder, level: 'medium' }));
+  await doc.transform(
+    reorder({ encoder: MeshoptEncoder }),
+    quantize(),
+    meshopt({ encoder: MeshoptEncoder, level: 'medium' }),
+  );
   return (await getIo()).writeBinary(doc);
 };

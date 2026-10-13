@@ -30,7 +30,10 @@ describe('normalizeFeature', () => {
   });
 
   it('should read osmium attributes and keep points', () => {
-    const record = normalizeFeature({ geometry: { type: 'Point', coordinates: [-4.07, 5.33] }, properties: { '@type': 'node', '@id': 7, amenity: 'pub' } });
+    const record = normalizeFeature({
+      geometry: { type: 'Point', coordinates: [-4.07, 5.33] },
+      properties: { '@type': 'node', '@id': 7, amenity: 'pub' },
+    });
     expect(record).toMatchObject({ id: 'osm:node/7', geometry: { type: 'Point' }, tags: { amenity: 'pub' } });
     expect(record).not.toHaveProperty('levels');
   });
@@ -41,7 +44,10 @@ describe('normalizeFeature', () => {
   });
 
   it('should round coordinates to the centimetre', () => {
-    const record = normalizeFeature({ geometry: { type: 'Point', coordinates: [-4.0712345678, 5.3312345678] }, properties: { '@id': 'node/1' } });
+    const record = normalizeFeature({
+      geometry: { type: 'Point', coordinates: [-4.0712345678, 5.3312345678] },
+      properties: { '@id': 'node/1' },
+    });
     const [e, n] = record?.geometry.type === 'Point' ? record.geometry.coordinates : [0, 0];
     expect(Math.round(e * 100) / 100).toBe(e);
     expect(Math.round(n * 100) / 100).toBe(n);

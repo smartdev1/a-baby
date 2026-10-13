@@ -21,12 +21,12 @@ Le jeu a besoin d'un temps commun à tous : cycle jour/nuit, horaires d'ouvertur
 
 ## Alternatives écartées
 
-| Option | Raison du rejet |
-|---|---|
-| Heure réelle d'Abidjan (décision antérieure) | Les joueurs du soir ne voient jamais le jour ; horaires réels trop restrictifs (abandonnée par le propriétaire) |
-| Horloge propre à chaque zone, synchronisée par messages | Dérives et divergences entre zones ; un état de plus à répliquer |
-| Horloge « tick-based » (compteur de ticks partagé) | Dépend de la régularité des ticks et de la propagation ; la fonction pure du temps serveur est plus simple et plus robuste |
-| Besoins et loyers qui courent tous hors ligne | Punit l'absence ; incompatible avec un facteur 12 (une semaine de jeu = 14 h) |
+| Option                                                  | Raison du rejet                                                                                                            |
+| ------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| Heure réelle d'Abidjan (décision antérieure)            | Les joueurs du soir ne voient jamais le jour ; horaires réels trop restrictifs (abandonnée par le propriétaire)            |
+| Horloge propre à chaque zone, synchronisée par messages | Dérives et divergences entre zones ; un état de plus à répliquer                                                           |
+| Horloge « tick-based » (compteur de ticks partagé)      | Dépend de la régularité des ticks et de la propagation ; la fonction pure du temps serveur est plus simple et plus robuste |
+| Besoins et loyers qui courent tous hors ligne           | Punit l'absence ; incompatible avec un facteur 12 (une semaine de jeu = 14 h)                                              |
 
 ## Conséquences
 

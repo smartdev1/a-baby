@@ -22,8 +22,14 @@ describe('rtt stats', () => {
 
   it('should merge runs of the same operator, access, slot and region', () => {
     const run = { operator: 'Orange', access: '4G', slot: 'soir', region: 'eu-west', rttsMs: [90, 100], sent: 2 };
-    const rows = aggregate([run, { ...run, rttsMs: [110], sent: 2 }, { ...run, region: 'lagos', error: 'connection failed' }]);
-    expect(rows).toEqual([{ key: 'Orange | 4G | soir | eu-west', runs: 2, samples: 3, p50Ms: 100, p95Ms: 110, jitterMs: 10, lossPct: 25 }]);
+    const rows = aggregate([
+      run,
+      { ...run, rttsMs: [110], sent: 2 },
+      { ...run, region: 'lagos', error: 'connection failed' },
+    ]);
+    expect(rows).toEqual([
+      { key: 'Orange | 4G | soir | eu-west', runs: 2, samples: 3, p50Ms: 100, p95Ms: 110, jitterMs: 10, lossPct: 25 },
+    ]);
     expect(toMarkdown(rows)).toContain('| Orange | 4G | soir | eu-west | 2 | 100 | 110 | 10 | 25 |');
   });
 });

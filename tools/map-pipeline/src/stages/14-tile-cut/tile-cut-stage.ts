@@ -18,12 +18,17 @@ export const tileCutStage: PipelineStage = {
   id: TILE_CUT_STAGE_ID,
   version: 1,
   outputs: [TILES_FILE],
-  inputFiles: (ctx) => [ctx.outputOf(HEIGHTS_STAGE_ID, BUILDINGS_FILE), ctx.outputOf(CLASSIFY_STAGE_ID, CLASSIFIED_FILE)],
+  inputFiles: (ctx) => [
+    ctx.outputOf(HEIGHTS_STAGE_ID, BUILDINGS_FILE),
+    ctx.outputOf(CLASSIFY_STAGE_ID, CLASSIFIED_FILE),
+  ],
   params: () => ({ tileSizeM: 250 }),
   run: async (ctx, outDir) => {
     const cutter = new TileCutter();
-    for await (const b of readNdjson<BuildingRecord>(ctx.outputOf(HEIGHTS_STAGE_ID, BUILDINGS_FILE))) cutter.addBuilding(b);
-    for await (const r of readNdjson<ClassifiedRecord>(ctx.outputOf(CLASSIFY_STAGE_ID, CLASSIFIED_FILE))) cutter.addClassified(r);
+    for await (const b of readNdjson<BuildingRecord>(ctx.outputOf(HEIGHTS_STAGE_ID, BUILDINGS_FILE)))
+      cutter.addBuilding(b);
+    for await (const r of readNdjson<ClassifiedRecord>(ctx.outputOf(CLASSIFY_STAGE_ID, CLASSIFIED_FILE)))
+      cutter.addClassified(r);
     const count = await writeNdjson(join(outDir, TILES_FILE), cutter.sortedTiles());
     ctx.logger.info({ tiles: count }, 'tiles cut');
   },

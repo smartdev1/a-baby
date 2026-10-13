@@ -20,13 +20,17 @@ const runDocker = (args: readonly string[]): Promise<{ code: number; stderr: str
     const child = spawn('docker', [...args], { stdio: ['ignore', 'ignore', 'pipe'] });
     let stderr = '';
     child.stderr.on('data', (chunk: Buffer) => (stderr += chunk.toString()));
-    child.on('error', (error) => reject(new Error(`cannot start docker (is Docker installed and running?): ${error.message}`)));
+    child.on('error', (error) =>
+      reject(new Error(`cannot start docker (is Docker installed and running?): ${error.message}`)),
+    );
     child.on('close', (code) => resolve({ code: code ?? 1, stderr }));
   });
 
 /** Files written in /out belong to the current user on Linux/macOS instead of root. */
 const userArgs = (): string[] =>
-  typeof process.getuid === 'function' && typeof process.getgid === 'function' ? ['--user', `${process.getuid()}:${process.getgid()}`] : [];
+  typeof process.getuid === 'function' && typeof process.getgid === 'function'
+    ? ['--user', `${process.getuid()}:${process.getgid()}`]
+    : [];
 
 export const ensureOsmiumImage = async (): Promise<void> => {
   const { code } = await runDocker(['image', 'inspect', OSMIUM_IMAGE]);

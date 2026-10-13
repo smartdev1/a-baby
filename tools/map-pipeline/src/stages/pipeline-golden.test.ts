@@ -40,7 +40,8 @@ const buildFixtureIn = async (): Promise<Record<string, string>> => {
   const config = await loadPipelineConfig(join(packageDir, 'config/fixture.pipeline.json'));
   await runPipeline({ repoRoot: root, config, stages: stagesFor(config), logger });
   const hashes: Record<string, string> = {};
-  for (const output of CHECKED_OUTPUTS) hashes[output] = await sha256OfFile(join(root, config.outputDir, 'stages', output));
+  for (const output of CHECKED_OUTPUTS)
+    hashes[output] = await sha256OfFile(join(root, config.outputDir, 'stages', output));
   return hashes;
 };
 
@@ -63,6 +64,8 @@ describe('pipeline golden (Pigeons fixture)', () => {
       writeFileSync(GOLDEN_FILE, `${JSON.stringify(first, null, 2)}\n`);
     }
     const golden = JSON.parse(readFileSync(GOLDEN_FILE, 'utf8')) as Record<string, string>;
-    expect(first, 'outputs changed: if intended, run UPDATE_GOLDEN=1 pnpm test and bump the stage version').toEqual(golden);
+    expect(first, 'outputs changed: if intended, run UPDATE_GOLDEN=1 pnpm test and bump the stage version').toEqual(
+      golden,
+    );
   });
 });

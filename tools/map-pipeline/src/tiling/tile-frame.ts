@@ -52,12 +52,16 @@ export const tileOrigin = (key: string): TileOrigin => {
   return { eastingM: b.minEastingM, northingM: b.minNorthingM };
 };
 
-export const toLocal = ([e, n]: UtmPoint, origin: TileOrigin): LocalPoint => [toCm(e - origin.eastingM), toCm(n - origin.northingM)];
+export const toLocal = ([e, n]: UtmPoint, origin: TileOrigin): LocalPoint => [
+  toCm(e - origin.eastingM),
+  toCm(n - origin.northingM),
+];
 
 /** The 8 surrounding tile keys (some may be empty or outside the release). */
 export const neighbourKeys = (key: string): string[] => {
   const { i, j } = parseTileKey(key);
   const keys: string[] = [];
-  for (let dj = -1; dj <= 1; dj++) for (let di = -1; di <= 1; di++) if (di || dj) keys.push(formatTileKey({ level: 0, i: i + di, j: j + dj }));
+  for (let dj = -1; dj <= 1; dj++)
+    for (let di = -1; di <= 1; di++) if (di || dj) keys.push(formatTileKey({ level: 0, i: i + di, j: j + dj }));
   return keys;
 };

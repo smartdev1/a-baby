@@ -10,7 +10,14 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import fc from 'fast-check';
 import { tileBounds } from '@skyline/geo';
-import { CollisionWorld, DEFAULT_CHARACTER, pointInRing, pushCircleOut, stepCharacter, type CharacterState } from '@skyline/physics';
+import {
+  CollisionWorld,
+  DEFAULT_CHARACTER,
+  pointInRing,
+  pushCircleOut,
+  stepCharacter,
+  type CharacterState,
+} from '@skyline/physics';
 import { decodeCollision } from '@skyline/tile-format';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { createLogger } from '@skyline/observability';
@@ -28,7 +35,12 @@ beforeAll(async () => {
   await mkdir(join(root, dirname(FIXTURE)), { recursive: true });
   await copyFile(join(packageDir, 'test/fixtures/pigeons-sample.geojson'), join(root, FIXTURE));
   const config = await loadPipelineConfig(join(packageDir, 'config/fixture.pipeline.json'));
-  await runPipeline({ repoRoot: root, config, stages: stagesFor(config), logger: createLogger({ service: 'test', level: 'silent' }) });
+  await runPipeline({
+    repoRoot: root,
+    config,
+    stages: stagesFor(config),
+    logger: createLogger({ service: 'test', level: 'silent' }),
+  });
 
   const tilesDir = join(root, config.outputDir, 'stages/16-encode/tiles/L0');
   const keys = readdirSync(tilesDir).map((d) => `L0_${d}`);
@@ -38,7 +50,11 @@ beforeAll(async () => {
     const dir = join(tilesDir, key.slice(3));
     const file = readdirSync(dir).find((f) => f.startsWith('collision.'));
     const b = tileBounds(key);
-    world.addTile(decodeCollision(new Uint8Array(readFileSync(join(dir, file ?? '')))), b.minEastingM - origin.minEastingM, b.minNorthingM - origin.minNorthingM);
+    world.addTile(
+      decodeCollision(new Uint8Array(readFileSync(join(dir, file ?? '')))),
+      b.minEastingM - origin.minEastingM,
+      b.minNorthingM - origin.minNorthingM,
+    );
   }
 }, 60_000);
 afterAll(async () => rm(root, { recursive: true, force: true }));
@@ -58,7 +74,11 @@ describe('physics on real Yopougon tiles (Pigeons fixture)', () => {
   it('should never end inside a building over 10 000 random steps', () => {
     // Start 1.5 m south-west of the first building of the densest tile, in a street.
     const start = startNextToBuildings();
-    let state: CharacterState = { position: { x: start.x, y: 0, z: start.z }, velocity: { x: 0, y: 0, z: 0 }, grounded: true };
+    let state: CharacterState = {
+      position: { x: start.x, y: 0, z: start.z },
+      velocity: { x: 0, y: 0, z: 0 },
+      grounded: true,
+    };
     const move = fc.record({
       moveX: fc.double({ min: -1, max: 1, noNaN: true }),
       moveZ: fc.double({ min: -1, max: 1, noNaN: true }),
@@ -74,7 +94,11 @@ describe('physics on real Yopougon tiles (Pigeons fixture)', () => {
         const { x, y, z } = state.position;
         const near = world.prismsNear(x, z, 1);
         checkedPrisms += near.length;
-        return near.every((p) => p.topYM <= y + DEFAULT_CHARACTER.stepUpM || (!pointInRing(p.ring, x, z) && pushCircleOut(p.ring, x, z, r) === null));
+        return near.every(
+          (p) =>
+            p.topYM <= y + DEFAULT_CHARACTER.stepUpM ||
+            (!pointInRing(p.ring, x, z) && pushCircleOut(p.ring, x, z, r) === null),
+        );
       }),
       { numRuns: 10_000, seed: 2026 },
     );

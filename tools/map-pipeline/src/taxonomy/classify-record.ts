@@ -12,7 +12,8 @@ export const placeCategoryOf = (tags: Readonly<Record<string, string>>): string 
   for (const key of PLACE_KEYS) {
     const value = tags[key];
     if (value === undefined) continue;
-    if (key === 'amenity' && value === 'place_of_worship') return WORSHIP_BY_RELIGION[tags['religion'] ?? ''] ?? 'worship.other';
+    if (key === 'amenity' && value === 'place_of_worship')
+      return WORSHIP_BY_RELIGION[tags['religion'] ?? ''] ?? 'worship.other';
     const category = PLACE_TAXONOMY[key][value] ?? DEFAULT_CATEGORY[key];
     if (category) return category;
   }

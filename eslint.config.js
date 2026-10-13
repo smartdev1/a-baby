@@ -10,13 +10,7 @@ import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
   {
-    ignores: [
-      '**/node_modules/**',
-      '**/dist/**',
-      'docs/archive/**',
-      'data/**',
-      'coverage/**',
-    ],
+    ignores: ['**/node_modules/**', '**/dist/**', 'docs/archive/**', 'data/**', 'coverage/**'],
   },
   js.configs.recommended,
   ...tseslint.configs.recommendedTypeChecked,
@@ -33,7 +27,10 @@ export default tseslint.config(
       'max-lines-per-function': ['error', { max: 80, skipBlankLines: true, skipComments: true }],
       complexity: ['error', 12],
       'max-params': ['error', 4],
-      'no-restricted-properties': ['error', { object: 'Math', property: 'random', message: 'Use SeededRng (ARCHITECTURE §9.2).' }],
+      'no-restricted-properties': [
+        'error',
+        { object: 'Math', property: 'random', message: 'Use SeededRng (ARCHITECTURE §9.2).' },
+      ],
       '@typescript-eslint/no-explicit-any': 'error',
       '@typescript-eslint/no-floating-promises': 'error',
       '@typescript-eslint/consistent-type-imports': 'error',
@@ -46,8 +43,14 @@ export default tseslint.config(
     rules: {
       'no-restricted-syntax': [
         'error',
-        { selector: "MemberExpression[object.name='Date'][property.name='now']", message: 'Use the world clock segment, not Date.now() (ADR 0011).' },
-        { selector: "NewExpression[callee.name='Date']", message: 'Use the world clock segment, not new Date() (ADR 0011).' },
+        {
+          selector: "MemberExpression[object.name='Date'][property.name='now']",
+          message: 'Use the world clock segment, not Date.now() (ADR 0011).',
+        },
+        {
+          selector: "NewExpression[callee.name='Date']",
+          message: 'Use the world clock segment, not new Date() (ADR 0011).',
+        },
       ],
     },
   },

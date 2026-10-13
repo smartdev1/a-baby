@@ -15,7 +15,11 @@ const collisionData: fc.Arbitrary<CollisionData> = fc
     resolution: fc.integer({ min: 2, max: 9 }),
     cellSizeM: fc.float({ min: Math.fround(0.5), max: 50, noNaN: true }),
     prisms: fc.array(
-      fc.record({ base: f32, extra: fc.float({ min: 0, max: 100, noNaN: true }), ring: fc.array(f32, { minLength: 6, maxLength: 40 }) }),
+      fc.record({
+        base: f32,
+        extra: fc.float({ min: 0, max: 100, noNaN: true }),
+        ring: fc.array(f32, { minLength: 6, maxLength: 40 }),
+      }),
       { maxLength: 20 },
     ),
   })
@@ -63,19 +67,27 @@ describe('collision codec', () => {
   });
 
   it('should refuse to encode inconsistent data', () => {
-    expect(() => encodeCollision({ ...SAMPLE, prisms: [{ baseYM: 5, topYM: 1, ring: Float32Array.from([0, 0, 1, 0, 1, 1]) }] })).toThrow();
-    expect(() => encodeCollision({ ...SAMPLE, heightField: { ...SAMPLE.heightField, heightsM: Float32Array.from([1]) } })).toThrow();
+    expect(() =>
+      encodeCollision({ ...SAMPLE, prisms: [{ baseYM: 5, topYM: 1, ring: Float32Array.from([0, 0, 1, 0, 1, 1]) }] }),
+    ).toThrow();
+    expect(() =>
+      encodeCollision({ ...SAMPLE, heightField: { ...SAMPLE.heightField, heightsM: Float32Array.from([1]) } }),
+    ).toThrow();
   });
 
   it('should never crash or over-read on 10 000 random or mutated inputs', () => {
     const valid = encodeCollision(SAMPLE);
-    const mutated = fc.tuple(fc.integer({ min: 0, max: valid.length - 1 }), fc.integer({ min: 0, max: 255 }), fc.integer({ min: 0, max: valid.length })).map(
-      ([at, byte, cut]) => {
+    const mutated = fc
+      .tuple(
+        fc.integer({ min: 0, max: valid.length - 1 }),
+        fc.integer({ min: 0, max: 255 }),
+        fc.integer({ min: 0, max: valid.length }),
+      )
+      .map(([at, byte, cut]) => {
         const copy = valid.slice(0, cut);
         if (at < copy.length) copy[at] = byte;
         return copy;
-      },
-    );
+      });
     fc.assert(
       fc.property(fc.oneof(fc.uint8Array({ maxLength: 256 }), mutated), (bytes) => {
         try {

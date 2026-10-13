@@ -25,7 +25,10 @@ export const classifyStage: PipelineStage = {
   inputFiles: (ctx) => [ctx.outputOf(NORMALIZE_STAGE_ID, NORMALIZED_FILE)],
   params: () => ({}),
   run: async (ctx, outDir) => {
-    const count = await writeNdjson(join(outDir, CLASSIFIED_FILE), classifyAll(ctx.outputOf(NORMALIZE_STAGE_ID, NORMALIZED_FILE)));
+    const count = await writeNdjson(
+      join(outDir, CLASSIFIED_FILE),
+      classifyAll(ctx.outputOf(NORMALIZE_STAGE_ID, NORMALIZED_FILE)),
+    );
     ctx.logger.info({ count }, 'records classified');
   },
 };

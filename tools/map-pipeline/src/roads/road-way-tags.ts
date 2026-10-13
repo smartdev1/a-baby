@@ -11,7 +11,11 @@ export const onewayOf = (tags: Tags): 1 | 0 | -1 => {
   const value = tags['oneway'];
   if (value === '-1' || value === 'reverse') return -1;
   if (value === 'yes' || value === '1' || value === 'true') return 1;
-  if (value === undefined && (tags['junction'] === 'roundabout' || tags['junction'] === 'circular' || tags['highway'] === 'motorway')) return 1;
+  if (
+    value === undefined &&
+    (tags['junction'] === 'roundabout' || tags['junction'] === 'circular' || tags['highway'] === 'motorway')
+  )
+    return 1;
   return 0;
 };
 

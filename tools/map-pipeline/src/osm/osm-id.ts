@@ -11,7 +11,11 @@ const TYPES = new Set(['node', 'way', 'relation']);
 export const stableOsmId = (properties: Record<string, unknown>, featureId?: unknown): OsmId | null => {
   const type = properties['@type'];
   const id = properties['@id'];
-  if (typeof type === 'string' && TYPES.has(type) && (typeof id === 'number' || (typeof id === 'string' && /^\d+$/.test(id)))) {
+  if (
+    typeof type === 'string' &&
+    TYPES.has(type) &&
+    (typeof id === 'number' || (typeof id === 'string' && /^\d+$/.test(id)))
+  ) {
     return `osm:${type}/${Number(id)}` as OsmId;
   }
   const slashed = typeof id === 'string' ? id : typeof featureId === 'string' ? featureId : null;

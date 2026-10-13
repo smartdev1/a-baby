@@ -28,7 +28,12 @@ const OsmSnapshotSource = z.object({
 });
 
 const BboxLonLat = z
-  .tuple([z.number().min(-180).max(180), z.number().min(-90).max(90), z.number().min(-180).max(180), z.number().min(-90).max(90)])
+  .tuple([
+    z.number().min(-180).max(180),
+    z.number().min(-90).max(90),
+    z.number().min(-180).max(180),
+    z.number().min(-90).max(90),
+  ])
   .refine(([west, south, east, north]) => west < east && south < north, 'bbox must be [west, south, east, north]');
 
 export const PipelineConfigSchema = z
@@ -51,9 +56,15 @@ export const PipelineConfigSchema = z
     outputDir: RepoRelativePath,
   })
   .strict()
-  .refine((c) => c.source.kind !== 'osm-snapshot' || c.boundary.osmRelationId !== null || c.boundary.provisionalBboxLonLat !== null, {
-    message: 'an osm-snapshot source needs boundary.osmRelationId or boundary.provisionalBboxLonLat',
-    path: ['boundary'],
-  });
+  .refine(
+    (c) =>
+      c.source.kind !== 'osm-snapshot' ||
+      c.boundary.osmRelationId !== null ||
+      c.boundary.provisionalBboxLonLat !== null,
+    {
+      message: 'an osm-snapshot source needs boundary.osmRelationId or boundary.provisionalBboxLonLat',
+      path: ['boundary'],
+    },
+  );
 
 export type PipelineConfig = z.infer<typeof PipelineConfigSchema>;

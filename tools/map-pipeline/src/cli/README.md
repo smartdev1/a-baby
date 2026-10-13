@@ -13,10 +13,10 @@ Command line entry point.
 pnpm map:build --config tools/map-pipeline/config/fixture.pipeline.json [--force]
 ```
 
-| File | Role |
-|---|---|
-| `main.ts` | Composition: parse args → find repo root → load config → run stages → print a summary |
-| `parse-cli-args.ts` | `build --config <file> [--force]` |
+| File                | Role                                                                                  |
+| ------------------- | ------------------------------------------------------------------------------------- |
+| `main.ts`           | Composition: parse args → find repo root → load config → run stages → print a summary |
+| `parse-cli-args.ts` | `build --config <file> [--force]`                                                     |
 | `find-repo-root.ts` | Finds the folder holding `pnpm-workspace.yaml` (config paths are repository-relative) |
 
 ## Rules

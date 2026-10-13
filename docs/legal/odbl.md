@@ -4,10 +4,10 @@
 
 ## Couches
 
-| Couche | Contenu | Licence |
-|---|---|---|
-| `osm-derived` | Tout ce que le pipeline calcule à partir d'OSM : emprises, hauteurs (OSM ou heuristiques), voies, lieux et catégories, tuiles (`geom`, `collision`, `meta`), manifeste | **ODbL 1.0** (base dérivée) |
-| `game-authored` | Contenu écrit par l'équipe : `content/` (actions, métiers, objets, dialogues, parodies de marques…), assets 3D, code | Propriétaire (licence du code : Q9) — peut **référencer** des identifiants OSM sans les fusionner |
+| Couche          | Contenu                                                                                                                                                                | Licence                                                                                           |
+| --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| `osm-derived`   | Tout ce que le pipeline calcule à partir d'OSM : emprises, hauteurs (OSM ou heuristiques), voies, lieux et catégories, tuiles (`geom`, `collision`, `meta`), manifeste | **ODbL 1.0** (base dérivée)                                                                       |
+| `game-authored` | Contenu écrit par l'équipe : `content/` (actions, métiers, objets, dialogues, parodies de marques…), assets 3D, code                                                   | Propriétaire (licence du code : Q9) — peut **référencer** des identifiants OSM sans les fusionner |
 
 Règle : les deux couches ne sont jamais fusionnées dans un même fichier distribué ; une tuile ne contient que de l'`osm-derived`, le contenu de jeu la référence par identifiant `osm:{type}/{id}`.
 

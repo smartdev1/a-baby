@@ -14,5 +14,11 @@ const EXEMPT = [/\.d\.ts$/, /^pnpm-lock\.yaml$/];
 export const checkFileHeaders = (root, files) =>
   files
     .filter((f) => CHECKED_EXTENSIONS.test(f) && !EXEMPT.some((re) => re.test(f)))
-    .filter((f) => !readFileSync(join(root, f), 'utf8').split('\n').slice(0, HEADER_LINES).some((l) => l.includes('Role:')))
+    .filter(
+      (f) =>
+        !readFileSync(join(root, f), 'utf8')
+          .split('\n')
+          .slice(0, HEADER_LINES)
+          .some((l) => l.includes('Role:')),
+    )
     .map((f) => `${f}: missing "Role:" header in the first ${HEADER_LINES} lines`);

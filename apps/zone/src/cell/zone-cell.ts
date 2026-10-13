@@ -3,7 +3,14 @@
  * Owner: backend
  */
 
-import { type CellInput, type CellJoin, type CellLeave, type MessageBus, subjects, type Unsubscribe } from '@skyline/bus';
+import {
+  type CellInput,
+  type CellJoin,
+  type CellLeave,
+  type MessageBus,
+  subjects,
+  type Unsubscribe,
+} from '@skyline/bus';
 import type { UtmPosition } from '@skyline/geo';
 import type { Logger } from '@skyline/observability';
 import { type CharacterState, type CollisionWorld, FIXED_STEP_S, stepCharacter } from '@skyline/physics';
@@ -70,12 +77,22 @@ export class ZoneCell {
 
   private async join(sessionId: string): Promise<void> {
     const { spawn } = this.options;
-    const state: CharacterState = { position: { x: spawn.x, y: 0, z: spawn.z }, velocity: { x: 0, y: 0, z: 0 }, grounded: true };
+    const state: CharacterState = {
+      position: { x: spawn.x, y: 0, z: spawn.z },
+      velocity: { x: 0, y: 0, z: 0 },
+      grounded: true,
+    };
     const player = new PlayerSlot(sessionId, this.nextEntityId++, state);
     this.players.set(sessionId, player);
     this.send(sessionId, {
       type: 'welcome',
-      body: { protocolVersion: PROTOCOL_VERSION, playerEntityId: player.entityId, tickRateHz: TICK_RATE_HZ, frameOrigin: this.options.frameOrigin, cellKey: this.options.cellKey },
+      body: {
+        protocolVersion: PROTOCOL_VERSION,
+        playerEntityId: player.entityId,
+        tickRateHz: TICK_RATE_HZ,
+        frameOrigin: this.options.frameOrigin,
+        cellKey: this.options.cellKey,
+      },
     });
     this.send(sessionId, { type: 'worldClock', body: await this.options.clock() });
   }
@@ -83,30 +100,56 @@ export class ZoneCell {
   private simulate(player: PlayerSlot): void {
     const inputs = player.takeForTick();
     if (inputs.length === 0) {
-      player.state = stepCharacter(this.options.world, player.state, { ...player.lastInput, moveX: 0, moveZ: 0, jump: false });
+      player.state = stepCharacter(this.options.world, player.state, {
+        ...player.lastInput,
+        moveX: 0,
+        moveZ: 0,
+        jump: false,
+      });
     }
     for (const input of inputs) {
-      player.lastInput = { moveX: input.moveX, moveZ: input.moveZ, yawRad: input.yawRad, run: input.flags.run, jump: input.flags.jump };
+      player.lastInput = {
+        moveX: input.moveX,
+        moveZ: input.moveZ,
+        yawRad: input.yawRad,
+        run: input.flags.run,
+        jump: input.flags.jump,
+      };
       player.state = stepCharacter(this.options.world, player.state, player.lastInput, { dt: FIXED_STEP_S });
       player.lastSeq = input.seq;
     }
     if (player.violations > MAX_VIOLATIONS) {
-      this.options.logger.warn({ entityId: player.entityId, violations: player.violations }, 'too many input violations, player removed');
-      this.send(player.sessionId, { type: 'error', body: { code: 'rate_limited', message: 'too many invalid inputs' } });
+      this.options.logger.warn(
+        { entityId: player.entityId, violations: player.violations },
+        'too many input violations, player removed',
+      );
+      this.send(player.sessionId, {
+        type: 'error',
+        body: { code: 'rate_limited', message: 'too many invalid inputs' },
+      });
       this.players.delete(player.sessionId);
       return;
     }
     this.send(player.sessionId, {
       type: 'inputAck',
-      body: { lastSeq: Math.max(player.lastSeq, 0), tick: this.tick, position: player.state.position, velocity: player.state.velocity },
+      body: {
+        lastSeq: Math.max(player.lastSeq, 0),
+        tick: this.tick,
+        position: player.state.position,
+        velocity: player.state.velocity,
+      },
     });
   }
 
   private broadcastSnapshot(): void {
-    const entities: EntityState[] = [...this.players.values()]
-      .slice(0, MAX_SNAPSHOT_ENTITIES)
-      .map((p) => ({ id: p.entityId, position: p.state.position, yawRad: p.lastInput.yawRad, state: entityStateCode(p.state) }));
-    for (const player of this.players.values()) this.send(player.sessionId, { type: 'snapshot', body: { tick: this.tick, entities } });
+    const entities: EntityState[] = [...this.players.values()].slice(0, MAX_SNAPSHOT_ENTITIES).map((p) => ({
+      id: p.entityId,
+      position: p.state.position,
+      yawRad: p.lastInput.yawRad,
+      state: entityStateCode(p.state),
+    }));
+    for (const player of this.players.values())
+      this.send(player.sessionId, { type: 'snapshot', body: { tick: this.tick, entities } });
   }
 
   private send(sessionId: string, message: ServerMessage): void {

@@ -16,11 +16,11 @@ Le client utilise les paquets UMD `babylonjs` et `babylonjs-gui` : bundle de plu
 
 ## Alternatives écartées
 
-| Option | Raison du rejet |
-|---|---|
-| Garder l'UMD | Bundle lourd, pas de tree-shaking, earcut à injecter globalement |
-| three.js | Réécriture de l'existant et outillage moins intégré (glTF, KTX2, thin instances, VAT disponibles nativement dans Babylon) |
-| Moteur natif exporté en WebAssembly (Unity, Godot) | Bundle lourd, pas de partage de code TypeScript avec le serveur |
+| Option                                             | Raison du rejet                                                                                                           |
+| -------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| Garder l'UMD                                       | Bundle lourd, pas de tree-shaking, earcut à injecter globalement                                                          |
+| three.js                                           | Réécriture de l'existant et outillage moins intégré (glTF, KTX2, thin instances, VAT disponibles nativement dans Babylon) |
+| Moteur natif exporté en WebAssembly (Unity, Godot) | Bundle lourd, pas de partage de code TypeScript avec le serveur                                                           |
 
 ## Conséquences
 

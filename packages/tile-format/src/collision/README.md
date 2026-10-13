@@ -7,11 +7,11 @@
 
 Binary codec of `collision.bin` v0 — the single collision format read by the client and the server (ARCHITECTURE §10.3, §31.6).
 
-| File | Role |
-|---|---|
-| `collision-codec.ts` | Layout, limits, `encodeCollision`, `decodeCollision` |
-| `bounded-reader.ts` | Bounds-checked little-endian reader + `CollisionDecodeError` (typed codes) |
-| `growable-writer.ts` | Little-endian writer for encoding |
+| File                 | Role                                                                       |
+| -------------------- | -------------------------------------------------------------------------- |
+| `collision-codec.ts` | Layout, limits, `encodeCollision`, `decodeCollision`                       |
+| `bounded-reader.ts`  | Bounds-checked little-endian reader + `CollisionDecodeError` (typed codes) |
+| `growable-writer.ts` | Little-endian writer for encoding                                          |
 
 ## Rules
 

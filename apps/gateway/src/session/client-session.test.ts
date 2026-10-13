@@ -10,15 +10,29 @@ import { describe, expect, it } from 'vitest';
 import { ClientSession } from './client-session.ts';
 
 const logger = createLogger({ service: 'test', level: 'silent' });
-const hello = (ticket: string, protocolVersion = 1) => encodeClientMessage({ type: 'hello', body: { protocolVersion, ticket, clientBuild: 't' } });
-const input = (seq: number) => encodeClientMessage({ type: 'input', body: { seq, moveX: 0, moveZ: 1, yawRad: 0, flags: { run: false, jump: false, interact: false } } });
+const hello = (ticket: string, protocolVersion = 1) =>
+  encodeClientMessage({ type: 'hello', body: { protocolVersion, ticket, clientBuild: 't' } });
+const input = (seq: number) =>
+  encodeClientMessage({
+    type: 'input',
+    body: { seq, moveX: 0, moveZ: 1, yawRad: 0, flags: { run: false, jump: false, interact: false } },
+  });
 
 const setup = (validTicket = 'good') => {
   const bus = new InMemoryBus();
   const sent: ServerMessage[] = [];
-  const link = { closed: false, send: (f: Uint8Array) => sent.push(decodeServerMessage(f)), close: () => (link.closed = true) };
+  const link = {
+    closed: false,
+    send: (f: Uint8Array) => sent.push(decodeServerMessage(f)),
+    close: () => (link.closed = true),
+  };
   const used = new Set<string>();
-  const session = new ClientSession(link, { bus, spawnCell: 'C_1_1', logger, tickets: { consume: (t) => t === validTicket && !used.has(t) && used.add(t) !== undefined } });
+  const session = new ClientSession(link, {
+    bus,
+    spawnCell: 'C_1_1',
+    logger,
+    tickets: { consume: (t) => t === validTicket && !used.has(t) && used.add(t) !== undefined },
+  });
   return { bus, sent, link, session };
 };
 

@@ -13,4 +13,4 @@ Données disponibles sous la [Open Database License (ODbL) 1.0](https://opendata
 
 ## Autres sources de données et assets
 
-*(aucune pour l'instant — chaque source ou asset tiers est ajouté ici avec sa licence avant d'être livré)*
+_(aucune pour l'instant — chaque source ou asset tiers est ajouté ici avec sa licence avant d'être livré)_

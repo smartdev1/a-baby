@@ -14,7 +14,8 @@ export class FrameReader {
   }
 
   private take(size: number, what: string): number {
-    if (this.offset + size > this.view.byteLength) throw new ProtocolDecodeError('truncated', `missing bytes for ${what}`);
+    if (this.offset + size > this.view.byteLength)
+      throw new ProtocolDecodeError('truncated', `missing bytes for ${what}`);
     const at = this.offset;
     this.offset += size;
     return at;
@@ -52,6 +53,7 @@ export class FrameReader {
   }
 
   end(): void {
-    if (this.offset !== this.view.byteLength) throw new ProtocolDecodeError('trailing-bytes', `${this.view.byteLength - this.offset} unexpected bytes`);
+    if (this.offset !== this.view.byteLength)
+      throw new ProtocolDecodeError('trailing-bytes', `${this.view.byteLength - this.offset} unexpected bytes`);
   }
 }

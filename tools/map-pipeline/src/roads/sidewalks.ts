@@ -32,7 +32,8 @@ export class FootwayIndex {
   constructor(footways: readonly Omit<RoadEdge, 'sidewalks'>[]) {
     this.segments = segmentsOf(footways);
     this.index = this.segments.length > 0 ? new Flatbush(this.segments.length) : null;
-    for (const { a, b } of this.segments) this.index?.add(Math.min(a[0], b[0]), Math.min(a[1], b[1]), Math.max(a[0], b[0]), Math.max(a[1], b[1]));
+    for (const { a, b } of this.segments)
+      this.index?.add(Math.min(a[0], b[0]), Math.min(a[1], b[1]), Math.max(a[0], b[0]), Math.max(a[1], b[1]));
     this.index?.finish();
   }
 
@@ -44,20 +45,28 @@ export class FootwayIndex {
       const midX = (seg.a[0] + seg.b[0]) / 2;
       const midZ = (seg.a[1] + seg.b[1]) / 2;
       const hits = this.index.search(midX - SEARCH_M, midZ - SEARCH_M, midX + SEARCH_M, midZ + SEARCH_M);
-      if (hits.some((i) => {
-        const other = this.segments[i];
-        if (!other) return false;
-        const [ox, oz] = direction(other);
-        return Math.abs(dx * ox + dz * oz) >= PARALLEL_COS;
-      })) return true;
+      if (
+        hits.some((i) => {
+          const other = this.segments[i];
+          if (!other) return false;
+          const [ox, oz] = direction(other);
+          return Math.abs(dx * ox + dz * oz) >= PARALLEL_COS;
+        })
+      )
+        return true;
     }
     return false;
   }
 }
 
-export const sidewalksFor = (edge: Omit<RoadEdge, 'sidewalks'>, tags: Readonly<Record<string, string>>, footways: FootwayIndex): { sidewalks: Sidewalks; generated: boolean } => {
+export const sidewalksFor = (
+  edge: Omit<RoadEdge, 'sidewalks'>,
+  tags: Readonly<Record<string, string>>,
+  footways: FootwayIndex,
+): { sidewalks: Sidewalks; generated: boolean } => {
   const mapped = mappedSidewalks(tags);
   if (mapped && mapped !== 'separate') return { sidewalks: mapped, generated: false };
-  if (mapped === 'separate' || !wantsSidewalks(edge.roadClass) || footways.hasParallelFootway(edge)) return { sidewalks: 'none', generated: false };
+  if (mapped === 'separate' || !wantsSidewalks(edge.roadClass) || footways.hasParallelFootway(edge))
+    return { sidewalks: 'none', generated: false };
   return { sidewalks: 'both', generated: true };
 };

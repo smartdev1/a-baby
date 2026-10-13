@@ -53,13 +53,25 @@ describe('geojson geometry', () => {
   });
 
   it('should measure a line length in metres', () => {
-    const line: Geometry = { type: 'LineString', coordinates: [[-4.08, 5.33], [-4.08, 5.339]] };
+    const line: Geometry = {
+      type: 'LineString',
+      coordinates: [
+        [-4.08, 5.33],
+        [-4.08, 5.339],
+      ],
+    };
     expect(lengthM(line)).toBeGreaterThan(990);
     expect(lengthM(line)).toBeLessThan(1000);
   });
 
   it('should place the representative point at the vertex average', () => {
-    const [lon, lat] = representativePoint({ type: 'LineString', coordinates: [[0, 0], [2, 2]] });
+    const [lon, lat] = representativePoint({
+      type: 'LineString',
+      coordinates: [
+        [0, 0],
+        [2, 2],
+      ],
+    });
     expect([lon, lat]).toEqual([1, 1]);
   });
 });

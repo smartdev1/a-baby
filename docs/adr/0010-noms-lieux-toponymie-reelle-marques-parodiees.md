@@ -29,10 +29,10 @@ OSM fournit les noms réels des rues, quartiers et lieux publics, mais aussi ceu
 
 ## Alternatives écartées
 
-| Option | Raison du rejet |
-|---|---|
-| Noms OSM bruts partout (décision antérieure) | Risques de marques et de diffamation (remplacée par le propriétaire) |
-| Noms entièrement fictifs pour tous les commerces | Perd la reconnaissance du quartier recherchée par le propriétaire |
+| Option                                             | Raison du rejet                                                                                                   |
+| -------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| Noms OSM bruts partout (décision antérieure)       | Risques de marques et de diffamation (remplacée par le propriétaire)                                              |
+| Noms entièrement fictifs pour tous les commerces   | Perd la reconnaissance du quartier recherchée par le propriétaire                                                 |
 | Déformation à l'exécution (côté client ou serveur) | Rend le nom affiché non reproductible et non publiable avec la base dérivée ; la décision la fixe à la génération |
 
 ## Conséquences

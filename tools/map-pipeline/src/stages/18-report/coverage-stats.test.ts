@@ -38,8 +38,25 @@ describe('addFeature', () => {
 
   it('should sum road length by class and count named POIs', () => {
     const stats = emptyStats();
-    addFeature(stats, feature({ type: 'LineString', coordinates: [[-4.075, 5.331], [-4.075, 5.339]] }, { highway: 'residential' }), BOUNDARY);
-    addFeature(stats, feature({ type: 'Point', coordinates: [-4.075, 5.335] }, { amenity: 'pub', name: 'Maquis' }), BOUNDARY);
+    addFeature(
+      stats,
+      feature(
+        {
+          type: 'LineString',
+          coordinates: [
+            [-4.075, 5.331],
+            [-4.075, 5.339],
+          ],
+        },
+        { highway: 'residential' },
+      ),
+      BOUNDARY,
+    );
+    addFeature(
+      stats,
+      feature({ type: 'Point', coordinates: [-4.075, 5.335] }, { amenity: 'pub', name: 'Maquis' }),
+      BOUNDARY,
+    );
     addFeature(stats, feature({ type: 'Point', coordinates: [-4.074, 5.335] }, { shop: 'kiosk' }), BOUNDARY);
     expect(stats.roadKmByClass['residential']).toBeCloseTo(0.885, 2);
     expect(stats.pois).toBe(2);

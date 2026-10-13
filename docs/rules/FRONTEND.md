@@ -9,16 +9,16 @@ Tout ce que le joueur **voit, entend et touche** : rendu 3D semi-réaliste de Yo
 
 ## 2. Périmètre
 
-| Peut modifier | Peut lire, ne modifie pas (demande au backend) | Ne touche jamais |
-|---|---|---|
-| `apps/web/**` | `packages/protocol`, `packages/tile-format`, `packages/physics`, `packages/geo`, `packages/content-schema`, `packages/sim-*` | `apps/gateway`, `apps/zone`, `apps/services` |
-| `assets-src/**`, `tools/asset-pipeline/**` | `content/actions`, `content/place-types`, `content/transport`… | `packages/db`, `packages/bus`, `packages/observability` |
-| `packages/i18n/**` | `ARCHITECTURE.md`, `docs/adr/` | `infra/`, `data/`, `tools/map-pipeline` |
-| `content/i18n/**`, `content/dialogues/**`, `content/appearance/**`, `content/interiors/**` | | `CLAUDE.md`, `ARCHITECTURE.md`, `docs/adr`, `docs/rules`, `.claude/` (propriétaire uniquement) |
-| `tests/e2e/**` | | |
-| Partagé : `docs/backlog`, `docs/spikes`, `tools/repo-checks`, configs racine (relecture de l'autre dev obligatoire) | | |
+| Peut modifier                                                                                                       | Peut lire, ne modifie pas (demande au backend)                                                                               | Ne touche jamais                                                                               |
+| ------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| `apps/web/**`                                                                                                       | `packages/protocol`, `packages/tile-format`, `packages/physics`, `packages/geo`, `packages/content-schema`, `packages/sim-*` | `apps/gateway`, `apps/zone`, `apps/services`                                                   |
+| `assets-src/**`, `tools/asset-pipeline/**`                                                                          | `content/actions`, `content/place-types`, `content/transport`…                                                               | `packages/db`, `packages/bus`, `packages/observability`                                        |
+| `packages/i18n/**`                                                                                                  | `ARCHITECTURE.md`, `docs/adr/`                                                                                               | `infra/`, `data/`, `tools/map-pipeline`                                                        |
+| `content/i18n/**`, `content/dialogues/**`, `content/appearance/**`, `content/interiors/**`                          |                                                                                                                              | `CLAUDE.md`, `ARCHITECTURE.md`, `docs/adr`, `docs/rules`, `.claude/` (propriétaire uniquement) |
+| `tests/e2e/**`                                                                                                      |                                                                                                                              |                                                                                                |
+| Partagé : `docs/backlog`, `docs/spikes`, `tools/repo-checks`, configs racine (relecture de l'autre dev obligatoire) |                                                                                                                              |                                                                                                |
 
-**Besoin d'un changement côté backend** (nouveau message réseau, champ de tuile, règle) : l'agent **n'écrit pas** le code. Il rédige une note de besoin dans la tâche (`docs/backlog/T-xxx`, section *Technical notes*) avec le contrat souhaité, et le développeur backend l'implémente.
+**Besoin d'un changement côté backend** (nouveau message réseau, champ de tuile, règle) : l'agent **n'écrit pas** le code. Il rédige une note de besoin dans la tâche (`docs/backlog/T-xxx`, section _Technical notes_) avec le contrat souhaité, et le développeur backend l'implémente.
 
 ## 3. Règles techniques non négociables
 

@@ -8,11 +8,25 @@ import { dedupePoints, openRing, stringHash } from './polyline.ts';
 
 describe('polyline helpers', () => {
   it('should drop consecutive duplicates when points repeat', () => {
-    expect(dedupePoints([{ x: 0, y: 0 }, { x: 0, y: 0 }, { x: 1, y: 0 }])).toEqual([{ x: 0, y: 0 }, { x: 1, y: 0 }]);
+    expect(
+      dedupePoints([
+        { x: 0, y: 0 },
+        { x: 0, y: 0 },
+        { x: 1, y: 0 },
+      ]),
+    ).toEqual([
+      { x: 0, y: 0 },
+      { x: 1, y: 0 },
+    ]);
   });
 
   it('should remove the closing point when the ring is closed', () => {
-    const ring = openRing([{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: 1, y: 1 }, { x: 0, y: 0 }]);
+    const ring = openRing([
+      { x: 0, y: 0 },
+      { x: 1, y: 0 },
+      { x: 1, y: 1 },
+      { x: 0, y: 0 },
+    ]);
     expect(ring).toHaveLength(3);
   });
 

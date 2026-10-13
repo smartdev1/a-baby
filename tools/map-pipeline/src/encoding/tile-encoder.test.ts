@@ -11,9 +11,38 @@ import { encodeTile } from './tile-encoder.ts';
 
 const TILE: TileContent = {
   key: 'L0_325_199',
-  buildingParts: [{ id: 'osm:way/1', heightM: 9.5, polygons: [[[[10, 10], [40, 10], [40, 20], [20, 20], [20, 40], [10, 40], [10, 10]]]] }],
+  buildingParts: [
+    {
+      id: 'osm:way/1',
+      heightM: 9.5,
+      polygons: [
+        [
+          [
+            [10, 10],
+            [40, 10],
+            [40, 20],
+            [20, 20],
+            [20, 40],
+            [10, 40],
+            [10, 10],
+          ],
+        ],
+      ],
+    },
+  ],
   buildingMeta: [{ id: 'osm:way/1', type: 'apartments', levels: 3, heightM: 9.5, heightSource: 'heuristic' }],
-  roads: [{ id: 'osm:way/2', roadClass: 'residential', lines: [[[0, 100], [250, 100]]] }],
+  roads: [
+    {
+      id: 'osm:way/2',
+      roadClass: 'residential',
+      lines: [
+        [
+          [0, 100],
+          [250, 100],
+        ],
+      ],
+    },
+  ],
   places: [{ id: 'osm:node/3', category: 'food.maquis', position: [30, 60], buildingId: null }],
 };
 
@@ -36,6 +65,8 @@ describe('encodeTile', () => {
 
   it('should name the tile when it is over budget', async () => {
     const encoded = await encodeTile(TILE, new Set());
-    expect(budgetViolations({ ...encoded, triangles: 500_000 })).toEqual(['tile L0_325_199 over budget: 500000 triangles > 400000']);
+    expect(budgetViolations({ ...encoded, triangles: 500_000 })).toEqual([
+      'tile L0_325_199 over budget: 500000 triangles > 400000',
+    ]);
   });
 });

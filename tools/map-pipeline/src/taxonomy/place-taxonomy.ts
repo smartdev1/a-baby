@@ -4,7 +4,18 @@
  */
 
 /** Keys checked in this order; the first key present on a feature decides its category. */
-export const PLACE_KEYS = ['amenity', 'shop', 'craft', 'healthcare', 'office', 'tourism', 'leisure', 'public_transport', 'highway', 'building'] as const;
+export const PLACE_KEYS = [
+  'amenity',
+  'shop',
+  'craft',
+  'healthcare',
+  'office',
+  'tourism',
+  'leisure',
+  'public_transport',
+  'highway',
+  'building',
+] as const;
 export type PlaceKey = (typeof PLACE_KEYS)[number];
 
 /** Category for unlisted values of a key (null = not a place, e.g. `building=yes`). */
@@ -118,9 +129,24 @@ export const PLACE_TAXONOMY: Record<PlaceKey, Readonly<Record<string, string>>> 
     painter: 'craft.painter',
     handicraft: 'craft.handicraft',
   },
-  healthcare: { pharmacy: 'health.pharmacy', hospital: 'health.hospital', clinic: 'health.clinic', doctor: 'health.doctor' },
-  office: { government: 'public.administration', company: 'work.office', ngo: 'work.office', telecommunication: 'work.office' },
-  tourism: { hotel: 'lodging.hotel', guest_house: 'lodging.guest_house', motel: 'lodging.hotel', hostel: 'lodging.guest_house' },
+  healthcare: {
+    pharmacy: 'health.pharmacy',
+    hospital: 'health.hospital',
+    clinic: 'health.clinic',
+    doctor: 'health.doctor',
+  },
+  office: {
+    government: 'public.administration',
+    company: 'work.office',
+    ngo: 'work.office',
+    telecommunication: 'work.office',
+  },
+  tourism: {
+    hotel: 'lodging.hotel',
+    guest_house: 'lodging.guest_house',
+    motel: 'lodging.hotel',
+    hostel: 'lodging.guest_house',
+  },
   leisure: {
     pitch: 'sport.pitch',
     sports_centre: 'sport.centre',

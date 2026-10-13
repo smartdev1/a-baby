@@ -6,7 +6,15 @@
 import { readdirSync } from 'node:fs';
 import { join, relative, sep } from 'node:path';
 
-const SKIPPED_DIRS = new Set(['node_modules', '.git', 'dist', 'coverage', 'playwright-report', 'test-results', '.vite']);
+const SKIPPED_DIRS = new Set([
+  'node_modules',
+  '.git',
+  'dist',
+  'coverage',
+  'playwright-report',
+  'test-results',
+  '.vite',
+]);
 const SKIPPED_PREFIXES = ['docs/archive/', 'data/cache/', 'data/build/', 'data/runtime/'];
 
 const toPosix = (path) => path.split(sep).join('/');

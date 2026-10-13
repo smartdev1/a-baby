@@ -9,7 +9,10 @@ import { buildHttpServer } from './http-server.ts';
 
 describe('buildHttpServer', () => {
   it('should answer ok when /health is requested', async () => {
-    const server = await buildHttpServer({ logger: createLogger({ service: 'test', level: 'silent' }), corsOrigin: '*' });
+    const server = await buildHttpServer({
+      logger: createLogger({ service: 'test', level: 'silent' }),
+      corsOrigin: '*',
+    });
     const response = await server.inject({ method: 'GET', url: '/health' });
     expect(response.statusCode).toBe(200);
     expect(response.json()).toEqual({ status: 'ok' });

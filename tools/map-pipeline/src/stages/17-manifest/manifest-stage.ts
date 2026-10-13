@@ -27,12 +27,19 @@ const snapshotInfo = async (ctx: StageContext): Promise<SnapshotInfo> => {
     const { osm } = loadSourcesLockSync(ctx.fromRepo(source.lockFile));
     return { provider: osm.provider, fileName: osm.fileName, snapshotDate: osm.snapshotDate, sha256: osm.sha256 };
   }
-  return { provider: 'local-file', fileName: basename(source.path), snapshotDate: source.snapshotDate, sha256: await sha256OfFile(ctx.fromRepo(source.path)) };
+  return {
+    provider: 'local-file',
+    fileName: basename(source.path),
+    snapshotDate: source.snapshotDate,
+    sha256: await sha256OfFile(ctx.fromRepo(source.path)),
+  };
 };
 
 const snapshotDateOf = (ctx: StageContext): string => {
   const { source } = ctx.config;
-  return source.kind === 'osm-snapshot' ? loadSourcesLockSync(ctx.fromRepo(source.lockFile)).osm.snapshotDate : source.snapshotDate;
+  return source.kind === 'osm-snapshot'
+    ? loadSourcesLockSync(ctx.fromRepo(source.lockFile)).osm.snapshotDate
+    : source.snapshotDate;
 };
 
 export const releaseName = (ctx: StageContext): string => `${ctx.config.commune}-${snapshotDateOf(ctx)}`;
@@ -64,7 +71,9 @@ export const manifestStage: PipelineStage = {
       sourceSnapshot: await snapshotInfo(ctx),
       licence: 'ODbL-1.0',
       attribution: '© OpenStreetMap contributors',
-      tiles: Object.fromEntries(keys.map((k) => [k, { geom: index[k]?.geom, collision: index[k]?.collision, meta: index[k]?.meta }])),
+      tiles: Object.fromEntries(
+        keys.map((k) => [k, { geom: index[k]?.geom, collision: index[k]?.collision, meta: index[k]?.meta }]),
+      ),
     });
     await writeFile(join(outDir, worldManifestFileName(manifest.release)), `${JSON.stringify(manifest, null, 2)}\n`);
     ctx.logger.info({ release: manifest.release, tiles: keys.length }, 'world manifest written');

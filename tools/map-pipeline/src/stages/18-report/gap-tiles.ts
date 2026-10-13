@@ -9,7 +9,10 @@ import { COVER_CLASSES, type GapCover } from './gap-cover.ts';
 
 const tileCentreLonLat = (key: string): readonly [number, number] => {
   const b = tileBounds(key);
-  const { lonDeg, latDeg } = fromUtm30n({ eastingM: (b.minEastingM + b.maxEastingM) / 2, northingM: (b.minNorthingM + b.maxNorthingM) / 2 });
+  const { lonDeg, latDeg } = fromUtm30n({
+    eastingM: (b.minEastingM + b.maxEastingM) / 2,
+    northingM: (b.minNorthingM + b.maxNorthingM) / 2,
+  });
   return [lonDeg, latDeg];
 };
 

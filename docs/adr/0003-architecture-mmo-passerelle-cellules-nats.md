@@ -19,13 +19,13 @@ La vision exige un monde **unique et persistant, sans limite de joueurs imposée
 
 ## Alternatives écartées
 
-| Option | Raison du rejet |
-|---|---|
+| Option                         | Raison du rejet                                                                                                                                                                                                                                                                          |
+| ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Colyseus** (salle = cellule) | Pensé pour des salles avec matchmaking ; changer de cellule imposerait une reconnexion WebSocket ou plusieurs sockets par client ; l'aire d'intérêt entre salles n'est pas native ; le matchmaking est inutile dans un monde unique. Réévaluable en v2 pour des mini-jeux à salle fermée |
-| SpacetimeDB | Modèle intéressant (utilisé par des MMO), mais modules serveur hors de notre écosystème TypeScript, licence et maturité à risque pour une équipe de 3 |
-| Nakama | Même modèle de « matchs » que Colyseus ; runtime Go ou Lua |
-| Un seul serveur monolithique | Ne passe pas l'échelle ; aucun chemin vers « sans limite » |
-| Redis pub/sub | Pas de requête/réponse native ; NATS couvre pub/sub, requête/réponse et KV |
+| SpacetimeDB                    | Modèle intéressant (utilisé par des MMO), mais modules serveur hors de notre écosystème TypeScript, licence et maturité à risque pour une équipe de 3                                                                                                                                    |
+| Nakama                         | Même modèle de « matchs » que Colyseus ; runtime Go ou Lua                                                                                                                                                                                                                               |
+| Un seul serveur monolithique   | Ne passe pas l'échelle ; aucun chemin vers « sans limite »                                                                                                                                                                                                                               |
+| Redis pub/sub                  | Pas de requête/réponse native ; NATS couvre pub/sub, requête/réponse et KV                                                                                                                                                                                                               |
 
 ## Conséquences
 

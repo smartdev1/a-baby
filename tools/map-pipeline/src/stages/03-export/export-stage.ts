@@ -25,7 +25,10 @@ export const createExportStage = (osmium: RunOsmium = runOsmium, checkImage = en
   version: 1,
   outputs: [FEATURES_FILE],
   inputFiles: (ctx) => [inputFile(ctx)],
-  params: (ctx) => ({ sourceKind: ctx.config.source.kind, image: ctx.config.source.kind === 'osm-snapshot' ? OSMIUM_IMAGE : null }),
+  params: (ctx) => ({
+    sourceKind: ctx.config.source.kind,
+    image: ctx.config.source.kind === 'osm-snapshot' ? OSMIUM_IMAGE : null,
+  }),
   run: async (ctx, outDir) => {
     const input = inputFile(ctx);
     if (ctx.config.source.kind === 'osm-snapshot') {

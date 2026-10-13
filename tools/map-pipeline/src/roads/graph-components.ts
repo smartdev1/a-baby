@@ -5,7 +5,10 @@
 
 import type { RoadEdge, RoadNode } from './road-graph-types.ts';
 
-export const componentStats = (nodes: readonly RoadNode[], edges: readonly Pick<RoadEdge, 'from' | 'to' | 'lengthM'>[]): { components: number; largestShare: number } => {
+export const componentStats = (
+  nodes: readonly RoadNode[],
+  edges: readonly Pick<RoadEdge, 'from' | 'to' | 'lengthM'>[],
+): { components: number; largestShare: number } => {
   const parent = new Map(nodes.map((n) => [n.id, n.id]));
   const find = (id: string): string => {
     let root = id;

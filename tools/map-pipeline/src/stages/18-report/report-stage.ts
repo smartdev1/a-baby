@@ -30,7 +30,9 @@ const isSnapshot = (ctx: StageContext): boolean => ctx.config.source.kind === 'o
 
 const loadBoundary = async (ctx: StageContext): Promise<Geometry | null> => {
   if (!isSnapshot(ctx)) return null;
-  const { features } = JSON.parse(await readFile(ctx.outputOf(EXTRACT_STAGE_ID, BOUNDARY_FILE), 'utf8')) as { features: { geometry: Geometry }[] };
+  const { features } = JSON.parse(await readFile(ctx.outputOf(EXTRACT_STAGE_ID, BOUNDARY_FILE), 'utf8')) as {
+    features: { geometry: Geometry }[];
+  };
   return features[0]?.geometry ?? null;
 };
 
@@ -46,7 +48,9 @@ const loadBusRoutes = async (ctx: StageContext, osmium: RunOsmium, outDir: strin
 
 const snapshotLabel = (ctx: StageContext): string =>
   ctx.config.source.kind === 'osm-snapshot'
-    ? (({ osm }) => `Geofabrik ${osm.fileName} (${osm.snapshotDate})`)(loadSourcesLockSync(ctx.fromRepo(ctx.config.source.lockFile)))
+    ? (({ osm }) => `Geofabrik ${osm.fileName} (${osm.snapshotDate})`)(
+        loadSourcesLockSync(ctx.fromRepo(ctx.config.source.lockFile)),
+      )
     : `local fixture ${ctx.config.source.path}`;
 
 export const createReportStage = (osmium: RunOsmium = runOsmium, checkImage = ensureOsmiumImage): PipelineStage => ({
@@ -56,7 +60,9 @@ export const createReportStage = (osmium: RunOsmium = runOsmium, checkImage = en
   inputFiles: (ctx) => [
     ctx.outputOf(EXPORT_STAGE_ID, FEATURES_FILE),
     ctx.outputOf(ROADS_STAGE_ID, ROAD_STATS_FILE),
-    ...(isSnapshot(ctx) ? [ctx.outputOf(EXTRACT_STAGE_ID, BOUNDARY_FILE), ctx.outputOf(EXTRACT_STAGE_ID, COMMUNE_PBF_FILE)] : []),
+    ...(isSnapshot(ctx)
+      ? [ctx.outputOf(EXTRACT_STAGE_ID, BOUNDARY_FILE), ctx.outputOf(EXTRACT_STAGE_ID, COMMUNE_PBF_FILE)]
+      : []),
   ],
   params: (ctx) => ({ commune: ctx.config.commune, image: isSnapshot(ctx) ? OSMIUM_IMAGE : null }),
   run: async (ctx, outDir) => {
@@ -80,7 +86,11 @@ export const createReportStage = (osmium: RunOsmium = runOsmium, checkImage = en
       roadGraph: JSON.parse(await readFile(ctx.outputOf(ROADS_STAGE_ID, ROAD_STATS_FILE), 'utf8')) as RoadGraphStats,
     };
     const svg = renderDensitySvg(
-      { buildingsPerTile: stats.buildingsPerTile, boundary, title: `${ctx.config.displayName} — building density (OSM)` },
+      {
+        buildingsPerTile: stats.buildingsPerTile,
+        boundary,
+        title: `${ctx.config.displayName} — building density (OSM)`,
+      },
       boundary ? boundaryUtmBounds(bboxOf(boundary)) : null,
       utmToLonLatFactory(fromUtm30n),
     );

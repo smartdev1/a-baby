@@ -11,8 +11,16 @@ const rng = (id = 'osm:way/1') => rngFor('test-seed', id);
 
 describe('resolveHeight', () => {
   it('should prefer the OSM height tag, then the levels tag', () => {
-    expect(resolveHeight({ type: 'yes', footprintAreaM2: 100, osmHeightM: 12.5 }, rng())).toEqual({ levels: 4, heightM: 12.5, heightSource: 'osm' });
-    expect(resolveHeight({ type: 'yes', footprintAreaM2: 100, osmLevels: 3 }, rng())).toEqual({ levels: 3, heightM: 9.5, heightSource: 'osm' });
+    expect(resolveHeight({ type: 'yes', footprintAreaM2: 100, osmHeightM: 12.5 }, rng())).toEqual({
+      levels: 4,
+      heightM: 12.5,
+      heightSource: 'osm',
+    });
+    expect(resolveHeight({ type: 'yes', footprintAreaM2: 100, osmLevels: 3 }, rng())).toEqual({
+      levels: 3,
+      heightM: 9.5,
+      heightSource: 'osm',
+    });
   });
 
   it('should give the same result for the same building id', () => {

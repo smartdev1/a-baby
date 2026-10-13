@@ -5,7 +5,17 @@
 
 import type { FrameReader } from '../binary/frame-reader.ts';
 import { FrameWriter } from '../binary/frame-writer.ts';
-import { assertCount, axisToI8, cmToSpeed, i8ToAxis, metresToMm, mmToMetres, speedToCm, u16ToYaw, yawToU16 } from '../binary/quantize.ts';
+import {
+  assertCount,
+  axisToI8,
+  cmToSpeed,
+  i8ToAxis,
+  metresToMm,
+  mmToMetres,
+  speedToCm,
+  u16ToYaw,
+  yawToU16,
+} from '../binary/quantize.ts';
 import { CLIENT_MESSAGE, SERVER_MESSAGE } from '../message-types.ts';
 import { ProtocolDecodeError } from '../protocol-errors.ts';
 
@@ -60,7 +70,11 @@ const ENTITY_BYTES = 4 + 12 + 2 + 1;
 const writeVec = (w: FrameWriter, v: Vec3M): void => {
   w.i32(metresToMm(v.x)).i32(metresToMm(v.y)).i32(metresToMm(v.z));
 };
-const readVec = (r: FrameReader, what: string): Vec3M => ({ x: mmToMetres(r.i32(what)), y: mmToMetres(r.i32(what)), z: mmToMetres(r.i32(what)) });
+const readVec = (r: FrameReader, what: string): Vec3M => ({
+  x: mmToMetres(r.i32(what)),
+  y: mmToMetres(r.i32(what)),
+  z: mmToMetres(r.i32(what)),
+});
 
 export const encodeInput = (m: InputMessage): Uint8Array =>
   new FrameWriter(10)
@@ -69,7 +83,11 @@ export const encodeInput = (m: InputMessage): Uint8Array =>
     .i8(axisToI8(m.moveX))
     .i8(axisToI8(m.moveZ))
     .u16(yawToU16(m.yawRad))
-    .u8((m.flags.run ? FLAG_BITS.run : 0) | (m.flags.jump ? FLAG_BITS.jump : 0) | (m.flags.interact ? FLAG_BITS.interact : 0))
+    .u8(
+      (m.flags.run ? FLAG_BITS.run : 0) |
+        (m.flags.jump ? FLAG_BITS.jump : 0) |
+        (m.flags.interact ? FLAG_BITS.interact : 0),
+    )
     .done();
 
 export const decodeInput = (r: FrameReader): InputMessage => {
@@ -79,7 +97,17 @@ export const decodeInput = (r: FrameReader): InputMessage => {
   const yawRad = u16ToYaw(r.u16('yaw'));
   const bits = r.u8('flags');
   if ((bits & ~KNOWN_FLAGS) !== 0) throw new ProtocolDecodeError('out-of-range', `unknown input flags ${bits}`);
-  return { seq, moveX, moveZ, yawRad, flags: { run: (bits & FLAG_BITS.run) !== 0, jump: (bits & FLAG_BITS.jump) !== 0, interact: (bits & FLAG_BITS.interact) !== 0 } };
+  return {
+    seq,
+    moveX,
+    moveZ,
+    yawRad,
+    flags: {
+      run: (bits & FLAG_BITS.run) !== 0,
+      jump: (bits & FLAG_BITS.jump) !== 0,
+      interact: (bits & FLAG_BITS.interact) !== 0,
+    },
+  };
 };
 
 export const encodeInputAck = (m: InputAckMessage): Uint8Array => {
@@ -98,7 +126,10 @@ export const decodeInputAck = (r: FrameReader): InputAckMessage => ({
 
 export const encodeSnapshot = (m: SnapshotMessage): Uint8Array => {
   assertCount(m.entities.length, MAX_SNAPSHOT_ENTITIES, 'snapshot entities');
-  const w = new FrameWriter(1 + 4 + 2 + m.entities.length * ENTITY_BYTES).u8(SERVER_MESSAGE.snapshot).u32(m.tick).u16(m.entities.length);
+  const w = new FrameWriter(1 + 4 + 2 + m.entities.length * ENTITY_BYTES)
+    .u8(SERVER_MESSAGE.snapshot)
+    .u32(m.tick)
+    .u16(m.entities.length);
   for (const e of m.entities) {
     w.u32(e.id);
     writeVec(w, e.position);
@@ -112,7 +143,12 @@ export const decodeSnapshot = (r: FrameReader): SnapshotMessage => {
   const count = assertCount(r.u16('entity count'), MAX_SNAPSHOT_ENTITIES, 'snapshot entities');
   const entities: EntityState[] = [];
   for (let k = 0; k < count; k++) {
-    entities.push({ id: r.u32('entity id'), position: readVec(r, 'entity position'), yawRad: u16ToYaw(r.u16('entity yaw')), state: r.u8('entity state') });
+    entities.push({
+      id: r.u32('entity id'),
+      position: readVec(r, 'entity position'),
+      yawRad: u16ToYaw(r.u16('entity yaw')),
+      state: r.u8('entity state'),
+    });
   }
   return { tick, entities };
 };

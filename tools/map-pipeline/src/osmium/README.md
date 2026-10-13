@@ -7,10 +7,10 @@
 
 Everything about osmium-tool, which always runs inside the frozen Docker image `skyline/osmium:1.18.0` (`infra/docker/osmium/`).
 
-| File | Role |
-|---|---|
-| `osmium-commands.ts` | Pure builders of `extract`, `tags-filter`, `export` argument arrays; the list of kept OSM tags; the image tag |
-| `run-osmium.ts` | Runs `docker run --rm` with `/in` (read-only) and `/out` bind mounts, as the current user on Linux; checks the image exists |
+| File                 | Role                                                                                                                        |
+| -------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| `osmium-commands.ts` | Pure builders of `extract`, `tags-filter`, `export` argument arrays; the list of kept OSM tags; the image tag               |
+| `run-osmium.ts`      | Runs `docker run --rm` with `/in` (read-only) and `/out` bind mounts, as the current user on Linux; checks the image exists |
 
 ## Rules
 

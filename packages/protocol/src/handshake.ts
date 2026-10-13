@@ -10,4 +10,7 @@ import { PROTOCOL_VERSION } from './protocol-version.ts';
 export const checkHello = (hello: HelloMessage): ServerErrorMessage | null =>
   hello.protocolVersion === PROTOCOL_VERSION
     ? null
-    : { code: 'version_mismatch', message: `server speaks protocol ${PROTOCOL_VERSION}, client sent ${hello.protocolVersion}` };
+    : {
+        code: 'version_mismatch',
+        message: `server speaks protocol ${PROTOCOL_VERSION}, client sent ${hello.protocolVersion}`,
+      };

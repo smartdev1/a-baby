@@ -16,4 +16,7 @@ const ringArea = (ring: UtmRing): number => {
 };
 
 export const multiPolygonAreaM2 = (polygons: readonly (readonly UtmRing[])[]): number =>
-  polygons.reduce((sum, [outer, ...holes]) => sum + (outer ? ringArea(outer) : 0) - holes.reduce((h, r) => h + ringArea(r), 0), 0);
+  polygons.reduce(
+    (sum, [outer, ...holes]) => sum + (outer ? ringArea(outer) : 0) - holes.reduce((h, r) => h + ringArea(r), 0),
+    0,
+  );

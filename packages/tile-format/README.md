@@ -9,13 +9,13 @@ The file format of a world tile, read by the web client (streaming, prediction) 
 
 ## How it works
 
-| Piece | Content |
-|---|---|
-| `TILE_FORMAT_VERSION` | `0`. An incompatible change bumps it; readers reject other versions |
-| File names | `tiles/L0/{i}_{j}/<kind>.<hash16>.<ext>` — `geom.glb`, `instances.bin`, `collision.bin`, `meta.json`, `nav.bin`; `world-manifest.<release>.json` |
-| `meta.json` | `TileMetaSchema`: buildings (`osm:way/…`, type, levels, heightM, `heightSource` osm/dataset/heuristic), places (game category, **displayed name from the `naming` stage only**, local position), neighbours |
-| Manifest | `WorldManifestSchema`: tile key → file hashes, UTM bbox, source snapshot, ODbL licence + attribution. No geometry |
-| `collision.bin` | Binary v0: `SKYC` header, height field (N×N f32), obstacle prisms (base, top, 2D ring). Local metres (x = east, z = north) |
+| Piece                 | Content                                                                                                                                                                                                     |
+| --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `TILE_FORMAT_VERSION` | `0`. An incompatible change bumps it; readers reject other versions                                                                                                                                         |
+| File names            | `tiles/L0/{i}_{j}/<kind>.<hash16>.<ext>` — `geom.glb`, `instances.bin`, `collision.bin`, `meta.json`, `nav.bin`; `world-manifest.<release>.json`                                                            |
+| `meta.json`           | `TileMetaSchema`: buildings (`osm:way/…`, type, levels, heightM, `heightSource` osm/dataset/heuristic), places (game category, **displayed name from the `naming` stage only**, local position), neighbours |
+| Manifest              | `WorldManifestSchema`: tile key → file hashes, UTM bbox, source snapshot, ODbL licence + attribution. No geometry                                                                                           |
+| `collision.bin`       | Binary v0: `SKYC` header, height field (N×N f32), obstacle prisms (base, top, 2D ring). Local metres (x = east, z = north)                                                                                  |
 
 ```ts
 import { decodeCollision, parseTileMeta, tileFilePath } from '@skyline/tile-format';

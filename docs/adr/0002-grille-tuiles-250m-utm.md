@@ -18,13 +18,13 @@ Yopougon couvre environ 153 km² et compte de l'ordre de 10⁵ bâtiments. L'exi
 
 ## Alternatives écartées
 
-| Option | Raison du rejet |
-|---|---|
-| Tuiles de 100 m | ≈ 15 000 fichiers, surcoût de requêtes et de gestion, LOD plus complexes |
-| Tuiles de 500 m ou 1 km en L0 | Tuiles lourdes (plusieurs Mo), streaming grossier, pics de chargement |
-| Quadtree adaptatif (taille variable selon la densité) | Complexité de génération et d'adressage sans gain mesuré à ce stade |
-| OGC 3D Tiles | Pas de chargeur Babylon natif mature au moment du choix (à revérifier) ; format plus général que nécessaire |
-| Équirectangulaire locale par export (existant) | Origine instable, identifiants de tuiles non stables entre communes |
+| Option                                                | Raison du rejet                                                                                             |
+| ----------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| Tuiles de 100 m                                       | ≈ 15 000 fichiers, surcoût de requêtes et de gestion, LOD plus complexes                                    |
+| Tuiles de 500 m ou 1 km en L0                         | Tuiles lourdes (plusieurs Mo), streaming grossier, pics de chargement                                       |
+| Quadtree adaptatif (taille variable selon la densité) | Complexité de génération et d'adressage sans gain mesuré à ce stade                                         |
+| OGC 3D Tiles                                          | Pas de chargeur Babylon natif mature au moment du choix (à revérifier) ; format plus général que nécessaire |
+| Équirectangulaire locale par export (existant)        | Origine instable, identifiants de tuiles non stables entre communes                                         |
 
 ## Conséquences
 

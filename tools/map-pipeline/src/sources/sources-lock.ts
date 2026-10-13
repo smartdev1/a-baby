@@ -24,7 +24,10 @@ export const OsmSnapshotLockSchema = z.object({
 
 export const SourcesLockSchema = z.object({
   osm: OsmSnapshotLockSchema,
-  boundaries: z.record(z.string(), z.object({ osmRelationId: z.number().int().positive().nullable(), note: z.string().optional() })),
+  boundaries: z.record(
+    z.string(),
+    z.object({ osmRelationId: z.number().int().positive().nullable(), note: z.string().optional() }),
+  ),
 });
 
 export type OsmSnapshotLock = z.infer<typeof OsmSnapshotLockSchema>;

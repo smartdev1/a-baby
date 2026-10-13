@@ -27,6 +27,12 @@ export class TickStats {
     const sorted = [...this.durations].sort((a, b) => a - b);
     const at = (p: number): number => sorted[Math.min(sorted.length - 1, Math.floor(p * sorted.length))] ?? 0;
     const round = (v: number): number => Math.round(v * 100) / 100;
-    return { ticks: this.ticks, p50Ms: round(at(0.5)), p95Ms: round(at(0.95)), maxMs: round(sorted.at(-1) ?? 0), players };
+    return {
+      ticks: this.ticks,
+      p50Ms: round(at(0.5)),
+      p95Ms: round(at(0.95)),
+      maxMs: round(sorted.at(-1) ?? 0),
+      players,
+    };
   }
 }

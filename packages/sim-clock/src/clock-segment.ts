@@ -16,10 +16,16 @@ export interface ClockSegment {
 const MS_PER_MIN = 60_000;
 
 export const gameMinutesAt = (segment: ClockSegment, realMs: number): number =>
-  segment.paused ? segment.gameStartMin : segment.gameStartMin + ((realMs - segment.realStartMs) / MS_PER_MIN) * segment.ratio;
+  segment.paused
+    ? segment.gameStartMin
+    : segment.gameStartMin + ((realMs - segment.realStartMs) / MS_PER_MIN) * segment.ratio;
 
 /** New segment starting at `realMs`, continuing the current game time. */
-const continueAt = (segment: ClockSegment, realMs: number, changes: Partial<Pick<ClockSegment, 'ratio' | 'paused'>>): ClockSegment => ({
+const continueAt = (
+  segment: ClockSegment,
+  realMs: number,
+  changes: Partial<Pick<ClockSegment, 'ratio' | 'paused'>>,
+): ClockSegment => ({
   realStartMs: realMs,
   gameStartMin: gameMinutesAt(segment, realMs),
   ratio: changes.ratio ?? segment.ratio,
@@ -31,8 +37,11 @@ export const changeRatio = (segment: ClockSegment, ratio: number, realMs: number
   return continueAt(segment, realMs, { ratio });
 };
 
-export const pause = (segment: ClockSegment, realMs: number): ClockSegment => continueAt(segment, realMs, { paused: true });
-export const resume = (segment: ClockSegment, realMs: number): ClockSegment => continueAt(segment, realMs, { paused: false });
+export const pause = (segment: ClockSegment, realMs: number): ClockSegment =>
+  continueAt(segment, realMs, { paused: true });
+export const resume = (segment: ClockSegment, realMs: number): ClockSegment =>
+  continueAt(segment, realMs, { paused: false });
 
 /** Real milliseconds that `gameMinutes` of game time last at the segment's ratio. */
-export const realMsForGameMinutes = (segment: ClockSegment, gameMinutes: number): number => (gameMinutes / segment.ratio) * MS_PER_MIN;
+export const realMsForGameMinutes = (segment: ClockSegment, gameMinutes: number): number =>
+  (gameMinutes / segment.ratio) * MS_PER_MIN;

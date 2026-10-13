@@ -18,11 +18,11 @@ Le propriétaire exige un code modulaire, **sans fichier fourre-tout** (pas de g
 
 ## Alternatives écartées
 
-| Option | Raison du rejet |
-|---|---|
-| Rester sur npm workspaces | Dépendances fantômes, double lockfile constaté |
-| Nx ou Turborepo | Puissants mais surdimensionnés pour 3 développeurs ; dependency-cruiser couvre les frontières |
-| Règles uniquement documentées | Non tenues dans la durée sans outillage |
+| Option                        | Raison du rejet                                                                               |
+| ----------------------------- | --------------------------------------------------------------------------------------------- |
+| Rester sur npm workspaces     | Dépendances fantômes, double lockfile constaté                                                |
+| Nx ou Turborepo               | Puissants mais surdimensionnés pour 3 développeurs ; dependency-cruiser couvre les frontières |
+| Règles uniquement documentées | Non tenues dans la durée sans outillage                                                       |
 
 ## Conséquences
 

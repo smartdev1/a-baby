@@ -28,10 +28,15 @@ const signedArea = (ring: readonly LocalPoint[]): number => {
 };
 
 /** Outer ring counter-clockwise, holes clockwise (x east, z north): the outward normal of edge a→b is then (dz, -dx). */
-const orient = (ring: LocalPoint[], counterClockwise: boolean): LocalPoint[] => (signedArea(ring) > 0 === counterClockwise ? ring : ring.reverse());
+const orient = (ring: LocalPoint[], counterClockwise: boolean): LocalPoint[] =>
+  signedArea(ring) > 0 === counterClockwise ? ring : ring.reverse();
 
 const onSameBorder = (a: LocalPoint, b: LocalPoint): boolean =>
-  [0, TILE_SIZE_M].some((edge) => (Math.abs(a[0] - edge) < BORDER_EPSILON_M && Math.abs(b[0] - edge) < BORDER_EPSILON_M) || (Math.abs(a[1] - edge) < BORDER_EPSILON_M && Math.abs(b[1] - edge) < BORDER_EPSILON_M));
+  [0, TILE_SIZE_M].some(
+    (edge) =>
+      (Math.abs(a[0] - edge) < BORDER_EPSILON_M && Math.abs(b[0] - edge) < BORDER_EPSILON_M) ||
+      (Math.abs(a[1] - edge) < BORDER_EPSILON_M && Math.abs(b[1] - edge) < BORDER_EPSILON_M),
+  );
 
 const addWalls = (walls: MeshBuffer, ring: readonly LocalPoint[], heightM: number): void => {
   for (let k = 0; k < ring.length; k++) {
@@ -62,10 +67,16 @@ const addRoof = (roofs: MeshBuffer, rings: readonly LocalPoint[][], heightM: num
   const triangles = earcut(flat, holes, 2);
   const base = roofs.vertexCount;
   for (let k = 0; k < flat.length; k += 2) roofs.vertex([flat[k] ?? 0, heightM, flat[k + 1] ?? 0], [0, 1, 0]);
-  for (let k = 0; k < triangles.length; k += 3) roofs.triangle(base + (triangles[k] ?? 0), base + (triangles[k + 1] ?? 0), base + (triangles[k + 2] ?? 0));
+  for (let k = 0; k < triangles.length; k += 3)
+    roofs.triangle(base + (triangles[k] ?? 0), base + (triangles[k + 1] ?? 0), base + (triangles[k + 2] ?? 0));
 };
 
-export const extrudeBuilding = (polygons: readonly LocalPolygon[], heightM: number, walls: MeshBuffer, roofs: MeshBuffer): void => {
+export const extrudeBuilding = (
+  polygons: readonly LocalPolygon[],
+  heightM: number,
+  walls: MeshBuffer,
+  roofs: MeshBuffer,
+): void => {
   for (const polygon of polygons) {
     const rings = polygon.map(openRing).filter((r) => r.length >= 3);
     const [outer, ...holes] = rings;

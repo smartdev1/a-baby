@@ -29,7 +29,9 @@ const PROP_PARTS: Record<string, PropPart[]> = {
     { build: (s) => CreateCylinder('p_pole', { height: 4, diameter: 0.15 }, s), colour: '#555555', yM: 2 },
     { build: (s) => CreateBox('p_head', { width: 0.6, height: 0.2, depth: 0.3 }, s), colour: '#f2e6a0', yM: 4.1 },
   ],
-  bench: [{ build: (s) => CreateBox('p_bench', { width: 1.6, height: 0.5, depth: 0.5 }, s), colour: '#8a5a2b', yM: 0.25 }],
+  bench: [
+    { build: (s) => CreateBox('p_bench', { width: 1.6, height: 0.5, depth: 0.5 }, s), colour: '#8a5a2b', yM: 0.25 },
+  ],
   signage: [{ build: (s) => CreateBox('p_sign', { width: 0.1, height: 2, depth: 0.6 }, s), colour: '#c0392b', yM: 1 }],
   trash: [{ build: (s) => CreateCylinder('p_trash', { height: 0.8, diameter: 0.5 }, s), colour: '#2f4f4f', yM: 0.4 }],
 };

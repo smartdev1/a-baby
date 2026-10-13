@@ -27,7 +27,13 @@ const lcg = (seed: number): (() => number) => {
   return () => (s = (Math.imul(s, 1664525) + 1013904223) >>> 0) / 4_294_967_296;
 };
 
-const inputAt = (seq: number, heading: number): InputMessage => ({ seq, moveX: 0, moveZ: 1, yawRad: heading, flags: { run: seq % 100 < 30, jump: seq % 97 === 0, interact: false } });
+const inputAt = (seq: number, heading: number): InputMessage => ({
+  seq,
+  moveX: 0,
+  moveZ: 1,
+  yawRad: heading,
+  flags: { run: seq % 100 < 30, jump: seq % 97 === 0, interact: false },
+});
 
 export const runBot = async ({ httpUrl, wsUrl, seconds, seed }: BotOptions): Promise<BotResult> => {
   const result = { welcomed: false, acks: 0, snapshots: 0, errors: [] as string[], rttsMs: [] as number[] };
@@ -55,7 +61,10 @@ export const runBot = async ({ httpUrl, wsUrl, seconds, seed }: BotOptions): Pro
     if (seq % 40 === 0) heading = random() * Math.PI * 2;
     socket.send(encodeClientMessage({ type: 'input', body: inputAt(seq, heading) }));
   }, 50);
-  const pings = setInterval(() => socket.send(encodeClientMessage({ type: 'ping', body: { clientTimeMs: performance.now() } })), 1000);
+  const pings = setInterval(
+    () => socket.send(encodeClientMessage({ type: 'ping', body: { clientTimeMs: performance.now() } })),
+    1000,
+  );
   await new Promise((r) => setTimeout(r, seconds * 1000));
   clearInterval(inputs);
   clearInterval(pings);

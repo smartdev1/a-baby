@@ -6,7 +6,16 @@
 import type { OsmFeature } from './feature-stream.ts';
 
 /** POI keys counted by the report, in display order. */
-export const POI_KEYS = ['amenity', 'shop', 'craft', 'office', 'healthcare', 'tourism', 'leisure', 'public_transport'] as const;
+export const POI_KEYS = [
+  'amenity',
+  'shop',
+  'craft',
+  'office',
+  'healthcare',
+  'tourism',
+  'leisure',
+  'public_transport',
+] as const;
 export type PoiKey = (typeof POI_KEYS)[number];
 
 const tag = (f: OsmFeature, key: string): string | undefined => {
@@ -15,7 +24,9 @@ const tag = (f: OsmFeature, key: string): string | undefined => {
 };
 
 export const isBuilding = (f: OsmFeature): boolean =>
-  tag(f, 'building') !== undefined && tag(f, 'building') !== 'no' && (f.geometry?.type === 'Polygon' || f.geometry?.type === 'MultiPolygon');
+  tag(f, 'building') !== undefined &&
+  tag(f, 'building') !== 'no' &&
+  (f.geometry?.type === 'Polygon' || f.geometry?.type === 'MultiPolygon');
 
 export const buildingType = (f: OsmFeature): string => tag(f, 'building') ?? 'unknown';
 

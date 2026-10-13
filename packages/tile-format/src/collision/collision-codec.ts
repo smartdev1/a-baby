@@ -42,13 +42,15 @@ const invalid = (message: string): never => {
 };
 
 const checkCount = (value: number, max: number, what: string, min = 0): number => {
-  if (value < min || value > max) throw new CollisionDecodeError('out-of-range', `${what} = ${value} (allowed ${min}..${max})`);
+  if (value < min || value > max)
+    throw new CollisionDecodeError('out-of-range', `${what} = ${value} (allowed ${min}..${max})`);
   return value;
 };
 
 export const encodeCollision = ({ heightField, prisms }: CollisionData): Uint8Array => {
   const { resolution, cellSizeM, heightsM } = heightField;
-  if (heightsM.length !== resolution * resolution) invalid(`height field has ${heightsM.length} samples, expected ${resolution ** 2}`);
+  if (heightsM.length !== resolution * resolution)
+    invalid(`height field has ${heightsM.length} samples, expected ${resolution ** 2}`);
   checkCount(resolution, COLLISION_LIMITS.maxResolution, 'resolution', 2);
   checkCount(prisms.length, COLLISION_LIMITS.maxPrisms, 'prism count');
 
@@ -74,9 +76,11 @@ export const encodeCollision = ({ heightField, prisms }: CollisionData): Uint8Ar
 };
 
 const decodeHeader = (reader: BoundedReader): void => {
-  if (reader.ascii(4, 'magic') !== COLLISION_MAGIC) throw new CollisionDecodeError('bad-magic', 'not a SkyLine collision file');
+  if (reader.ascii(4, 'magic') !== COLLISION_MAGIC)
+    throw new CollisionDecodeError('bad-magic', 'not a SkyLine collision file');
   const version = reader.u16('version');
-  if (version !== COLLISION_VERSION) throw new CollisionDecodeError('unsupported-version', `version ${version}, expected ${COLLISION_VERSION}`);
+  if (version !== COLLISION_VERSION)
+    throw new CollisionDecodeError('unsupported-version', `version ${version}, expected ${COLLISION_VERSION}`);
   reader.u16('flags');
 };
 
@@ -91,7 +95,12 @@ const decodePrism = (reader: BoundedReader, index: number): Prism => {
   const baseYM = reader.f32(`prism[${index}].baseYM`);
   const topYM = reader.f32(`prism[${index}].topYM`);
   if (topYM < baseYM) invalid(`prism[${index}] top is below its base`);
-  const vertexCount = checkCount(reader.u16(`prism[${index}].vertexCount`), COLLISION_LIMITS.maxVerticesPerPrism, 'prism vertex count', 3);
+  const vertexCount = checkCount(
+    reader.u16(`prism[${index}].vertexCount`),
+    COLLISION_LIMITS.maxVerticesPerPrism,
+    'prism vertex count',
+    3,
+  );
   return { baseYM, topYM, ring: reader.f32Array(vertexCount * 2, `prism[${index}].ring`) };
 };
 
@@ -102,6 +111,7 @@ export const decodeCollision = (bytes: Uint8Array): CollisionData => {
   const count = checkCount(reader.u32('prism count'), COLLISION_LIMITS.maxPrisms, 'prism count');
   const prisms: Prism[] = [];
   for (let k = 0; k < count; k++) prisms.push(decodePrism(reader, k));
-  if (reader.remaining !== 0) throw new CollisionDecodeError('trailing-bytes', `${reader.remaining} unexpected bytes at the end`);
+  if (reader.remaining !== 0)
+    throw new CollisionDecodeError('trailing-bytes', `${reader.remaining} unexpected bytes at the end`);
   return { heightField, prisms };
 };
