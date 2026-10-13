@@ -11,5 +11,10 @@ export default defineConfig({
     exclude: ['**/node_modules/**', '**/dist/**', 'tools/map-pipeline/legacy/**'],
     environment: 'node',
     passWithNoTests: true,
+    coverage: {
+      provider: 'v8',
+      include: ['{apps,packages,tools}/*/src/**/*.{ts,tsx}'],
+      exclude: ['**/*.test.{ts,tsx}', '**/*.d.ts', 'tools/map-pipeline/legacy/**'],
+    },
   },
 });
