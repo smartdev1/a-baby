@@ -1,7 +1,7 @@
 ---
 id: T-013
 title: Client migration to @babylonjs/core, composition root, debug modules, OSM attribution
-status: review
+status: done
 owner: frontend
 author_of_code:
 priority: P0

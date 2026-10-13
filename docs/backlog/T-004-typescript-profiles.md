@@ -1,7 +1,7 @@
 ---
 id: T-004
 title: TypeScript base config with browser, node and pure profiles
-status: review
+status: done
 owner: fullstack-devops
 author_of_code: fullstack-devops
 priority: P0

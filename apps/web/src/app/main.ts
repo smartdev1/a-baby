@@ -6,7 +6,6 @@
 import { createEngine, createScene } from '../engine/create-engine.ts';
 import { createFlyCamera } from '../debug/fly-camera.ts';
 import { createPerfOverlay } from '../debug/perf-overlay.ts';
-import { loadLegacyBlockout } from '../debug/legacy-blockout/blockout-loader.ts';
 
 const start = async (): Promise<void> => {
   const canvas = document.getElementById('render-canvas');
@@ -15,9 +14,7 @@ const start = async (): Promise<void> => {
   const engine = createEngine(canvas);
   const scene = createScene(engine);
 
-  // Temporary until the tile loader lands (T-014).
-  const { center } = await loadLegacyBlockout(scene);
-  const camera = createFlyCamera(scene, center);
+  const camera = createFlyCamera(scene);
   const overlay = createPerfOverlay(document.body);
 
   engine.runRenderLoop(() => {

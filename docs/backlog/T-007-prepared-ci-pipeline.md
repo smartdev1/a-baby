@@ -1,7 +1,7 @@
 ---
 id: T-007
 title: Prepared CI pipeline (Ubuntu and Windows)
-status: review
+status: done
 owner: backend
 author_of_code: backend-dev (Claude, for Ky-Wilson)
 priority: P1

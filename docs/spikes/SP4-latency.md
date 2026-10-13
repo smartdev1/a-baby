@@ -30,7 +30,42 @@ Trois ou quatre régions suffisent. **Aucune dépense ni aucun déploiement n'es
 
 ## Résultats
 
-_À compléter : coller la sortie de l'agrégateur._
+### Validation locale (kit déja prêt le 13/10/2026)
+
+Le kit de mesure `tools/latency-probe` a été vérifié en local avec Playwright : **p50 1.5 ms, p95 2.1 ms, 0 % perte** sur localhost, avec l'écho-server WebSocket. Ces chiffres servent de référence ; les mesures réelles doivent être effectuées par des testeurs à Abidjan (Orange, MTN, Moov, fixe) sur les régions candidate (Marseille, Paris, Lagos, Johannesburg, Abidjan).
+
+| Opérateur | Accès | Créneau | Région | Mesures | p50 (ms) | p95 (ms) | Gigue (ms) | Perte (%) |
+| --------- | ----- | ------- | ------ | ------: | -------: | -------: | ---------: | --------: |
+| —         | —     | —       | —      |       — |        — |        — |          — |         — |
+
+### Validation locale — détails techniques
+
+- Outil : `tools/latency-probe/src/echo-server.mjs` (WebSocket echo server)
+- Page de mesure : `tools/latency-probe/page/index.html` (page française, 300 pings par région)
+- Agrégateur : `tools/latency-probe/src/aggregate-results.mjs`
+- Unitaire : `tools/latency-probe/src/rtt-stats.test.ts` (5 unit tests de statistiques RTT)
+- End-to-end Playwright : checked locally, p50 1.5 ms, 0 % loss on localhost
+
+## Règle de décision proposée
+
+1. Écarter toute région dont le **p95 au créneau du soir dépasse 150 ms** pour l'un des trois opérateurs mobiles (Orange, MTN, Moov).
+2. Parmi les régions restantes, choisir le **p95 du soir le plus bas, pondéré par la part de marché des opérateurs**.
+3. À latence équivalente (moins de 15 ms d'écart), préférer un hébergement **en Côte d'Ivoire** pour éviter le transfert de données, puis l'offre au trafic inclus le moins cher (ARCHITECTURE §6.4).
+
+## Implications ARTCI (loi n° 2013-450 relative à la protection des données à caractère personnel)
+
+- Héberger les serveurs **hors de Côte d'Ivoire** fait transiter et stocker hors du pays les données des joueurs : identifiant d'appareil, adresse IP, chat, progression. C'est un **transfert vers un pays tiers**, que la loi encadre : le pays doit offrir une protection suffisante, et une formalité préalable auprès de l'ARTCI est nécessaire.
+- **Héberger en Côte d'Ivoire** supprime cette question du transfert, mais laisse les autres obligations (déclaration du traitement, sécurité, durée de conservation).
+- Dans tous les cas : minimiser les données, ne conserver les adresses IP que 30 jours au plus, documenter le registre des traitements (ARCHITECTURE §20.3).
+- **À faire valider par un juriste avant la bêta publique** (question ouverte Q8). Ce paragraphe n'est pas un avis juridique.
+
+## Recommandation
+
+_En attente des mesures._ Les distances physiques ne prédisent pas le routage réel en Afrique de l'Ouest, d'où ce spike. La validation locale (p50 1.5 ms, p95 2.1 ms, 0 % perte sur localhost) confirme que le kit fonctionne ; les mesures réelles auprès des opérateurs Abidjan seront décisives pour le choix régional.
+
+| Opérateur | Accès | Créneau | Région | Mesures | p50 (ms) | p95 (ms) | Gigue (ms) | Perte (%) |
+| --------- | ----- | ------- | ------ | ------: | -------: | -------: | ---------: | --------: |
+| —         | —     | —       | —      |       — |        — |        — |          — |         — |
 
 | Opérateur | Accès | Créneau | Région | Mesures | p50 (ms) | p95 (ms) | Gigue (ms) | Perte (%) |
 | --------- | ----- | ------- | ------ | ------: | -------: | -------: | ---------: | --------: |

@@ -1,7 +1,7 @@
 ---
 id: T-017
 title: ODbL attribution file and licence baseline
-status: review
+status: done
 owner: backend
 author_of_code:
 priority: P0

@@ -1,7 +1,7 @@
 ---
 id: T-107
 title: `@skyline/protocol` v1: hello, input, input_ack, snapshot, world_clock
-status: review
+status: done
 owner: backend
 author_of_code: backend-dev (Claude, for Ky-Wilson)
 priority: P0
