@@ -35,6 +35,8 @@ const CHECKED_OUTPUTS = [
   '17-manifest/world-manifest.pigeons-fixture-2026-10-13.json',
 ];
 const logger = createLogger({ service: 'golden', level: 'silent' });
+// Two workers: the parallel path is exercised (its output must match the golden hashes) without starting one worker per core.
+process.env['SKYLINE_PIPELINE_WORKERS'] ??= '2';
 
 const roots: string[] = [];
 

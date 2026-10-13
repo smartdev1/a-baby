@@ -7,11 +7,16 @@ import { createReadStream, createWriteStream } from 'node:fs';
 import { once } from 'node:events';
 import { createInterface } from 'node:readline';
 
-export async function* readNdjson<T>(path: string): AsyncGenerator<T> {
+/** Raw non-empty lines, for callers that hand the parsing to worker threads. */
+export async function* readNdjsonLines(path: string): AsyncGenerator<string> {
   const lines = createInterface({ input: createReadStream(path, 'utf8'), crlfDelay: Infinity });
   for await (const line of lines) {
-    if (line.trim()) yield JSON.parse(line) as T;
+    if (line.trim()) yield line;
   }
+}
+
+export async function* readNdjson<T>(path: string): AsyncGenerator<T> {
+  for await (const line of readNdjsonLines(path)) yield JSON.parse(line) as T;
 }
 
 /** Writes one JSON value per line, respecting stream back-pressure. */

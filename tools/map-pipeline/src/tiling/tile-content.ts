@@ -77,3 +77,10 @@ export interface TileContent {
 }
 
 export const emptyTileContent = (key: string): TileContent => ({ key, buildingParts: [], buildingMeta: [], roads: [], places: [], instances: [], terrain: null });
+
+/** Key of a tiles.ndjson line without parsing it (the key is always the first property). */
+export const tileKeyOfLine = (line: string): string => {
+  const key = /^\{"key":"(L\d+_\d+_\d+)"/.exec(line)?.[1];
+  if (!key) throw new Error(`tiles.ndjson line without a leading key: ${line.slice(0, 60)}`);
+  return key;
+};

@@ -1,19 +1,20 @@
 /**
- * Role: stage 15-lod-build: L1 render tiles (500 m) built from the L0 tiles, streamed two rows at a time, written as tiles/L1/{i}_{j}/geom.<hash>.glb + lod-index.json.
+ * Role: stage 15-lod-build: L1 render tiles (500 m) built from the L0 tiles, streamed two rows at a time and encoded on the worker pool, written as tiles/L1/{i}_{j}/geom.<hash>.glb + lod-index.json.
  * Owner: backend
  */
 
 import { existsSync } from 'node:fs';
-import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
+import { readFile, rm, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { parentTileKey, parseTileKey, type TileKey } from '@skyline/geo';
 import { tileFilePath } from '@skyline/tile-format';
 import { TILE_BUDGET_MAX } from '../../encoding/tile-budgets.ts';
-import { encodeLodTile } from '../../encoding/tile-encoder.ts';
-import { buildL1Tile } from '../../lod/build-l1-tile.ts';
-import { readNdjson } from '../../records/ndjson-files.ts';
+import type { EncodeJob, EncodeJobResult } from '../../parallel/encode-jobs.ts';
+import { mapOrdered } from '../../parallel/ordered-map.ts';
+import { createTileEncoderPool, inFlightFor } from '../../parallel/tile-encoder-pool.ts';
+import { readNdjsonLines } from '../../records/ndjson-files.ts';
 import type { PipelineStage } from '../../runner/stage-contract.ts';
-import type { TileContent } from '../../tiling/tile-content.ts';
+import { tileKeyOfLine } from '../../tiling/tile-content.ts';
 import { TILE_CUT_STAGE_ID, TILES_FILE } from '../14-tile-cut/tile-cut-stage.ts';
 
 export const LOD_STAGE_ID = '15-lod-build';
@@ -25,6 +26,27 @@ export interface LodIndexEntry {
   readonly triangles: number;
 }
 export type LodIndex = Record<string, LodIndexEntry>;
+
+/** L1 jobs in row order. tiles.ndjson is sorted by row: an L1 row is complete once L0 rows 2J and 2J+1 have been read. */
+async function* l1Jobs(tilesPath: string): AsyncGenerator<EncodeJob> {
+  const groups = new Map<string, Map<string, string>>();
+  const take = function* (keys: string[]): Generator<EncodeJob> {
+    for (const key of keys) {
+      const children = groups.get(key);
+      groups.delete(key);
+      if (children) yield { kind: 'l1', key, children: [...children.entries()] };
+    }
+  };
+  for await (const line of readNdjsonLines(tilesPath)) {
+    const key = tileKeyOfLine(line);
+    const parent = parentTileKey(key);
+    if (!parent) continue;
+    const rowJ = parseTileKey(key).j;
+    yield* take([...groups.keys()].filter((k) => 2 * parseTileKey(k).j + 1 < rowJ));
+    (groups.get(parent) ?? groups.set(parent, new Map()).get(parent))?.set(key, line);
+  }
+  yield* take([...groups.keys()]);
+}
 
 export const lodStage: PipelineStage = {
   id: LOD_STAGE_ID,
@@ -40,31 +62,16 @@ export const lodStage: PipelineStage = {
   run: async (ctx, outDir) => {
     await rm(join(outDir, 'tiles'), { recursive: true, force: true });
     const index: LodIndex = {};
-    const groups = new Map<string, Map<string, TileContent>>();
-    const flush = async (keys: string[]): Promise<void> => {
-      for (const key of keys) {
-        const children = groups.get(key);
-        groups.delete(key);
-        if (!children) continue;
-        const encoded = await encodeLodTile(buildL1Tile(key, children));
-        if (encoded.geom.bytes.length > TILE_BUDGET_MAX.bytes || encoded.triangles > TILE_BUDGET_MAX.triangles) {
-          throw new Error(`tile ${key} over budget: ${encoded.geom.bytes.length} bytes, ${encoded.triangles} triangles`);
-        }
-        const path = join(outDir, tileFilePath(key as TileKey, 'geom', encoded.geom.hash));
-        await mkdir(join(path, '..'), { recursive: true });
-        await writeFile(path, encoded.geom.bytes);
-        index[key] = { geom: encoded.geom.hash, bytes: encoded.geom.bytes.length, triangles: encoded.triangles };
-      }
+    const pool = createTileEncoderPool({ existing: [], options: {}, outDir });
+    const record = (t: EncodeJobResult): void => {
+      if (t.bytes > TILE_BUDGET_MAX.bytes || t.triangles > TILE_BUDGET_MAX.triangles) throw new Error(`tile ${t.key} over budget: ${t.bytes} bytes, ${t.triangles} triangles`);
+      index[t.key] = { geom: t.geom, bytes: t.bytes, triangles: t.triangles };
     };
-    // tiles.ndjson is sorted by row: an L1 row is complete once L0 rows 2J and 2J+1 have been read.
-    for await (const tile of readNdjson<TileContent>(ctx.outputOf(TILE_CUT_STAGE_ID, TILES_FILE))) {
-      const parent = parentTileKey(tile.key);
-      if (!parent) continue;
-      const rowJ = parseTileKey(tile.key).j;
-      await flush([...groups.keys()].filter((k) => 2 * parseTileKey(k).j + 1 < rowJ));
-      (groups.get(parent) ?? groups.set(parent, new Map()).get(parent))?.set(tile.key, tile);
+    try {
+      await mapOrdered(l1Jobs(ctx.outputOf(TILE_CUT_STAGE_ID, TILES_FILE)), (job) => pool.encode(job), record, inFlightFor(pool));
+    } finally {
+      await pool.close();
     }
-    await flush([...groups.keys()]);
     const sorted = Object.fromEntries(Object.entries(index).sort(([a], [b]) => (a < b ? -1 : 1)));
     await writeFile(join(outDir, LOD_INDEX_FILE), `${JSON.stringify(sorted, null, 2)}\n`);
     ctx.logger.info({ l1Tiles: Object.keys(sorted).length }, 'L1 tiles built');

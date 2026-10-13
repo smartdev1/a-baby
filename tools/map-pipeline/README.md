@@ -16,6 +16,8 @@ Deterministic (seeds derived from OSM ids), incremental, cross-platform. osmium 
 ```bash
 pnpm map:build --config tools/map-pipeline/config/fixture.pipeline.json          # incremental
 pnpm map:build --config tools/map-pipeline/config/fixture.pipeline.json --force  # re-run every stage
+pnpm map:build --config tools/map-pipeline/config/yopougon.pipeline.json --force-from 16-encode  # re-run from one stage on
+SKYLINE_PIPELINE_WORKERS=0 pnpm map:build …  # encoding on the main thread (default: one worker per core − 1)
 ```
 
 Output: `data/build/<commune>/stages/<nn>-<stage>/` (git-ignored). Folders: `src/cli` (command), `src/config` (validated config), `src/runner` (incremental runner), `src/determinism` (seeded RNG), `src/stages` (one folder per stage), `config/` (one file per commune).
