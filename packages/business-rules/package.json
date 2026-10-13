@@ -1,0 +1,14 @@
+{
+  "name": "@skyline/business-rules",
+  "version": "0.1.0",
+  "description": "Pure player-business rules: stock, margins, employment contracts, revenue sharing. Never writes balances.",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {}
+}

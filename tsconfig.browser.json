@@ -1,0 +1,10 @@
+{
+  "//": "Role: profile for browser code (apps/web): DOM, web workers, Vite client types.",
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "lib": ["ES2023", "DOM", "DOM.Iterable", "WebWorker.ImportScripts"],
+    "types": ["vite/client"],
+    "jsx": "react-jsx",
+    "jsxImportSource": "preact"
+  }
+}

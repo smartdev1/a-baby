@@ -1,0 +1,7 @@
+{
+  "//": "Role: TypeScript settings of @skyline/map-pipeline (node profile).",
+  "extends": "../../tsconfig.node.json",
+  "include": [
+    "src/**/*.ts"
+  ]
+}

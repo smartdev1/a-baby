@@ -1,3 +1,0 @@
-@echo off
-cd "C:\Users\Aristide Adouko\Downloads\a_baby\packages\game-config"
-node -e "const r=JSON.parse(require('fs').readFileSync('road-network.json','utf-8')); console.log('edges:', r.edges ? Object.keys(r.edges).slice(0,3) : 'none'); console.log('edges size:', r.edges ? r.edges.size : 'N/A'); console.log('intersections:', r.intersections ? r.intersections.length : 'N/A'); console.log('metadata:', r.metadata);"

@@ -1,0 +1,14 @@
+{
+  "name": "@skyline/sim-clock",
+  "version": "0.1.0",
+  "description": "Internal world clock: clock segments (ratio, pause), game calendar, opening-hour windows (ADR 0011).",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {}
+}

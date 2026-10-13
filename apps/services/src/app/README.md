@@ -1,0 +1,14 @@
+# `apps/services/src/app/`
+
+- **Owner:** backend developer
+- **Status:** Skeleton
+
+## Role
+
+Composition root: Fastify server, health endpoints, bus subscriptions.
+
+## Rules
+
+- Every source file starts with a `Role:` header comment.
+- Keep this README up to date when the folder content changes.
+- See `ARCHITECTURE.md` and `docs/rules/` for the full rules.

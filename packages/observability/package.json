@@ -1,0 +1,17 @@
+{
+  "name": "@skyline/observability",
+  "version": "0.1.0",
+  "description": "Structured logging (pino), OpenTelemetry metrics and trace context for all Node processes.",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@opentelemetry/api": "^1.9.1",
+    "pino": "^10.4.0"
+  }
+}

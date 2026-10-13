@@ -1,87 +1,32 @@
-# Node
+# Role: files and folders git must never track (dependencies, builds, secrets, generated map data, local agent role).
+
+# Dependencies and builds
 node_modules/
 dist/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
+coverage/
+*.tsbuildinfo
+.vite/
+playwright-report/
+test-results/
 
-# Build outputs
-/.turbo
-/.next
-
-# Environment
+# Environment and secrets
 .env
 .env.*
 !.env.example
 
-# Prisma
-prisma/*.sqlite
-prisma/*.sqlite-journal
+# Map pipeline: downloads and generated tiles are never committed (only data/sources/sources.lock.json)
+data/cache/
+data/build/
 
-# Logs
-logs
+# Local Claude Code state (each developer declares their own role)
+.claude/role.local
+.claude/*.lock
+.claude/settings.local.json
+CLAUDE.local.md
+
+# Logs and OS noise
 *.log
-
-# Runtime data
-pids
-*.pid
-*.seed
-*.pid.lock
-
-# Instrumented libs
-lib-cov
-
-# Coverage directory used by tools like istanbul
-coverage
-*.lcov
-
-# nyc test coverage
-.nyc_output
-
-# Grunt intermediate storage
-.grunt
-
-# Bower components
-bower_components
-
-# node-waf configuration
-.lock-wscript
-
-# Compiled binary addons
-build/Release
-
-# Dependency directories
-jspm_packages
-
-# TypeScript v1 definition files
-typings/
-
-# TypeScript cache
-*.tsbuildinfo
-
-# Optional npm cache directory
-.npm
-
-# Optional eslint cache
-.eslintcache
-
-# Microbundle cache
-.rpt2_cache
-.rts2_cache_CJ
-.rts2_cache_RT
-.rts2_cache_CJ
-
-# Storybook
-.out
-.storybook-out
-
-# Vercel
-.vercel
-
-# Vitest
-.vitest
-
-# Windows
+logs/
+.DS_Store
 Thumbs.db
 Desktop.ini

@@ -1,0 +1,10 @@
+# Role: normalizes line endings (LF everywhere, Windows-friendly) and marks binary assets.
+* text=auto eol=lf
+*.glb binary
+*.gltf text
+*.ktx2 binary
+*.png binary
+*.jpg binary
+*.blend binary
+*.bin binary
+*.pbf binary
