@@ -4,6 +4,7 @@
  */
 
 import type { RouteRelation } from './bus-routes.ts';
+import type { RoadGraphStats } from '../../roads/road-graph-types.ts';
 import { type CoverageStats, topEntries } from './coverage-stats.ts';
 
 export interface ReportFacts {
@@ -15,6 +16,7 @@ export interface ReportFacts {
   readonly busRoutes: readonly RouteRelation[] | null;
   /** Building-free L0 tiles inside the boundary, by land cover at their centre. */
   readonly gapTilesByCover: Readonly<Record<string, number>> | null;
+  readonly roadGraph: RoadGraphStats;
 }
 
 const countBy = <T>(items: readonly T[], keyOf: (item: T) => string): Record<string, number> => {
@@ -28,7 +30,7 @@ const int = (n: number): string => n.toLocaleString('en-US').replace(/,/g, ' ');
 const table = (header: string, rows: [string, string][]): string =>
   [`| ${header} | |`, '|---|---:|', ...rows.map(([a, b]) => `| ${a} | ${b} |`)].join('\n');
 
-export const renderReportMarkdown = ({ commune, snapshot, boundaryRelation, areaKm2, stats, busRoutes, gapTilesByCover }: ReportFacts): string => {
+export const renderReportMarkdown = ({ commune, snapshot, boundaryRelation, areaKm2, stats, busRoutes, gapTilesByCover, roadGraph }: ReportFacts): string => {
   const roads = topEntries(stats.roadKmByClass, 20).map(([k, km]): [string, string] => [k, `${km.toFixed(1)} km`]);
   const totalKm = Object.values(stats.roadKmByClass).reduce((a, b) => a + b, 0);
   const tilesWithBuildings = Object.keys(stats.buildingsPerTile).length;
@@ -70,6 +72,16 @@ export const renderReportMarkdown = ({ commune, snapshot, boundaryRelation, area
     '## POI categories (top 30)',
     '',
     table('Tag', topEntries(stats.poiCategories, 30).map(([k, n]) => [k, int(n)])),
+    '',
+    '## Road graph',
+    '',
+    table('Measure', [
+      ['Nodes / edges', `${int(roadGraph.nodes)} / ${int(roadGraph.edges)}`],
+      ['Routable length', `${roadGraph.lengthKm} km`],
+      ['Connected components', int(roadGraph.components)],
+      ['Largest component (share of length)', `${(roadGraph.largestComponentShare * 100).toFixed(1)} %`],
+      ['Streets with generated sidewalks', int(roadGraph.edgesWithGeneratedSidewalks)],
+    ]),
     '',
     '## Route relations by network',
     '',

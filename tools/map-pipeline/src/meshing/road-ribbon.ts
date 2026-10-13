@@ -1,39 +1,11 @@
 /**
- * Role: turns clipped road centre lines into flat ribbons at the real width of their highway class (road surface vs paths).
+ * Role: turns clipped road centre lines into flat ribbons at the real width of their highway class (widths from roads/road-classes.ts).
  * Owner: backend
  */
 
+import { isPathClass, roadWidthM } from '../roads/road-classes.ts';
 import type { LocalPoint } from '../tiling/tile-content.ts';
 import type { MeshBuffer } from './mesh-buffer.ts';
-
-/** Carriageway width in metres per `highway` class (typical Abidjan values, refined with lanes later). */
-const WIDTH_M: Readonly<Record<string, number>> = {
-  motorway: 14,
-  trunk: 12,
-  primary: 10,
-  secondary: 8,
-  tertiary: 7,
-  motorway_link: 6,
-  trunk_link: 6,
-  primary_link: 6,
-  secondary_link: 6,
-  tertiary_link: 5,
-  residential: 5.5,
-  unclassified: 5,
-  living_street: 4.5,
-  pedestrian: 4,
-  service: 3.5,
-  track: 3,
-  footway: 1.5,
-  path: 1.5,
-  steps: 1.5,
-  cycleway: 1.5,
-};
-
-const PATH_CLASSES = new Set(['footway', 'path', 'steps', 'cycleway', 'track', 'pedestrian']);
-
-export const roadWidthM = (roadClass: string): number => WIDTH_M[roadClass] ?? 4;
-export const isPathClass = (roadClass: string): boolean => PATH_CLASSES.has(roadClass);
 
 /** Slightly above the ground to avoid z-fighting; paths above roads where they cross. */
 const ROAD_Y_M = 0.05;
