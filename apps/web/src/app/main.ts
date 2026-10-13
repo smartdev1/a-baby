@@ -3,18 +3,20 @@
  * Owner: frontend
  */
 
+import { Vector3 } from '@babylonjs/core/Maths/math.vector';
 import { createEngine, createScene } from '../engine/create-engine.ts';
 import { createFlyCamera } from '../debug/fly-camera.ts';
 import { createPerfOverlay } from '../debug/perf-overlay.ts';
 
-const start = async (): Promise<void> => {
+const start = (): void => {
   const canvas = document.getElementById('render-canvas');
   if (!(canvas instanceof HTMLCanvasElement)) throw new Error('#render-canvas not found');
 
   const engine = createEngine(canvas);
   const scene = createScene(engine);
 
-  const camera = createFlyCamera(scene);
+  // No world loaded yet (tile loader: T-014): look at the scene origin.
+  const camera = createFlyCamera(scene, Vector3.Zero());
   const overlay = createPerfOverlay(document.body);
 
   engine.runRenderLoop(() => {
@@ -24,6 +26,8 @@ const start = async (): Promise<void> => {
   window.addEventListener('resize', () => engine.resize());
 };
 
-start().catch((error: unknown) => {
+try {
+  start();
+} catch (error: unknown) {
   console.error('SkyLine client failed to start', error);
-});
+}

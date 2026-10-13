@@ -4,10 +4,12 @@
  */
 
 import {
+  type CellHandoff,
+  type CellSnapshot,
   type CellInput,
   type CellJoin,
-  type CellLeave,
   type MessageBus,
+  type SessionClosed,
   subjects,
   type Unsubscribe,
 } from '@skyline/bus';
@@ -74,7 +76,11 @@ export class ZoneCell {
   tickStats(): TickStatsSnapshot & { handoffsIn: number; handoffP95Ms: number } {
     const sorted = [...this.handoffMs].sort((a, b) => a - b);
     const p95 = sorted[Math.min(sorted.length - 1, Math.floor(sorted.length * 0.95))] ?? 0;
-    return { ...this.stats.snapshot(this.players.size), handoffsIn: this.handoffMs.length, handoffP95Ms: Math.round(p95 * 100) / 100 };
+    return {
+      ...this.stats.snapshot(this.players.size),
+      handoffsIn: this.handoffMs.length,
+      handoffP95Ms: Math.round(p95 * 100) / 100,
+    };
   }
 
   /** One simulation tick (public for tests). */
@@ -99,12 +105,27 @@ export class ZoneCell {
 
   private async join(sessionId: string): Promise<void> {
     const { spawn } = this.options;
+    const y = this.options.world.groundHeightAt(spawn.x, spawn.z);
     const state: CharacterState = {
-      position: { x: spawn.x, y: 0, z: spawn.z },
+      position: { x: spawn.x, y, z: spawn.z },
       velocity: { x: 0, y: 0, z: 0 },
       grounded: true,
     };
-    const player = new PlayerSlot(sessionId, this.nextEntityId++, state);
+    await this.welcome(new PlayerSlot(sessionId, entityIdOf(sessionId), state));
+  }
+
+  /** A player handed over by a neighbour cell keeps its state, sequence and entity id. */
+  private async adopt(h: CellHandoff): Promise<void> {
+    const player = new PlayerSlot(h.sessionId, h.entityId, stateFromHandoff(h, this.options.frameOrigin));
+    player.lastSeq = h.lastSeq;
+    player.lastInput = { ...player.lastInput, yawRad: h.yawRad };
+    this.handoffMs.push(Date.now() - h.sentAtMs);
+    if (this.handoffMs.length > 10_000) this.handoffMs.shift();
+    await this.welcome(player);
+  }
+
+  private async welcome(player: PlayerSlot): Promise<void> {
+    const { sessionId } = player;
     this.players.set(sessionId, player);
     this.send(sessionId, {
       type: 'welcome',
@@ -174,21 +195,27 @@ export class ZoneCell {
       player.state = { ...before, velocity: { x: 0, y: before.velocity.y, z: 0 } };
       return false;
     }
-    this.options.bus.publish(subjects.cellHandoff(target), toHandoff({ ...player, yawRad: player.lastInput.yawRad }, this.options.frameOrigin, Date.now()));
+    this.options.bus.publish(
+      subjects.cellHandoff(target),
+      toHandoff({ ...player, yawRad: player.lastInput.yawRad }, this.options.frameOrigin, Date.now()),
+    );
     this.players.delete(player.sessionId);
     this.forwarding.add(player.sessionId, target, this.tick);
     return true;
   }
 
   private broadcastSnapshot(): void {
-    const entities: EntityState[] = [...this.players.values()].slice(0, MAX_SNAPSHOT_ENTITIES).map((p) => ({
-      id: p.entityId,
-      position: p.state.position,
-      yawRad: p.lastInput.yawRad,
-      state: entityStateCode(p.state),
-    }));
-    for (const player of this.players.values())
-      this.send(player.sessionId, { type: 'snapshot', body: { tick: this.tick, entities } });
+    if (this.players.size === 0) return;
+    const entities: EntityState[] = [...this.players.values()]
+      .slice(0, MAX_SNAPSHOT_ENTITIES)
+      .map((p) => ({
+        id: p.entityId,
+        position: p.state.position,
+        yawRad: p.lastInput.yawRad,
+        state: entityStateCode(p.state),
+      }));
+    const snapshot: CellSnapshot = { type: 'snapshot', body: { tick: this.tick, entities } };
+    this.options.bus.publish(subjects.cellSnapshot(this.options.cellKey), snapshot);
   }
 
   private send(sessionId: string, message: ServerMessage): void {
