@@ -535,6 +535,7 @@ Les tests unitaires vivent **à côté** du code (`foo.ts` / `foo.test.ts`) ; `t
 | `apps/zone` | ✔ | ✔ | **✘** | ✘ | ✔ | ✘ |
 | `apps/services` | ✔ | ✔ | ✔ | ✘ | ✔ | ✘ |
 | `tools/*` | ✔ | `observability` | ✘ | ✘ | ✔ | ✘ |
+| `apps/all-in-one` (composition uniquement, ADR 0013) | ✔ | ✔ | ✘ | ✘ | ✔ | **`src/index.ts` public de `gateway`, `zone`, `services` uniquement** |
 
 Au sein d'une app, la même logique s'applique : `apps/web/src/world-render` n'importe pas `ui`, `ui` n'importe pas `world-render` ; ils communiquent par des stores (signals) exposés par `app/`. Dans `apps/services/src/modules/X`, un module n'importe jamais `infra/` d'un autre module, seulement son `application/` public.
 
@@ -1366,6 +1367,7 @@ Légende : **Garder** (en place) · **Déplacer** · **Réécrire** (la logique 
 | [0010](docs/adr/0010-noms-lieux-toponymie-reelle-marques-parodiees.md) | Toponymie réelle, marques et commerces parodiés de façon déterministe, avec garde-fous | Acceptée (propriétaire) |
 | [0011](docs/adr/0011-horloge-interne-du-monde.md) | Horloge interne du monde, autoritaire, ratio configurable, règle hors ligne | Acceptée (propriétaire) ; ratio et règle hors ligne à valider |
 | [0012](docs/adr/0012-invite-uniquement-extension-compte.md) | Profil invité uniquement au MVP, compte permanent en point d'extension | Acceptée (propriétaire) |
+| [0013](docs/adr/0013-all-in-one-composition-app.md) | `apps/all-in-one` : seule app autorisée à importer d'autres apps, via leur `src/index.ts` public | Acceptée (propriétaire, 13/10/2026) |
 
 ---
 
