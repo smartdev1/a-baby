@@ -47,7 +47,8 @@ export const runPipeline = async ({ repoRoot, config, stages, logger, force = fa
 
     logger.info({ stage: stage.id }, 'stage running');
     await stage.run(ctx, outDir);
-    await writeCache(stage, outDir, inputHash);
+    // Recomputed after the run: a stage may create one of its own inputs (01-acquire downloads the snapshot it declares).
+    await writeCache(stage, outDir, await computeInputHash(stage, ctx));
     reports.push({ id: stage.id, status: 'ran', durationMs: performance.now() - startedAt });
   }
   return reports;

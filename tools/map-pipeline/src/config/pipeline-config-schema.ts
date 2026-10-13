@@ -25,6 +25,10 @@ const OsmSnapshotSource = z.object({
   lockFile: RepoRelativePath,
 });
 
+const BboxLonLat = z
+  .tuple([z.number().min(-180).max(180), z.number().min(-90).max(90), z.number().min(-180).max(180), z.number().min(-90).max(90)])
+  .refine(([west, south, east, north]) => west < east && south < north, 'bbox must be [west, south, east, north]');
+
 export const PipelineConfigSchema = z
   .object({
     /** Machine name, lower-case kebab: `yopougon`. */
@@ -36,12 +40,18 @@ export const PipelineConfigSchema = z
     boundary: z.object({
       /** OSM relation of the administrative boundary; null until confirmed by spike SP2 (T-018). */
       osmRelationId: z.number().int().positive().nullable(),
+      /** [west, south, east, north] in degrees, used while the relation is unknown. */
+      provisionalBboxLonLat: BboxLonLat.nullable().default(null),
     }),
     /** Margin kept around the boundary, in metres. */
     marginM: z.number().min(0).max(5_000),
     /** Repository-relative build folder (git-ignored under data/build/). */
     outputDir: RepoRelativePath,
   })
-  .strict();
+  .strict()
+  .refine((c) => c.source.kind !== 'osm-snapshot' || c.boundary.osmRelationId !== null || c.boundary.provisionalBboxLonLat !== null, {
+    message: 'an osm-snapshot source needs boundary.osmRelationId or boundary.provisionalBboxLonLat',
+    path: ['boundary'],
+  });
 
 export type PipelineConfig = z.infer<typeof PipelineConfigSchema>;

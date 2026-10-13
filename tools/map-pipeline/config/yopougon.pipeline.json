@@ -6,7 +6,15 @@
     "kind": "osm-snapshot",
     "lockFile": "data/sources/sources.lock.json"
   },
-  "boundary": { "osmRelationId": null },
+  "boundary": {
+    "osmRelationId": null,
+    "provisionalBboxLonLat": [
+      -4.175,
+      5.295,
+      -4.005,
+      5.43
+    ]
+  },
   "marginM": 300,
   "outputDir": "data/build/yopougon"
 }

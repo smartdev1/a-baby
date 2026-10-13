@@ -1,10 +1,17 @@
 /**
- * Role: ordered list of the pipeline stages. Adding a stage = one new folder under stages/ + one line here.
+ * Role: ordered list of the pipeline stages for a config. Adding a stage = one new folder under stages/ + one line here.
  * Owner: backend
  */
 
+import type { PipelineConfig } from '../config/pipeline-config-schema.ts';
 import type { PipelineStage } from '../runner/stage-contract.ts';
+import { createAcquireStage } from './01-acquire/acquire-stage.ts';
 import { sourceStage } from './01-source/source-stage.ts';
+import { createExtractStage } from './02-extract/extract-stage.ts';
+import { createExportStage } from './03-export/export-stage.ts';
 
-/** Execution order (ARCHITECTURE §11.2). Business stages arrive with T-011, T-012 and T-022. */
-export const PIPELINE_STAGES: readonly PipelineStage[] = [sourceStage];
+/** Execution order (ARCHITECTURE §11.2). Both source kinds end with 03-export → features.geojsonseq. */
+export const stagesFor = (config: PipelineConfig): PipelineStage[] =>
+  config.source.kind === 'osm-snapshot'
+    ? [createAcquireStage(), createExtractStage(), createExportStage()]
+    : [sourceStage, createExportStage()];
