@@ -37,6 +37,8 @@ export interface TilePlaceEntry {
   readonly category: string;
   readonly position: LocalPoint;
   readonly buildingId: OsmId | null;
+  /** From stage 09-naming only (ADR 0010). */
+  readonly displayName: string | null;
 }
 
 export interface TileContent {

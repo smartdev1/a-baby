@@ -9,7 +9,7 @@ Pipeline stages, one folder per stage named `<nn>-<name>` (ARCHITECTURE §11.2).
 
 ## How it works
 
-`stage-registry.ts` (`stagesFor(config)`) lists the stages in execution order: fixture = `01-source → 03-export`; OSM snapshot = `01-acquire → 02-extract → 03-export`; then both `04-normalize → 05-classify → 06-heights → 08-roads → 14-tile-cut → 16-encode → 17-manifest → 18-report`. `pipeline-golden.test.ts` checks byte-identical outputs on the fixture. Adding a stage = a new folder with a `PipelineStage` implementation + its README + one line in the registry.
+`stage-registry.ts` (`stagesFor(config)`) lists the stages in execution order: fixture = `01-source → 03-export`; OSM snapshot = `01-acquire → 02-extract → 03-export`; then both `04-normalize → 05-classify → 06-heights → 08-roads → 09-naming → 14-tile-cut → 16-encode → 17-manifest → 18-report`. `pipeline-golden.test.ts` checks byte-identical outputs on the fixture. Adding a stage = a new folder with a `PipelineStage` implementation + its README + one line in the registry.
 
 | Stage | Status |
 |---|---|
@@ -22,6 +22,7 @@ Pipeline stages, one folder per stage named `<nn>-<name>` (ARCHITECTURE §11.2).
 | `05-classify` | Active (buildings, place categories, roads) |
 | `06-heights` | Active (levels and heights with source) |
 | `08-roads` | Active (road and pedestrian graph, sidewalks, components) |
+| `09-naming` | Active (displayed names: toponyms, parodied brands, deformed shop names) |
 | `14-tile-cut` | Active (250 m tiles, clipped geometry) |
 | `16-encode` | Active (geom.glb, collision.bin, meta.json, budgets) |
 | `17-manifest` | Active (world manifest of the release) |

@@ -59,8 +59,7 @@ const metaOf = (tile: TileContent, existing: ReadonlySet<string>): TileMeta =>
     formatVersion: 0,
     tileKey: tile.key,
     buildings: tile.buildingMeta.map((b) => ({ id: b.id, type: b.type, levels: b.levels, heightM: b.heightM, heightSource: b.heightSource })),
-    // displayName is produced by the naming stage (ADR 0010, J2); null until then.
-    places: tile.places.map((p) => ({ id: p.id, category: p.category, displayName: null, position: { x: p.position[0], z: p.position[1] }, buildingId: p.buildingId })),
+    places: tile.places.map((p) => ({ id: p.id, category: p.category, displayName: p.displayName, position: { x: p.position[0], z: p.position[1] }, buildingId: p.buildingId })),
     neighbours: neighbourKeys(tile.key).filter((k) => existing.has(k)),
   });
 

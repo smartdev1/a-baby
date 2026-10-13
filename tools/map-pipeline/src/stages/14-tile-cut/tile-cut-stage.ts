@@ -10,18 +10,23 @@ import type { PipelineStage } from '../../runner/stage-contract.ts';
 import { TileCutter } from '../../tiling/tile-cutter.ts';
 import { CLASSIFIED_FILE, CLASSIFY_STAGE_ID } from '../05-classify/classify-stage.ts';
 import { BUILDINGS_FILE, HEIGHTS_STAGE_ID } from '../06-heights/heights-stage.ts';
+import { NAMING_STAGE_ID, PLACE_NAMES_FILE } from '../09-naming/naming-stage.ts';
+import type { PlaceName } from '../../naming/name-place.ts';
 
 export const TILE_CUT_STAGE_ID = '14-tile-cut';
 export const TILES_FILE = 'tiles.ndjson';
 
 export const tileCutStage: PipelineStage = {
   id: TILE_CUT_STAGE_ID,
-  version: 1,
+  // v2: places carry their displayed name (09-naming).
+  version: 2,
   outputs: [TILES_FILE],
-  inputFiles: (ctx) => [ctx.outputOf(HEIGHTS_STAGE_ID, BUILDINGS_FILE), ctx.outputOf(CLASSIFY_STAGE_ID, CLASSIFIED_FILE)],
+  inputFiles: (ctx) => [ctx.outputOf(HEIGHTS_STAGE_ID, BUILDINGS_FILE), ctx.outputOf(CLASSIFY_STAGE_ID, CLASSIFIED_FILE), ctx.outputOf(NAMING_STAGE_ID, PLACE_NAMES_FILE)],
   params: () => ({ tileSizeM: 250 }),
   run: async (ctx, outDir) => {
-    const cutter = new TileCutter();
+    const names = new Map<string, string | null>();
+    for await (const n of readNdjson<PlaceName>(ctx.outputOf(NAMING_STAGE_ID, PLACE_NAMES_FILE))) names.set(n.id, n.displayName);
+    const cutter = new TileCutter(names);
     for await (const b of readNdjson<BuildingRecord>(ctx.outputOf(HEIGHTS_STAGE_ID, BUILDINGS_FILE))) cutter.addBuilding(b);
     for await (const r of readNdjson<ClassifiedRecord>(ctx.outputOf(CLASSIFY_STAGE_ID, CLASSIFIED_FILE))) cutter.addClassified(r);
     const count = await writeNdjson(join(outDir, TILES_FILE), cutter.sortedTiles());

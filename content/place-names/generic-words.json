@@ -1,0 +1,14 @@
+{
+  "note": "Common words kept as they are in shop names (lower case, accents ignored). Only the other words (proper nouns) are deformed.",
+  "words": [
+    "le", "la", "les", "l", "de", "du", "des", "d", "et", "a", "au", "aux", "en", "chez", "un", "une", "sur", "pour", "par", "the", "of", "and", "plus", "&",
+    "maquis", "restaurant", "resto", "boutique", "kiosque", "cafe", "express", "garba", "garbadrome", "buvette", "traditionnelle", "traditionelle", "cave", "bar", "bistro", "bistrot",
+    "cafetariat", "cafeteria", "boulangerie", "patisserie", "superette", "supermarche", "marche", "alimentation", "alimentaire", "grossiste", "grosiste", "depot", "boissons", "boisson", "gaz",
+    "coiffure", "salon", "dame", "dames", "homme", "hommes", "beaute", "cosmetique", "cosmetiques", "vente", "mercerie", "couture", "tailleur", "pressing", "blanchisserie", "lavage",
+    "garage", "auto", "moto", "quincaillerie", "quincallerie", "general", "generale", "imprimerie", "librairie", "papeterie", "photocopie", "cyber", "cybercafe", "bijouterie", "electromenager",
+    "magasin", "stockage", "sacs", "chaussures", "vetements", "plastique", "poissonnerie", "poissons", "vendeuse", "atieke", "attieke", "alloco", "dibi", "braise", "poulet", "poisson",
+    "pharmacie", "clinique", "cabinet", "medical", "centre", "sante", "hotel", "residence", "auberge", "motel", "service", "services", "telephone", "transfert", "argent", "mobile", "money",
+    "agence", "point", "station", "lavage", "mecanique", "menuiserie", "soudure", "atelier", "electricite", "plomberie", "peinture", "vitrerie", "ets", "etablissement", "etablissements", "sarl", "sa", "ci",
+    "yopougon", "yop", "abidjan", "cote", "ivoire", "siporex", "niangon", "selmer", "sicogi", "andokoi", "kouté", "koute", "toits", "rouges", "wassakara", "gesco", "maroc", "banco"
+  ]
+}

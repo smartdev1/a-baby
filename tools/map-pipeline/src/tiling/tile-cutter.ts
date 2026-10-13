@@ -25,6 +25,9 @@ const linesOf = (g: UtmGeometry): readonly (readonly UtmPoint[])[] =>
 export class TileCutter {
   private readonly tiles = new Map<string, TileContent>();
 
+  /** Displayed names by place id, produced by stage 09-naming. */
+  constructor(private readonly displayNames: ReadonlyMap<string, string | null> = new Map()) {}
+
   private tile(key: string): TileContent {
     let content = this.tiles.get(key);
     if (!content) {
@@ -51,7 +54,13 @@ export class TileCutter {
       const point = representativePoint(r.geometry);
       const key = tileOfPoint(point);
       if (key) {
-        this.tile(key).places.push({ id: r.id, category: r.placeCategory, position: toLocal(point, tileOrigin(key)), buildingId: r.isBuilding ? r.id : null });
+        this.tile(key).places.push({
+          id: r.id,
+          category: r.placeCategory,
+          position: toLocal(point, tileOrigin(key)),
+          buildingId: r.isBuilding ? r.id : null,
+          displayName: this.displayNames.get(r.id) ?? null,
+        });
       }
     }
   }
