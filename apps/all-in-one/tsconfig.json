@@ -1,0 +1,5 @@
+{
+  "//": "Role: TypeScript settings of @skyline/all-in-one (node profile).",
+  "extends": "../../tsconfig.node.json",
+  "include": ["src/**/*.ts"]
+}

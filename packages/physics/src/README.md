@@ -1,18 +1,14 @@
 # `packages/physics/src/`
 
 - **Owner:** backend developer
-- **Status:** Skeleton — J1
+- **Status:** Active — T-106
 
 ## Role
 
-Source code of @skyline/physics.
-
-## How it works
-
-Unit tests live next to the code (`*.test.ts`).
-
-## Rules
-
-- Every source file starts with a `Role:` header comment.
-- Keep this README up to date when the folder content changes.
-- See `ARCHITECTURE.md` and `docs/rules/` for the full rules.
+| File | Role |
+|---|---|
+| `index.ts` | Public API |
+| `physics-types.ts` | `Vec3`, `CharacterState`, `MoveInput`, tuning `DEFAULT_CHARACTER`, `FIXED_STEP_S` |
+| `collision-world.ts` | Tiles in a common frame: ground height, prism grid queries |
+| `polygon-math.ts` | Point-in-polygon, closest boundary point, circle push-out |
+| `character-controller.ts` | `stepCharacter`, `supportHeightAt` |

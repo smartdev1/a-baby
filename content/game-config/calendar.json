@@ -1,0 +1,15 @@
+{
+  "hoursPerDay": 24,
+  "weekdays": [
+    "calendar.weekday.monday",
+    "calendar.weekday.tuesday",
+    "calendar.weekday.wednesday",
+    "calendar.weekday.thursday",
+    "calendar.weekday.friday",
+    "calendar.weekday.saturday",
+    "calendar.weekday.sunday"
+  ],
+  "monthDays": [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31],
+  "firstWeekday": 0,
+  "startYear": 2026
+}

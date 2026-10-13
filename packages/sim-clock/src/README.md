@@ -1,18 +1,13 @@
 # `packages/sim-clock/src/`
 
 - **Owner:** backend developer
-- **Status:** Skeleton — J3
+- **Status:** Active — T-109
 
-## Role
-
-Source code of @skyline/sim-clock.
-
-## How it works
-
-Unit tests live next to the code (`*.test.ts`).
-
-## Rules
-
-- Every source file starts with a `Role:` header comment.
-- Keep this README up to date when the folder content changes.
-- See `ARCHITECTURE.md` and `docs/rules/` for the full rules.
+| File | Role |
+|---|---|
+| `index.ts` | Public API |
+| `clock-segment.ts` | Segments, game minutes, ratio change, pause / resume |
+| `game-calendar.ts` | Game date from game minutes |
+| `time-windows.ts` | Opening windows, overnight support, `HH:MM` parsing |
+| `clock-sync.ts` | Server clock offset from ping / pong samples |
+| `clock-config-schema.ts` | Zod schemas of `clock.json` and `calendar.json` |

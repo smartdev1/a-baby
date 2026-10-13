@@ -1,14 +1,12 @@
 # `apps/zone/src/world-data/`
 
 - **Owner:** backend developer
-- **Status:** Planned — J1
+- **Status:** Active — T-108
 
 ## Role
 
-Loads collisions, action sites and stops from the tiles of the cell (+ margin).
+`cell-collision-loader.ts`: loads the collision tiles of a cell + neighbour ring from a pipeline release; frame origin = cell south-west corner.
 
 ## Rules
 
-- Every source file starts with a `Role:` header comment.
-- Keep this README up to date when the folder content changes.
-- See `ARCHITECTURE.md` and `docs/rules/` for the full rules.
+- Every source file starts with a `Role:` header comment; keep this README up to date.

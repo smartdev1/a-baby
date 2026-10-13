@@ -22,6 +22,8 @@ const CHECKED_OUTPUTS = [
   '04-normalize/normalized.ndjson',
   '05-classify/classified.ndjson',
   '06-heights/buildings.ndjson',
+  '08-roads/road-edges.ndjson',
+  '08-roads/road-stats.json',
   '14-tile-cut/tiles.ndjson',
   '16-encode/encode-index.json',
   '17-manifest/world-manifest.pigeons-fixture-2026-10-13.json',

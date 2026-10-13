@@ -209,11 +209,48 @@ importers:
         specifier: ^5.0.4
         version: 5.0.4(@opentelemetry/api@1.9.1)(@types/node@26.6.5)(@vitest/coverage-v8@5.0.4)(vite@8.3.4(@types/node@26.6.5)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))
 
+  apps/all-in-one:
+    dependencies:
+      '@skyline/bus':
+        specifier: workspace:*
+        version: link:../../packages/bus
+      '@skyline/gateway':
+        specifier: workspace:*
+        version: link:../gateway
+      '@skyline/geo':
+        specifier: workspace:*
+        version: link:../../packages/geo
+      '@skyline/observability':
+        specifier: workspace:*
+        version: link:../../packages/observability
+      '@skyline/protocol':
+        specifier: workspace:*
+        version: link:../../packages/protocol
+      '@skyline/services':
+        specifier: workspace:*
+        version: link:../services
+      '@skyline/zone':
+        specifier: workspace:*
+        version: link:../zone
+      ws:
+        specifier: ^8.22.0
+        version: 8.22.0
+      zod:
+        specifier: ^4.6.6
+        version: 4.6.6
+    devDependencies:
+      '@types/ws':
+        specifier: ^8.18.2
+        version: 8.18.2
+
   apps/gateway:
     dependencies:
       '@msgpack/msgpack':
         specifier: ^3.1.3
         version: 3.1.3
+      '@skyline/bus':
+        specifier: workspace:*
+        version: link:../../packages/bus
       '@skyline/observability':
         specifier: workspace:*
         version: link:../../packages/observability
@@ -242,6 +279,9 @@ importers:
       '@skyline/observability':
         specifier: workspace:*
         version: link:../../packages/observability
+      '@skyline/sim-clock':
+        specifier: workspace:*
+        version: link:../../packages/sim-clock
       fastify:
         specifier: ^5.12.5
         version: 5.12.5
@@ -282,12 +322,33 @@ importers:
 
   apps/zone:
     dependencies:
+      '@skyline/bus':
+        specifier: workspace:*
+        version: link:../../packages/bus
+      '@skyline/geo':
+        specifier: workspace:*
+        version: link:../../packages/geo
       '@skyline/observability':
         specifier: workspace:*
         version: link:../../packages/observability
+      '@skyline/physics':
+        specifier: workspace:*
+        version: link:../../packages/physics
+      '@skyline/protocol':
+        specifier: workspace:*
+        version: link:../../packages/protocol
+      '@skyline/sim-clock':
+        specifier: workspace:*
+        version: link:../../packages/sim-clock
+      '@skyline/tile-format':
+        specifier: workspace:*
+        version: link:../../packages/tile-format
 
   packages/bus:
     dependencies:
+      '@skyline/protocol':
+        specifier: workspace:*
+        version: link:../protocol
       nats:
         specifier: ^2.29.3
         version: 2.29.3
@@ -325,7 +386,11 @@ importers:
         specifier: ^10.4.0
         version: 10.4.0
 
-  packages/physics: {}
+  packages/physics:
+    dependencies:
+      '@skyline/tile-format':
+        specifier: workspace:*
+        version: link:../tile-format
 
   packages/protocol:
     dependencies:
@@ -342,7 +407,11 @@ importers:
         specifier: ^4.6.6
         version: 4.6.6
 
-  packages/sim-clock: {}
+  packages/sim-clock:
+    dependencies:
+      zod:
+        specifier: ^4.6.6
+        version: 4.6.6
 
   packages/sim-needs: {}
 
@@ -420,6 +489,9 @@ importers:
       '@skyline/observability':
         specifier: workspace:*
         version: link:../../packages/observability
+      '@skyline/physics':
+        specifier: workspace:*
+        version: link:../../packages/physics
       '@skyline/tile-format':
         specifier: workspace:*
         version: link:../../packages/tile-format

@@ -40,6 +40,18 @@ export default tseslint.config(
     },
   },
   {
+    // Game rules use the world clock only (ADR 0011): no real-time clock in simulation and rule packages.
+    files: ['packages/sim-*/src/**/*.ts', 'packages/economy-rules/src/**/*.ts', 'packages/business-rules/src/**/*.ts'],
+    ignores: ['**/*.test.ts'],
+    rules: {
+      'no-restricted-syntax': [
+        'error',
+        { selector: "MemberExpression[object.name='Date'][property.name='now']", message: 'Use the world clock segment, not Date.now() (ADR 0011).' },
+        { selector: "NewExpression[callee.name='Date']", message: 'Use the world clock segment, not new Date() (ADR 0011).' },
+      ],
+    },
+  },
+  {
     files: ['tools/latency-probe/page/**/*.mjs'],
     languageOptions: { globals: { ...globals.browser } },
   },

@@ -13,6 +13,7 @@ import type { PipelineStage, StageContext } from '../../runner/stage-contract.ts
 import { loadSourcesLockSync } from '../../sources/sources-lock.ts';
 import { BOUNDARY_FILE, COMMUNE_PBF_FILE, EXTRACT_STAGE_ID } from '../02-extract/extract-stage.ts';
 import { EXPORT_STAGE_ID, FEATURES_FILE } from '../03-export/export-stage.ts';
+import { ROAD_STATS_FILE, ROADS_STAGE_ID } from '../08-roads/roads-stage.ts';
 import { parseRouteRelations, type RouteRelation } from './bus-routes.ts';
 import { addFeature, emptyStats } from './coverage-stats.ts';
 import { classifyGapTiles } from './gap-tiles.ts';
@@ -20,6 +21,7 @@ import { GapCover } from './gap-cover.ts';
 import { boundaryUtmBounds, renderDensitySvg, utmToLonLatFactory } from './density-svg.ts';
 import { readFeatures } from './feature-stream.ts';
 import { renderReportMarkdown } from './report-markdown.ts';
+import type { RoadGraphStats } from '../../roads/road-graph-types.ts';
 
 export const REPORT_STAGE_ID = '18-report';
 const OUTPUTS = ['coverage-report.json', 'coverage-report.md', 'building-density.svg'] as const;
@@ -49,10 +51,11 @@ const snapshotLabel = (ctx: StageContext): string =>
 
 export const createReportStage = (osmium: RunOsmium = runOsmium, checkImage = ensureOsmiumImage): PipelineStage => ({
   id: REPORT_STAGE_ID,
-  version: 3,
+  version: 4,
   outputs: OUTPUTS,
   inputFiles: (ctx) => [
     ctx.outputOf(EXPORT_STAGE_ID, FEATURES_FILE),
+    ctx.outputOf(ROADS_STAGE_ID, ROAD_STATS_FILE),
     ...(isSnapshot(ctx) ? [ctx.outputOf(EXTRACT_STAGE_ID, BOUNDARY_FILE), ctx.outputOf(EXTRACT_STAGE_ID, COMMUNE_PBF_FILE)] : []),
   ],
   params: (ctx) => ({ commune: ctx.config.commune, image: isSnapshot(ctx) ? OSMIUM_IMAGE : null }),
@@ -74,6 +77,7 @@ export const createReportStage = (osmium: RunOsmium = runOsmium, checkImage = en
       stats,
       busRoutes: await loadBusRoutes(ctx, osmium, outDir),
       gapTilesByCover: boundary ? classifyGapTiles(stats.buildingsPerTile, boundary, cover) : null,
+      roadGraph: JSON.parse(await readFile(ctx.outputOf(ROADS_STAGE_ID, ROAD_STATS_FILE), 'utf8')) as RoadGraphStats,
     };
     const svg = renderDensitySvg(
       { buildingsPerTile: stats.buildingsPerTile, boundary, title: `${ctx.config.displayName} — building density (OSM)` },

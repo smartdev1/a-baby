@@ -1,7 +1,7 @@
 # `packages/bus/`
 
 - **Owner:** backend developer
-- **Status:** Skeleton — J5
+- **Status:** Active — in-memory bus + typed world subjects (T-108); NATS in J5
 
 ## Role
 

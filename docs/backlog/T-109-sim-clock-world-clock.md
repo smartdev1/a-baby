@@ -1,9 +1,9 @@
 ---
 id: T-109
 title: `@skyline/sim-clock` + `world-clock` module: internal world clock, ratio, calendar
-status: todo
+status: review
 owner: backend
-author_of_code:
+author_of_code: backend-dev (Claude, for Ky-Wilson)
 priority: P0
 size: M
 ---
@@ -17,10 +17,10 @@ Jalon : **J1** (`docs/roadmap.md`, J1-14 (server side)). Dépend de : T-004. Dé
 As a player, I want the same game time as everyone else so that shops open and night falls for all.
 
 ## Acceptance criteria
-- [ ] Given `content/game-config/clock.json` (ratio, default 1 game day = 2 real hours) and `calendar.json`, Then `sim-clock` converts real time ↔ game time through clock segments (ratio changes and pauses keep continuity).
-- [ ] Given the services module `world-clock`, Then the current segment is persisted and published; the zone sends `world_clock` to clients.
-- [ ] Given a client drift correction test, Then the displayed game time stays within 1 game minute of the server.
-- [ ] Given rules, Then no game rule uses `Date.now()` (lint rule or test).
+- [x] Given `content/game-config/clock.json` (ratio, default 1 game day = 2 real hours) and `calendar.json`, Then `sim-clock` converts real time ↔ game time through clock segments (ratio changes and pauses keep continuity).
+- [x] Given the services module `world-clock`, Then the current segment is persisted and published; the zone sends `world_clock` to clients.
+- [x] Given a client drift correction test, Then the displayed game time stays within 1 game minute of the server.
+- [x] Given rules, Then no game rule uses `Date.now()` (lint rule or test).
 
 ## Out of scope
 - Offline rules for needs and rents (J3/J6).
@@ -31,7 +31,11 @@ ADR 0011. Client day/night rendering by the frontend.
 Règles : `docs/rules/BACKEND.md`, ARCHITECTURE.md §9. Toute nouvelle dépendance ou source de données exige l'accord du propriétaire.
 
 ## Implementation log
-(filled by the implementer)
+- 2026-10-13 — `@skyline/sim-clock` (pure): clock segments with continuous ratio changes / pauses, game calendar, overnight opening windows, client offset estimation (fastest third of ping/pong samples, median), Zod schemas of `content/game-config/clock.json` (ratio 12, start at 06:00) and `calendar.json`.
+- Services module `world-clock`: `WorldClockService` + `ClockSegmentStore` port, in-memory and atomic file stores (`data/runtime/world-clock.json`, git-ignored, until J6), `GET /api/v1/world-clock` (`{ segment, serverTimeMs }`); wired in `apps/services` main (content and runtime folders configurable by env).
+- The zone sends the `world_clock` protocol message (T-107 schema) once it exists (T-108).
+- ESLint: `Date.now()` and `new Date()` forbidden in `sim-*`, `economy-rules`, `business-rules`.
+- Tests: 7 (sim-clock) + 3 (module, incl. restart persistence and HTTP); drift estimate within 20 ms on jittery samples (1 game minute = 5 s real).
 
 ## Review
 (filled by tech-lead-po)
