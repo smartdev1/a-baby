@@ -2,7 +2,7 @@
 id: T-021
 title: i18n foundation: @skyline/i18n, fr-CI catalogues, no hard-coded text rule
 status: todo
-owner: fullstack-devops
+owner: frontend
 author_of_code:
 priority: P0
 size: S

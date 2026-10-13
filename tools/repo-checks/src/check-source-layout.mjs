@@ -7,7 +7,7 @@ const SOURCE = /\.(ts|tsx)$/;
 const TEST = /\.test\.tsx?$/;
 const MAX_SOURCE_FILES_PER_DIR = 12;
 const FORBIDDEN_NAME = /(^|\/)(utils|helpers|common|misc|stuff|core)\.(ts|tsx)$|Manager\.(ts|tsx)$/i;
-const EXEMPT = /^(tools\/map-pipeline\/legacy|docs\/archive)\//;
+const EXEMPT = /^docs\/archive\//;
 
 export const checkSourceLayout = (files) => {
   const sources = files.filter((f) => SOURCE.test(f) && !TEST.test(f) && !f.endsWith('.d.ts') && !EXEMPT.test(f));

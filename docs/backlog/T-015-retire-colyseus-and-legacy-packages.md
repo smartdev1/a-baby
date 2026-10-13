@@ -1,9 +1,9 @@
 ---
 id: T-015
 title: Retire Colyseus server skeleton, contracts, game-config and archive the Prisma schema
-status: todo
-owner: fullstack-devops
-author_of_code:
+status: review
+owner: backend
+author_of_code: backend-dev (Claude, for Ky-Wilson)
 priority: P1
 size: S
 ---
@@ -17,11 +17,11 @@ Jalon : **J0 — Assainissement & fondations** (`docs/roadmap.md`). Dépend de :
 En tant qu'équipe, je veux retirer ce qui ne sera pas réutilisé tel quel afin d'éviter toute confusion avant la création des nouveaux services.
 
 ## Acceptance criteria
-- [ ] Given `apps/server`, Then le dossier est supprimé ; l'idée `/health` et l'arrêt propre sont notés pour `apps/services` (journal d'implémentation).
-- [ ] Given `packages/contracts`, Then il est supprimé ; les types réutilisables (`Position`, `input`, `interact`, `purchase` avec idempotence, `ping`) sont recopiés dans `docs/archive/contracts-v0.ts.md` pour J1-12.
-- [ ] Given `packages/game-config/`, Then il est supprimé (`world.json`, `props.json`, `road-network.json`).
-- [ ] Given `prisma/schema.prisma`, Then il est déplacé dans `docs/archive/` (le nouveau schéma arrive en J6-01).
-- [ ] Given les scripts racine, Then `pnpm dev` ne lance plus que le client tant que les nouveaux serveurs n'existent pas.
+- [x] Given `apps/server`, Then le dossier est supprimé ; l'idée `/health` et l'arrêt propre sont notés pour `apps/services` (journal d'implémentation).
+- [x] Given `packages/contracts`, Then il est supprimé ; les types réutilisables (`Position`, `input`, `interact`, `purchase` avec idempotence, `ping`) sont recopiés dans `docs/archive/contracts-v0.ts.md` pour J1-12.
+- [x] Given `packages/game-config/`, Then il est supprimé (`world.json`, `props.json`, `road-network.json`).
+- [x] Given `prisma/schema.prisma`, Then il est déplacé dans `docs/archive/` (le nouveau schéma arrive en J6-01).
+- [x] Given les scripts racine, Then `pnpm dev` ne lance plus que le client tant que les nouveaux serveurs n'existent pas.
 
 ## Out of scope
 - Créer `apps/gateway`, `apps/zone` et `apps/services` (J1, J6).
@@ -32,7 +32,10 @@ Suppressions et retrait de dépendances (colyseus, express, @colyseus/monitor, p
 Toute exécution de commande (install, build, test, git) doit être demandée au propriétaire (CLAUDE.md). Règles de modularité : ARCHITECTURE.md §9.
 
 ## Implementation log
-(filled by the implementer)
+- Done in the J0 foundations PR (#2): `apps/server` removed (its `/health` + graceful shutdown now live in `apps/services/src/app/`), Colyseus/Express/`@colyseus/monitor` dropped (ADR 0003 applied), `packages/contracts` archived as `docs/archive/legacy-code/contracts-index.ts` (reusable for J1 protocol: `Position`, `input`, `interact`, `purchase` with idempotency, `ping`), `packages/game-config` removed (`world.json` / `props.json` moved to `apps/web/public/dev-fixtures/` for the temporary viewer, local path stripped), Prisma schema archived as `docs/archive/legacy-code/schema.prisma`. `pnpm dev` only starts the web client.
+- 2026-10-13 (batch 2): `tools/map-pipeline/legacy/` deleted — everything useful was rewritten (projection → `@skyline/geo`, importer → stages 04–05, building placer → 06-heights). Its config exclusions (ESLint, dependency-cruiser, Vitest, Prettier, repo checks) were removed. Still readable in git history at commit `1163466`.
+  - Kept for later from the legacy code: `RoadNetwork.ts` (graph + Dijkstra, O(n²) build → rewrite with flatbush in the `roads` stage, J1/J2, and A* in `sim-transport`, J4); `PropPlacer.ts` (street lights / trees / benches along roads → `props-vegetation` stage, J2, seeded and placed perpendicular to the road).
+- **Left to the frontend developer (outside the backend role, blocked by the role guard):** delete `apps/web/src/debug/legacy-blockout/`, `apps/web/public/dev-fixtures/` and the `earcut` dependency of `@skyline/web`, once the tile loader T-014 replaces the temporary viewer.
 
 ## Review
 (filled by tech-lead-po)

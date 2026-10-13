@@ -2,7 +2,7 @@
 id: T-014
 title: Client tile loader v0: render the fixture at 1:1 scale
 status: todo
-owner: fullstack-devops
+owner: frontend
 author_of_code:
 priority: P0
 size: M

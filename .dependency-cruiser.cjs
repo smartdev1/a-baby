@@ -9,6 +9,13 @@ module.exports = {
   forbidden: [
     { name: 'no-circular', severity: 'error', from: {}, to: { circular: true } },
     {
+      name: 'no-unresolvable',
+      comment: 'Every import must resolve (declare workspace packages in package.json). The probe page imports a file served at runtime.',
+      severity: 'error',
+      from: { pathNot: '^tools/latency-probe/page/' },
+      to: { couldNotResolve: true },
+    },
+    {
       name: 'pure-packages-stay-pure',
       comment: 'Pure packages: no Node builtins, no Babylon, no Preact, no Node-only packages.',
       severity: 'error',
@@ -25,7 +32,8 @@ module.exports = {
       name: 'only-services-import-db',
       severity: 'error',
       from: { pathNot: '^(apps/services|packages/db)/' },
-      to: { path: '^packages/db/' },
+      // Matches the resolved folder AND the package name (an undeclared, unresolved import must fail too).
+      to: { path: '^(packages/db/|@skyline/db$)' },
     },
     {
       name: 'web-is-browser-only',
@@ -61,7 +69,7 @@ module.exports = {
   ],
   options: {
     doNotFollow: { path: 'node_modules' },
-    exclude: { path: '(node_modules|dist|docs/archive|tools/map-pipeline/legacy)' },
+    exclude: { path: '(node_modules|dist|docs/archive)' },
     tsPreCompilationDeps: true,
     tsConfig: { fileName: 'tsconfig.base.json' },
     enhancedResolveOptions: { exportsFields: ['exports'], conditionNames: ['import', 'default'] },

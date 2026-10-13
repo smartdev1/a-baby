@@ -1,7 +1,6 @@
-# Role: files Prettier must not reformat (lockfiles, generated data, archives, legacy code, fixtures).
+# Role: files Prettier must not reformat (lockfiles, generated data, archives, fixtures).
 pnpm-lock.yaml
 docs/archive/
-tools/map-pipeline/legacy/
 tools/map-pipeline/test/fixtures/
 apps/web/public/dev-fixtures/
 data/

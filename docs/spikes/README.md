@@ -1,7 +1,7 @@
 # `docs/spikes/`
 
 - **Owner:** shared (any developer, reviewed by the other one)
-- **Status:** Planned
+- **Status:** Active — SP2 delivered (`SP2-osm-coverage.md`)
 
 ## Role
 

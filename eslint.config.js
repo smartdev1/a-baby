@@ -14,7 +14,6 @@ export default tseslint.config(
       '**/node_modules/**',
       '**/dist/**',
       'docs/archive/**',
-      'tools/map-pipeline/legacy/**',
       'data/**',
       'coverage/**',
     ],
@@ -39,6 +38,10 @@ export default tseslint.config(
       '@typescript-eslint/no-floating-promises': 'error',
       '@typescript-eslint/consistent-type-imports': 'error',
     },
+  },
+  {
+    files: ['tools/latency-probe/page/**/*.mjs'],
+    languageOptions: { globals: { ...globals.browser } },
   },
   {
     files: ['apps/web/**/*.{ts,tsx}'],

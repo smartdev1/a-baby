@@ -153,6 +153,8 @@ Notation des tâches : `ID — intitulé — taille — dépendances — couloir
 
 ### J1 — Marcher dans un quartier en streaming (8 à 10 semaines)
 
+> **Mise à jour 13/10/2026 (décisions du propriétaire)** : pas de quartier pilote — J1 porte sur **tout Yopougon** (2 901 tuiles déjà produites par T-012) ; pas d'artiste externe, l'art est produit en interne par le développeur frontend. Tâches backend détaillées : `docs/backlog/T-101` à `T-111` (T-111 avance l'étape `naming` de J2).
+
 **Objectif démontrable** : un joueur ouvre le jeu, crée un avatar simple, apparaît dans le **quartier pilote** (≈ 1 km², à choisir en Q3), le parcourt à pied à la 3e personne avec collisions, et voit les tuiles arriver et repartir autour de lui sans saccade, **de jour comme de nuit** (horloge interne du monde). Son déplacement est validé par un serveur de zone qui tourne en local (mode `all-in-one`).
 
 **Livrables** : SP1, SP3 (démarré), SP5, SP6 ; pipeline des étapes `roads`, `facades-roofs` v0, `collision`, `props-vegetation` v0 ; streaming L0 et L1 ; contrôleur de personnage partagé ; `apps/zone` et `apps/gateway` minimaux ; protocole v1 (`hello`, `input`, `snapshot`, `input_ack`, `world_clock`) ; `sim-clock` et horloge interne du monde (segments, ratio configurable) ; kit de façades gris v0 puis premiers modules de l'artiste.

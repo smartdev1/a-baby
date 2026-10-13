@@ -9,7 +9,7 @@ import { join } from 'node:path';
 const CHECKED_EXTENSIONS = /\.(ts|tsx|js|mjs|cjs|css|html|ya?ml|prisma|sh)$/;
 const HEADER_LINES = 6;
 /** JSON cannot hold comments: JSON files are documented by their folder README (tsconfig files use a "//" key). */
-const EXEMPT = [/^tools\/map-pipeline\/legacy\//, /\.d\.ts$/, /^pnpm-lock\.yaml$/];
+const EXEMPT = [/\.d\.ts$/, /^pnpm-lock\.yaml$/];
 
 export const checkFileHeaders = (root, files) =>
   files

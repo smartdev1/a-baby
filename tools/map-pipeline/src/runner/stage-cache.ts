@@ -8,7 +8,7 @@ import { readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { z } from 'zod';
 import { sha256OfFile, sha256OfText, stableStringify } from './content-hash.ts';
-import type { PipelineStage, StageContext } from './stage-contract.ts';
+import { outputsOf, type PipelineStage, type StageContext } from './stage-contract.ts';
 
 const CACHE_FILE = '.stage-cache.json';
 
@@ -34,19 +34,19 @@ const readCache = async (outDir: string): Promise<CacheRecord | null> => {
 };
 
 /** True when the cache matches the input hash and every output still has its recorded content. */
-export const isUpToDate = async (stage: PipelineStage, outDir: string, inputHash: string): Promise<boolean> => {
+export const isUpToDate = async (stage: PipelineStage, ctx: StageContext, outDir: string, inputHash: string): Promise<boolean> => {
   const cache = await readCache(outDir);
   if (!cache || cache.inputHash !== inputHash) return false;
-  for (const name of stage.outputs) {
+  for (const name of outputsOf(stage, ctx)) {
     const path = join(outDir, name);
     if (!existsSync(path) || cache.outputs[name] !== (await sha256OfFile(path))) return false;
   }
-  return true;
+  return stage.extraOutputsPresent ? stage.extraOutputsPresent(outDir) : true;
 };
 
-export const writeCache = async (stage: PipelineStage, outDir: string, inputHash: string): Promise<void> => {
+export const writeCache = async (stage: PipelineStage, ctx: StageContext, outDir: string, inputHash: string): Promise<void> => {
   const outputs: Record<string, string> = {};
-  for (const name of stage.outputs) {
+  for (const name of outputsOf(stage, ctx)) {
     const path = join(outDir, name);
     if (!existsSync(path)) throw new Error(`stage ${stage.id} did not write its declared output "${name}"`);
     outputs[name] = await sha256OfFile(path);

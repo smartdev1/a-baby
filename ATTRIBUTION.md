@@ -2,14 +2,15 @@
 
 ## OpenStreetMap
 
-Map data © [OpenStreetMap contributors](https://www.openstreetmap.org/copyright), available under the [Open Database License (ODbL) 1.0](https://opendatacommons.org/licenses/odbl/1-0/).
+**© les contributeurs d'OpenStreetMap** — https://www.openstreetmap.org/copyright
 
-SkyLine's world geometry (streets, buildings, places of Yopougon) is a **derived database** of OpenStreetMap. In accordance with the ODbL (ADR 0006):
+Données disponibles sous la [Open Database License (ODbL) 1.0](https://opendatacommons.org/licenses/odbl/1-0/).
 
-- this attribution is displayed in the game (loading screen, map, credits) and must never be removed;
-- the OSM-derived layer is kept separate from game-authored content and will be published under the ODbL when the game is publicly distributed;
-- brand and shop names shown in the game are parodied (ADR 0010); public place names and streets keep their real names.
+- Instantané utilisé : voir `data/sources/sources.lock.json` (actuellement Geofabrik `ivory-coast-261001.osm.pbf`, 01/10/2026, sha256 `68ec1fda…d18d5`).
+- Le monde de SkyLine (rues, bâtiments, lieux de Yopougon) est une **base de données dérivée** d'OpenStreetMap : séparation des couches et publication décrites dans `docs/legal/odbl.md` (ADR 0006).
+- Cette mention est affichée dans le jeu (chargement, carte, crédits) et ne doit jamais être retirée.
+- Les noms de marques et de commerces affichés sont parodiés (ADR 0010) ; la toponymie et les lieux publics gardent leur nom réel.
 
-## Other data and assets
+## Autres sources de données et assets
 
-Every third-party asset (textures, models, sounds) is listed here with its licence before it is shipped. None yet.
+*(aucune pour l'instant — chaque source ou asset tiers est ajouté ici avec sa licence avant d'être livré)*

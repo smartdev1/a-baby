@@ -12,6 +12,7 @@
     "dev": "pnpm --filter @skyline/web dev",
     "dev:services": "pnpm --filter @skyline/services dev",
     "map:build": "tsx tools/map-pipeline/src/cli/main.ts build",
+    "map:osmium-image": "docker build -t skyline/osmium:1.18.0 infra/docker/osmium",
     "build": "pnpm -r --if-present build",
     "typecheck": "pnpm -r --if-present typecheck",
     "lint": "eslint . && depcruise apps packages tools --config .dependency-cruiser.cjs && node tools/repo-checks/src/run-all.mjs",
@@ -20,6 +21,7 @@
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "test:e2e": "playwright test",
+    "verify": "pnpm lint && pnpm typecheck && pnpm test",
     "check:repo": "node tools/repo-checks/src/run-all.mjs"
   },
   "devDependencies": {

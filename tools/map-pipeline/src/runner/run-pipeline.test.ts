@@ -22,7 +22,7 @@ const config = (seed = 'v1') =>
       commune: 'unit',
       displayName: 'Unit',
       seed,
-      source: { kind: 'local-file', format: 'geojson', path: 'input.geojson' },
+      source: { kind: 'local-file', format: 'geojson', path: 'input.geojson', snapshotDate: '2026-10-13' },
       boundary: { osmRelationId: null },
       marginM: 0,
       outputDir: 'build',

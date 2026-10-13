@@ -5,7 +5,7 @@
 
 ## Role
 
-Pipeline source code: `cli/` (entry point), `config/` (validated commune config), `runner/` (incremental stage runner), `determinism/` (seeded RNG), `stages/` (one folder per stage), `geometry/`, `heuristics/`, `writers/` (filled by T-011/T-012).
+Pipeline source code: `cli/` (entry point), `config/` (validated commune config), `runner/` (incremental stage runner), `determinism/` (seeded RNG), `stages/` (one folder per stage), `osm/`, `records/`, `taxonomy/`, `heuristics/`, `tiling/`, `meshing/`, `encoding/`, `geometry/`, `sources/`, `osmium/`, `writers/` (reserved). Each folder README lists its files.
 
 ## Rules
 

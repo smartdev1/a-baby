@@ -25,6 +25,7 @@ pnpm dev:services   # HTTP services on http://127.0.0.1:8080/health
 ## Quality gates (must pass before every PR)
 
 ```bash
+pnpm verify      # = lint + typecheck + test (what CI runs, see infra/ci/README.md)
 pnpm lint        # ESLint + package boundaries (dependency-cruiser) + repo checks (Role headers, folder READMEs, layout)
 pnpm typecheck   # TypeScript strict on every package
 pnpm test        # Vitest

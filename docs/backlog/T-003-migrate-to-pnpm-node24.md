@@ -1,9 +1,9 @@
 ---
 id: T-003
 title: Migrate to pnpm workspaces and Node 24 LTS, single lockfile
-status: review
-owner: fullstack-devops
-author_of_code: fullstack-devops
+status: done
+owner: backend
+author_of_code:
 priority: P0
 size: M
 ---
@@ -17,12 +17,12 @@ Jalon : **J0 — Assainissement & fondations** (`docs/roadmap.md`). Dépend de :
 En tant que développeur sous Windows ou Linux, je veux installer le projet en une commande avec un lockfile unique afin d'avoir le même environnement que mes collègues.
 
 ## Acceptance criteria
-- [ ] Given un clone propre sous Windows 11 et sous Linux, When je lance `pnpm install`, Then l'installation réussit avec un seul `pnpm-lock.yaml`, et `package-lock.json` ainsi que `apps/web/package-lock.json` n'existent plus.
-- [ ] Given `pnpm-workspace.yaml`, Then il déclare `apps/*`, `packages/*` et `tools/*`.
-- [ ] Given le `package.json` racine, Then il contient `engines.node >= 24`, `packageManager` (pnpm figé), la description « vie virtuelle 3D web — Yopougon », et uniquement des scripts racine (`lint`, `typecheck`, `test`, `dev`).
-- [ ] Given `config/prisma/schema.prisma`, `config/typescript/*.json` et `config/vite/web.config.ts`, Then ils sont supprimés (doublons morts).
-- [ ] Given `apps/web/package.json`, Then la dépendance par chemin `world-generator` et `vite-plugin-babel-macros` sont retirées.
-- [ ] Given un `.nvmrc` ou équivalent, Then il fixe Node 24.
+- [x] Given un clone propre sous Windows 11 et sous Linux, When je lance `pnpm install`, Then l'installation réussit avec un seul `pnpm-lock.yaml`, et `package-lock.json` ainsi que `apps/web/package-lock.json` n'existent plus.
+- [x] Given `pnpm-workspace.yaml`, Then il déclare `apps/*`, `packages/*` et `tools/*`.
+- [x] Given le `package.json` racine, Then il contient `engines.node >= 24`, `packageManager` (pnpm figé), la description « vie virtuelle 3D web — Yopougon », et uniquement des scripts racine (`lint`, `typecheck`, `test`, `dev`).
+- [x] Given `config/prisma/schema.prisma`, `config/typescript/*.json` et `config/vite/web.config.ts`, Then ils sont supprimés (doublons morts).
+- [x] Given `apps/web/package.json`, Then la dépendance par chemin `world-generator` et `vite-plugin-babel-macros` sont retirées.
+- [x] Given un `.nvmrc` ou équivalent, Then il fixe Node 24.
 
 ## Out of scope
 - Migrer Babylon (T-013).
@@ -34,17 +34,10 @@ Ajout et suppression de dépendances, modification de la configuration de build 
 Toute exécution de commande (install, build, test, git) doit être demandée au propriétaire (CLAUDE.md). Règles de modularité : ARCHITECTURE.md §9.
 
 ## Implementation log
-- Updated root `package.json` description to "vie virtuelle 3D web — Yopougon"
-- Cleaned up root `package.json` scripts to only include: `lint`, `typecheck`, `test`, `dev`
-- Verified no `package-lock.json` files exist at root or `apps/web/`
-- Verified `pnpm install` succeeds with single `pnpm-lock.yaml`
-- Verified `pnpm-workspace.yaml` declares `apps/*`, `packages/*`, `tools/*`
-- Verified `.nvmrc` fixes Node 24
-- Verified `apps/web/package.json` has no `world-generator` or `vite-plugin-babel-macros` dependencies
-- Verified config directories (`config/prisma/schema.prisma`, `config/typescript/*.json`, `config/vite/web.config.ts`) don't exist (already satisfied)
+- Done in PR #2: pnpm workspaces (`apps/*`, `packages/*`, `tools/*`), single `pnpm-lock.yaml`, `engines.node >= 24`, `packageManager`, `.nvmrc`, `config/` duplicates and both npm lockfiles removed, web path dependency removed.
 
 ## Review
-(filled by tech-lead-po)
+- Reviewed and merged by smartdev1 in PR #2.
 
 ## QA report
 (filled by the QA agent)
