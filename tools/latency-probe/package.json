@@ -1,0 +1,15 @@
+{
+  "name": "@skyline/latency-probe",
+  "version": "0.1.0",
+  "description": "Spike SP4 kit: WebSocket echo server + probe page + aggregator to measure latency from Abidjan to candidate hosting regions.",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json",
+    "start": "node src/echo-server.mjs",
+    "aggregate": "node src/aggregate-results.mjs"
+  },
+  "dependencies": {
+    "ws": "^8.22.0"
+  }
+}

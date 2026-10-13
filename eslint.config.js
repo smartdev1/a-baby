@@ -40,6 +40,10 @@ export default tseslint.config(
     },
   },
   {
+    files: ['tools/latency-probe/page/**/*.mjs'],
+    languageOptions: { globals: { ...globals.browser } },
+  },
+  {
     files: ['apps/web/**/*.{ts,tsx}'],
     languageOptions: { globals: { ...globals.browser } },
     rules: { 'no-restricted-properties': 'off' },

@@ -1,9 +1,9 @@
 ---
 id: T-019
 title: Spike SP4: network latency from Abidjan to candidate regions
-status: todo
+status: blocked
 owner: fullstack-devops
-author_of_code:
+author_of_code: backend-dev (Claude, for Ky-Wilson)
 priority: P1
 size: S
 ---
@@ -29,7 +29,11 @@ Les mesures nécessitent des testeurs à Abidjan (propriétaire) et éventuellem
 Toute exécution de commande (install, build, test, git) doit être demandée au propriétaire (CLAUDE.md). Règles de modularité : ARCHITECTURE.md §9.
 
 ## Implementation log
-(filled by the implementer)
+- 2026-10-13 — Measurement kit ready (no deployment, no spending by the agent):
+  - `tools/latency-probe/`: WebSocket echo server (serves the page, echoes ≤ 256-byte messages, no storage), French mobile-friendly probe page (300 pings per region, p50 / p95 / jitter / loss, JSON export), shared stats module, aggregator producing the SP4 table; 3 unit tests; end-to-end run checked locally with Playwright (p50 1.5 ms, 0 % loss on localhost).
+  - `infra/docker/latency-echo/Dockerfile` (prepared, never executed by an agent).
+  - `docs/spikes/SP4-latency.md`: candidate regions, protocol (testers per operator, 3 time slots, 2 days), decision rule (evening p95 ≤ 150 ms), ARTCI implications (law 2013-450), empty results table.
+- **Blocked on the owner**: deploy 3–4 temporary instances, recruit testers in Abidjan (Orange, MTN, Moov, fixed), collect the JSON files, then fill the results and the recommendation.
 
 ## Review
 (filled by tech-lead-po)
