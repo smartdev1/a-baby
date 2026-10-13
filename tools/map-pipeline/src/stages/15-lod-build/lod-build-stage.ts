@@ -28,8 +28,8 @@ export type LodIndex = Record<string, LodIndexEntry>;
 
 export const lodStage: PipelineStage = {
   id: LOD_STAGE_ID,
-  // Bump when lod/*.ts or the meshing change the L1 output.
-  version: 1,
+  // Bump when lod/*.ts or the meshing change the L1 output. v2: sheet-metal roofs (T-102).
+  version: 2,
   outputs: [LOD_INDEX_FILE],
   inputFiles: (ctx) => [ctx.outputOf(TILE_CUT_STAGE_ID, TILES_FILE)],
   params: () => ({ levels: [1] }),

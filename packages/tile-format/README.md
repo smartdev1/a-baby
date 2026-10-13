@@ -15,7 +15,7 @@ The file format of a world tile, read by the web client (streaming, prediction) 
 | File names | `tiles/L0/{i}_{j}/<kind>.<hash16>.<ext>` — `geom.glb`, `instances.bin`, `collision.bin`, `meta.json`, `nav.bin`; `world-manifest.<release>.json` |
 | `meta.json` | `TileMetaSchema`: buildings (`osm:way/…`, type, levels, heightM, `heightSource` osm/dataset/heuristic), places (game category, **displayed name from the `naming` stage only**, local position), neighbours |
 | Manifest | `WorldManifestSchema`: tile key → file hashes (L0: geom, collision, meta, instances; L1+: geom only), UTM bbox, source snapshot, ODbL licence + attribution. No geometry |
-| `instances.bin` | Binary v1: instanced modules (props, vegetation; facades in T-102) — index into `INSTANCE_MODULES`, local position, yaw, scale, variant |
+| `instances.bin` | Binary v2: instanced modules (props, vegetation, facade bays, roof accessories) — index into `INSTANCE_MODULES`, local position, yaw, scale, variant, width/height stretch |
 | `collision.bin` | Binary v1: `SKYC` header, height field (N×N f32), obstacle prisms (base, top, 2D ring), water layer (level + cell mask). Local metres (x = east, z = north) |
 
 ```ts

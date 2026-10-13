@@ -1,5 +1,5 @@
 /**
- * Role: spatial guards for placement (flatbush): inside a building footprint? on a carriageway? direction of the nearest road (to face it).
+ * Role: spatial guards for placement (flatbush): inside a building footprint? on a carriageway? road within a radius? direction of the nearest road (to face it).
  * Owner: backend
  */
 
@@ -53,6 +53,17 @@ export class PlacementGuards {
       this.roadIndex?.search(e - 10, n - 10, e + 10, n + 10).some((i) => {
         const s = this.segments[i];
         return s !== undefined && distanceToSegment(s, e, n) < s.halfWidthM + marginM;
+      }) ?? false
+    );
+  }
+
+  /** True when a road edge (its carriageway edge) lies within `radiusM` of the point. */
+  roadWithin(e: number, n: number, radiusM: number): boolean {
+    const r = radiusM + 15;
+    return (
+      this.roadIndex?.search(e - r, n - r, e + r, n + r).some((i) => {
+        const s = this.segments[i];
+        return s !== undefined && distanceToSegment(s, e, n) < s.halfWidthM + radiusM;
       }) ?? false
     );
   }

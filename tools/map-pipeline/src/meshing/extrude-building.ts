@@ -1,12 +1,14 @@
 /**
- * Role: extrudes a clipped building footprint into a flat roof (earcut, holes supported) and outward-facing walls, skipping artificial walls along tile borders.
+ * Role: extrudes a clipped building footprint into outward-facing walls (skipping artificial walls along tile borders, and optionally the walls covered by facade bays) and a flat roof (earcut, holes supported) or a pitched sheet-metal roof.
  * Owner: backend
  */
 
 import earcut from 'earcut';
-import type { LocalPoint, LocalPolygon } from '../tiling/tile-content.ts';
+import { MIN_BAY_WALL_M, MIN_FACADE_HEIGHT_M } from '../facades/wall-layout.ts';
+import type { LocalPoint, LocalPolygon, TilePitchedRoof } from '../tiling/tile-content.ts';
 import { TILE_SIZE_M } from '../tiling/tile-frame.ts';
 import type { MeshBuffer } from './mesh-buffer.ts';
+import { addPitchedRoof } from './pitched-roof.ts';
 
 const BORDER_EPSILON_M = 0.01;
 
@@ -33,7 +35,8 @@ const orient = (ring: LocalPoint[], counterClockwise: boolean): LocalPoint[] => 
 const onSameBorder = (a: LocalPoint, b: LocalPoint): boolean =>
   [0, TILE_SIZE_M].some((edge) => (Math.abs(a[0] - edge) < BORDER_EPSILON_M && Math.abs(b[0] - edge) < BORDER_EPSILON_M) || (Math.abs(a[1] - edge) < BORDER_EPSILON_M && Math.abs(b[1] - edge) < BORDER_EPSILON_M));
 
-const addWalls = (walls: MeshBuffer, ring: readonly LocalPoint[], [baseYM, topYM]: readonly [number, number]): void => {
+/** Walls at least this long are covered by facade bays (instances) and may be left out of the mesh; 0 keeps every wall. */
+const addWalls = (walls: MeshBuffer, ring: readonly LocalPoint[], [baseYM, topYM]: readonly [number, number], coveredFromM: number): void => {
   for (let k = 0; k < ring.length; k++) {
     const a = ring[k];
     const b = ring[(k + 1) % ring.length];
@@ -41,7 +44,7 @@ const addWalls = (walls: MeshBuffer, ring: readonly LocalPoint[], [baseYM, topYM
     const dx = b[0] - a[0];
     const dz = b[1] - a[1];
     const len = Math.hypot(dx, dz);
-    if (len < 1e-6) continue;
+    if (len < 1e-6 || (coveredFromM > 0 && len >= coveredFromM)) continue;
     const [nx, nz] = [dz / len, -dx / len];
     const v0 = walls.vertex([a[0], baseYM, a[1]], [nx, 0, nz]);
     const v1 = walls.vertex([b[0], baseYM, b[1]], [nx, 0, nz]);
@@ -67,19 +70,29 @@ const addRoof = (roofs: MeshBuffer, rings: readonly LocalPoint[][], heightM: num
 
 export interface BuildingVolume {
   readonly polygons: readonly LocalPolygon[];
-  /** Ground under the building and building height (roof at baseYM + heightM). */
+  /** Ground under the building and building height (walls up to baseYM + heightM). */
   readonly baseYM: number;
   readonly heightM: number;
+  readonly roof?: TilePitchedRoof;
 }
 
-export const extrudeBuilding = ({ polygons, baseYM, heightM }: BuildingVolume, { walls, roofs }: { walls: MeshBuffer; roofs: MeshBuffer }): void => {
+export interface BuildingMeshGroups {
+  readonly walls: MeshBuffer;
+  readonly roofs: MeshBuffer;
+  readonly sheetRoofs: MeshBuffer;
+}
+
+/** `stripFacadeWalls`: leave out the outer walls that carry facade bays (stage 11), once the client renders the facade kit. */
+export const extrudeBuilding = ({ polygons, baseYM, heightM, roof }: BuildingVolume, groups: BuildingMeshGroups, stripFacadeWalls = false): void => {
   const topYM = baseYM + heightM;
+  const coveredFromM = stripFacadeWalls && heightM >= MIN_FACADE_HEIGHT_M ? MIN_BAY_WALL_M : 0;
   for (const polygon of polygons) {
     const rings = polygon.map(openRing).filter((r) => r.length >= 3);
     const [outer, ...holes] = rings;
     if (!outer) continue;
     const oriented = [orient(outer, true), ...holes.map((h) => orient(h, false))];
-    oriented.forEach((ring) => addWalls(walls, ring, [baseYM, topYM]));
-    addRoof(roofs, oriented, topYM);
+    oriented.forEach((ring, index) => addWalls(groups.walls, ring, [baseYM, topYM], index === 0 ? coveredFromM : 0));
+    if (!roof) addRoof(groups.roofs, oriented, topYM);
   }
+  if (roof) addPitchedRoof(roof, topYM, groups);
 };

@@ -8,7 +8,7 @@ import { waterMaskBytes } from '@skyline/tile-format';
 import { isWaterCell } from '../meshing/terrain-mesh.ts';
 import { isPathClass } from '../roads/road-classes.ts';
 import type { TileTerrain } from '../terrain/tile-terrain.ts';
-import { emptyTileContent, type LocalPoint, type TileContent } from '../tiling/tile-content.ts';
+import { emptyTileContent, type LocalPoint, type TileBuildingPart, type TileContent, type TilePitchedRoof } from '../tiling/tile-content.ts';
 import { ringAreaM2, simplifyRing } from './simplify-ring.ts';
 
 const MIN_BUILDING_AREA_M2 = 30;
@@ -17,6 +17,14 @@ const L1_RESOLUTION = 51;
 const L1_CELL_M = 10;
 
 const shift = (p: LocalPoint, dx: number, dz: number): LocalPoint => [Math.round((p[0] + dx) * 100) / 100, Math.round((p[1] + dz) * 100) / 100];
+
+const shiftRoof = (roof: TilePitchedRoof, dx: number, dz: number): TilePitchedRoof => {
+  const [a, b, c, d] = roof.corners;
+  return { ...roof, corners: [shift(a, dx, dz), shift(b, dx, dz), shift(c, dx, dz), shift(d, dx, dz)] };
+};
+
+const shiftedPart = (part: TileBuildingPart, polygons: TileBuildingPart['polygons'], [dx, dz]: readonly [number, number]): TileBuildingPart =>
+  part.roof ? { ...part, polygons, roof: shiftRoof(part.roof, dx, dz) } : { ...part, polygons };
 
 /** Height of the L1 vertex (i, j) read from the child L0 grid that contains it. */
 const l1Terrain = (key: string, children: ReadonlyMap<string, TileContent>, offsets: ReadonlyMap<string, [number, number]>): TileTerrain => {
@@ -77,7 +85,7 @@ export const buildL1Tile = (key: string, l0: ReadonlyMap<string, TileContent>): 
       const polygons = part.polygons
         .map((rings) => rings.map((ring) => simplifyRing(ring.map((p) => shift(p, dx, dz)), SIMPLIFY_TOLERANCE_M)).filter((r): r is LocalPoint[] => r !== null))
         .filter((rings) => rings.length > 0 && ringAreaM2(rings[0] ?? []) >= MIN_BUILDING_AREA_M2);
-      if (polygons.length > 0) out.buildingParts.push({ ...part, polygons });
+      if (polygons.length > 0) out.buildingParts.push(shiftedPart(part, polygons, [dx, dz]));
     }
     for (const road of child.roads) {
       if (!isPathClass(road.roadClass)) out.roads.push({ ...road, lines: road.lines.map((line) => line.map((p) => shift(p, dx, dz))) });

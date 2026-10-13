@@ -1,5 +1,5 @@
 /**
- * Role: tests instances.bin: round trip within quantization, unknown modules refused, 5 000-case fuzz with typed errors only.
+ * Role: tests instances.bin: round trip within quantization (stretch included), v1 files still decoded, unknown modules refused, 5 000-case fuzz with typed errors only.
  * Owner: backend
  */
 
@@ -17,7 +17,10 @@ const instance = fc.record({
   yawRad: fc.double({ min: 0, max: 6.28, noNaN: true }),
   scale: fc.double({ min: 0.5, max: 2, noNaN: true }),
   variant: fc.integer({ min: 0, max: 255 }),
+  stretchX: fc.double({ min: 0.5, max: 2, noNaN: true }),
+  stretchY: fc.double({ min: 0.5, max: 2, noNaN: true }),
 });
+const close = (a: number | undefined, b: number | undefined): boolean => Math.abs((a ?? 1) - (b ?? 1)) <= 0.5 / 170 + 1e-9;
 
 describe('instances codec', () => {
   it('should round-trip within quantization', () => {
@@ -26,10 +29,15 @@ describe('instances codec', () => {
         const out = decodeInstances(encodeInstances(list));
         return out.length === list.length && out.every((o, k) => {
           const i = list[k]!;
-          return o.module === i.module && o.x === i.x && o.z === i.z && Math.abs(o.scale - i.scale) <= 0.5 / 170 + 1e-9 && o.variant === i.variant;
+          return o.module === i.module && o.x === i.x && o.z === i.z && close(o.scale, i.scale) && o.variant === i.variant && close(o.stretchX, i.stretchX) && close(o.stretchY, i.stretchY);
         });
       }),
     );
+  });
+
+  it('should still decode a v1 file (no stretch bytes)', () => {
+    const v1 = Uint8Array.from([...'SKYI'].map((c) => c.charCodeAt(0)).concat([1, 0, 0, 0, 1, 0, 0, 0, 2, 0, ...new Array<number>(12).fill(0), 0, 0, 85, 7]));
+    expect(decodeInstances(v1)).toEqual([{ module: 2, x: 0, y: 0, z: 0, yawRad: 0, scale: 1, variant: 7, stretchX: 1, stretchY: 1 }]);
   });
 
   it('should refuse unknown modules', () => {

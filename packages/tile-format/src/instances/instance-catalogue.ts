@@ -1,5 +1,5 @@
 /**
- * Role: catalogue of instanced modules (props, vegetation, later facade kits): the index written in instances.bin ↔ the asset name the client loads. Append-only.
+ * Role: catalogue of instanced modules (props, vegetation, facade and roof kits): the index written in instances.bin ↔ the asset name the client loads. Append-only, shared by the pipeline and the client.
  * Owner: backend
  */
 
@@ -19,6 +19,21 @@ export const INSTANCE_MODULES = [
   'veg_tree_generic_a',
   'veg_tree_forest_a',
   'veg_bush_a',
+  // Facade bays (T-102): nominal 3 m wide; ground floor 3.5 m high, upper floors 3 m; pivot at the bottom centre of the outer face, facing +z.
+  'bld_wall_plain_a',
+  'bld_wall_window_a',
+  'bld_wall_window_b',
+  'bld_balcony_a',
+  'bld_gf_wall_plain_a',
+  'bld_gf_window_a',
+  'bld_door_metal_a',
+  'bld_gate_metal_a',
+  'bld_shopfront_shutter_a',
+  'bld_shopfront_open_a',
+  // Flat roof parapet (3 m × 0.8 m, on the roof edge) and roof-top accessories.
+  'bld_parapet_a',
+  'bld_roof_water_tank_a',
+  'bld_roof_rebar_a',
 ] as const;
 
 export type InstanceModule = (typeof INSTANCE_MODULES)[number];

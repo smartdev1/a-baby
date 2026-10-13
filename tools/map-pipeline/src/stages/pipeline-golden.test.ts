@@ -26,6 +26,8 @@ const CHECKED_OUTPUTS = [
   '08-roads/road-stats.json',
   '09-naming/place-names.ndjson',
   '10-terrain/terrain-tiles.ndjson',
+  '11-facades-roofs/facades.ndjson',
+  '11-facades-roofs/roofs.ndjson',
   '12-props/props.ndjson',
   '14-tile-cut/tiles.ndjson',
   '15-lod-build/lod-index.json',

@@ -48,11 +48,11 @@ const indexPaths = (index: EncodeIndex): string[] =>
 
 export const encodeStage: PipelineStage = {
   id: ENCODE_STAGE_ID,
-  // v8: instances.bin (props and vegetation, 12-props).
-  version: 8,
+  // v9: facade instances (absolute height, stretch; instances.bin v2), sheet-metal roofs, instance draw calls in the budget (T-102).
+  version: 9,
   outputs: [ENCODE_INDEX_FILE],
   inputFiles: (ctx) => [ctx.outputOf(TILE_CUT_STAGE_ID, TILES_FILE)],
-  params: () => ({ formatVersion: TILE_FORMAT_VERSION }),
+  params: (ctx) => ({ formatVersion: TILE_FORMAT_VERSION, stripFacadeWalls: ctx.config.facades.stripBayWalls }),
   extraOutputsPresent: async (outDir) => {
     const index = JSON.parse(await readFile(join(outDir, ENCODE_INDEX_FILE), 'utf8')) as EncodeIndex;
     return indexPaths(index).every((p) => existsSync(join(outDir, p)));
@@ -66,7 +66,7 @@ export const encodeStage: PipelineStage = {
     const index: EncodeIndex = {};
     const violations: string[] = [];
     for await (const tile of readNdjson<TileContent>(tilesPath)) {
-      const encoded = await encodeTile(tile, existing);
+      const encoded = await encodeTile(tile, existing, { stripFacadeWalls: ctx.config.facades.stripBayWalls });
       violations.push(...budgetViolations(encoded));
       await writeTile(outDir, encoded);
       index[tile.key] = {

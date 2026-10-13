@@ -1,5 +1,5 @@
 /**
- * Role: builds the `geom` glTF binary of a tile (one mesh per material: ground, roads, paths, walls, roofs), quantized and meshopt-compressed.
+ * Role: builds the `geom` glTF binary of a tile (one mesh per material: ground, water, roads, paths, walls, flat roofs, sheet-metal roofs), quantized and meshopt-compressed.
  * Owner: backend
  */
 
@@ -17,6 +17,7 @@ const MATERIALS: Readonly<Record<string, readonly [number, number, number]>> = {
   path: [0.48, 0.4, 0.27],
   walls: [0.69, 0.58, 0.43],
   roofs: [0.32, 0.29, 0.27],
+  sheetRoofs: [0.36, 0.33, 0.3],
 };
 
 export type MeshGroups = Readonly<Record<keyof typeof MATERIALS, MeshBuffer>>;

@@ -1,9 +1,10 @@
 /**
- * Role: bilinear ground height at any UTM point from the per-tile terrain grids (0 where no tile exists); used to seat buildings and drape roads.
+ * Role: bilinear ground height at any UTM point from the per-tile terrain grids (0 where no tile exists); used to seat buildings (base = lowest footprint vertex) and drape roads.
  * Owner: backend
  */
 
 import { formatTileKey, tileBounds, tileCoordOf } from '@skyline/geo';
+import type { UtmRing } from '../records/map-records.ts';
 import type { TileTerrain } from './tile-terrain.ts';
 
 export class TerrainSampler {
@@ -22,5 +23,11 @@ export class TerrainSampler {
     const tz = fz - j;
     const h = (ii: number, jj: number): number => t.heightsM[jj * t.resolution + ii] ?? 0;
     return (h(i, j) * (1 - tx) + h(i + 1, j) * tx) * (1 - tz) + (h(i, j + 1) * (1 - tx) + h(i + 1, j + 1) * tx) * tz;
+  }
+
+  /** Ground under a building: lowest vertex of its outer ring, cm precision (same value for the walls, the facades and the collision). */
+  baseUnder(outerRing: UtmRing): number {
+    const ring = outerRing.length > 0 ? outerRing : [[0, 0] as const];
+    return Math.round(Math.min(...ring.map(([e, n]) => this.heightAt(e, n))) * 100) / 100;
   }
 }

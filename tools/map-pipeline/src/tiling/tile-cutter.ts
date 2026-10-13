@@ -1,15 +1,16 @@
 /**
- * Role: distributes buildings, roads and places over L0 tiles: geometry cut into every tile it covers, attributes stored once in the tile of the representative point.
+ * Role: distributes buildings (with their pitched roofs), roads, places and instances over L0 tiles: geometry cut into every tile it covers, attributes stored once in the tile of the representative point.
  * Owner: backend
  */
 
 import type { BuildingRecord, ClassifiedRecord, UtmGeometry, UtmPoint } from '../records/map-records.ts';
 import { moduleIndex } from '@skyline/tile-format';
+import type { PitchedRoof } from '../facades/roof-choice.ts';
 import type { PlacedInstance } from '../props/placed-instance.ts';
 import { TerrainSampler } from '../terrain/terrain-sampler.ts';
 import type { TileTerrain } from '../terrain/tile-terrain.ts';
 import { clipPolygonsToTile, clipPolylineToTile } from './clip-to-tile.ts';
-import { emptyTileContent, type TileContent } from './tile-content.ts';
+import { emptyTileContent, type TileContent, type TilePitchedRoof } from './tile-content.ts';
 import { boundsOfPoints, tileOfPoint, tileOrigin, tilesOverlapping, toLocal } from './tile-frame.ts';
 
 /** Ways not drawn as roads (not built yet, or not walkable surfaces). */
@@ -25,6 +26,12 @@ export const representativePoint = (g: UtmGeometry): UtmPoint => {
 
 const linesOf = (g: UtmGeometry): readonly (readonly UtmPoint[])[] =>
   g.type === 'LineString' ? [g.coordinates] : g.type === 'MultiLineString' ? g.coordinates : [];
+
+const localRoof = (roof: PitchedRoof, key: string): TilePitchedRoof => {
+  const origin = tileOrigin(key);
+  const [a, b, c, d] = roof.corners;
+  return { kind: roof.kind, riseM: roof.riseM, corners: [toLocal(a, origin), toLocal(b, origin), toLocal(c, origin), toLocal(d, origin)] };
+};
 
 export class TileCutter {
   private readonly tiles = new Map<string, TileContent>();
@@ -49,21 +56,34 @@ export class TileCutter {
     return content;
   }
 
-  addBuilding(b: BuildingRecord): void {
+  /** `roof` comes from stage 11 and is only given for buildings lying in one tile. */
+  addBuilding(b: BuildingRecord, roof?: PitchedRoof): void {
     const polygons = b.footprint.coordinates;
-    const baseYM = Math.round(Math.min(...(polygons[0]?.[0] ?? [[0, 0]]).map(([e, n]) => this.ground.heightAt(e, n))) * 100) / 100;
+    const baseYM = this.ground.baseUnder(polygons[0]?.[0] ?? []);
     for (const key of tilesOverlapping(boundsOfPoints(polygons.flat(2)))) {
       const clipped = clipPolygonsToTile(polygons, tileOrigin(key));
-      if (clipped.length > 0) this.tile(key).buildingParts.push({ id: b.id, baseYM, heightM: b.heightM, polygons: clipped });
+      if (clipped.length === 0) continue;
+      this.tile(key).buildingParts.push({ id: b.id, baseYM, heightM: b.heightM, polygons: clipped, ...(roof ? { roof: localRoof(roof, key) } : {}) });
     }
     const owner = tileOfPoint(representativePoint(b.footprint));
     if (owner) this.tile(owner).buildingMeta.push({ id: b.id, type: b.type, levels: b.levels, heightM: b.heightM, heightSource: b.heightSource });
   }
 
-  /** Props and vegetation from stage 12-props, in the tile of their position. */
+  /** Props and vegetation (stage 12) and facades (stage 11), in the tile of their position. */
   addInstance(p: PlacedInstance): void {
     const key = tileOfPoint([p.e, p.n]);
-    if (key) this.tile(key).instances.push({ module: moduleIndex(p.module), position: toLocal([p.e, p.n], tileOrigin(key)), yawRad: p.yawRad, scale: p.scale, variant: p.variant });
+    if (!key) return;
+    const { yM, stretchX, stretchY } = p;
+    this.tile(key).instances.push({
+      module: moduleIndex(p.module),
+      position: toLocal([p.e, p.n], tileOrigin(key)),
+      yawRad: p.yawRad,
+      scale: p.scale,
+      variant: p.variant,
+      ...(yM === undefined ? {} : { yM }),
+      ...(stretchX === undefined ? {} : { stretchX }),
+      ...(stretchY === undefined ? {} : { stretchY }),
+    });
   }
 
   /** Roads and places come from the classified records. */

@@ -50,8 +50,13 @@ const groundSampler =
     return (h(i, j) * (1 - tx) + h(i + 1, j) * tx) * (1 - tz) + (h(i, j + 1) * (1 - tx) + h(i + 1, j + 1) * tx) * tz;
   };
 
-export const meshGroups = (tile: TileContent): MeshGroups => {
-  const groups = { ground: new MeshBuffer(), water: new MeshBuffer(), road: new MeshBuffer(), path: new MeshBuffer(), walls: new MeshBuffer(), roofs: new MeshBuffer() };
+export interface EncodeOptions {
+  /** Leave the walls covered by facade bays out of geom.glb (once the client renders the facade kit). */
+  readonly stripFacadeWalls?: boolean;
+}
+
+export const meshGroups = (tile: TileContent, { stripFacadeWalls = false }: EncodeOptions = {}): MeshGroups => {
+  const groups = { ground: new MeshBuffer(), water: new MeshBuffer(), road: new MeshBuffer(), path: new MeshBuffer(), walls: new MeshBuffer(), roofs: new MeshBuffer(), sheetRoofs: new MeshBuffer() };
   if (tile.terrain) {
     addTerrainGrid(groups.ground, tile.terrain);
     addWaterCells(groups.water, tile.terrain);
@@ -60,7 +65,7 @@ export const meshGroups = (tile: TileContent): MeshGroups => {
   }
   const groundAt = groundSampler(tile.terrain);
   for (const road of tile.roads) for (const line of road.lines) addRoadRibbon(isPathClass(road.roadClass) ? groups.path : groups.road, line, road.roadClass, groundAt);
-  for (const part of tile.buildingParts) extrudeBuilding(part, groups);
+  for (const part of tile.buildingParts) extrudeBuilding(part, groups, stripFacadeWalls);
   return groups;
 };
 
@@ -95,22 +100,35 @@ const metaOf = (tile: TileContent, existing: ReadonlySet<string>): TileMeta =>
     neighbours: neighbourKeys(tile.key).filter((k) => existing.has(k)),
   });
 
-/** Instances standing on the terrain; those on water cells are dropped. */
+/** Instances keep their own height (facades) or stand on the terrain; terrain instances on water cells are dropped. */
 const instancesOf = (tile: TileContent): Instance[] => {
   const groundAt = groundSampler(tile.terrain);
   const water = tile.terrain?.water;
   const mask = water ? new Uint8Array(Buffer.from(water.maskBase64, 'base64')) : null;
   const cell = water ? TILE_SIZE_M / water.cellsPerSide : 1;
+  const onWater = (x: number, z: number): boolean =>
+    !!mask && !!water && isWaterCell(mask, water.cellsPerSide, Math.min(water.cellsPerSide - 1, Math.floor(x / cell)), Math.min(water.cellsPerSide - 1, Math.floor(z / cell)));
   return tile.instances
-    .filter(({ position: [x, z] }) => !mask || !water || !isWaterCell(mask, water.cellsPerSide, Math.min(water.cellsPerSide - 1, Math.floor(x / cell)), Math.min(water.cellsPerSide - 1, Math.floor(z / cell))))
-    .map((i) => ({ module: i.module, x: i.position[0], y: groundAt(i.position[0], i.position[1]), z: i.position[1], yawRad: i.yawRad, scale: i.scale, variant: i.variant }));
+    .filter(({ position: [x, z], yM }) => yM !== undefined || !onWater(x, z))
+    .map(({ module, position: [x, z], yM, yawRad, scale, variant, stretchX, stretchY }) => ({
+      module,
+      x,
+      y: yM ?? groundAt(x, z),
+      z,
+      yawRad,
+      scale,
+      variant,
+      ...(stretchX === undefined ? {} : { stretchX }),
+      ...(stretchY === undefined ? {} : { stretchY }),
+    }));
 };
 
-export const encodeTile = async (tile: TileContent, existing: ReadonlySet<string>): Promise<EncodedTile> => {
-  const groups = meshGroups(tile);
+export const encodeTile = async (tile: TileContent, existing: ReadonlySet<string>, options: EncodeOptions = {}): Promise<EncodedTile> => {
+  const groups = meshGroups(tile, options);
   const triangles = Object.values(groups).reduce((sum, g) => sum + g.triangleCount, 0);
-  const drawCalls = Object.values(groups).filter((g) => g.triangleCount > 0).length;
   const instances = instancesOf(tile);
+  // One draw call per non-empty material group and per instanced module (thin instances).
+  const drawCalls = Object.values(groups).filter((g) => g.triangleCount > 0).length + new Set(instances.map((i) => i.module)).size;
   return {
     key: tile.key,
     geom: file(await buildTileGlb(groups, tile.key)),

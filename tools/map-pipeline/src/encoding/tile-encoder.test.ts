@@ -28,7 +28,7 @@ describe('encodeTile', () => {
     const collision = decodeCollision(encoded.collision.bytes);
     expect(collision.prisms).toHaveLength(1);
     expect(collision.prisms[0]?.topYM).toBe(9.5);
-    expect(encoded.drawCalls).toBe(4); // ground, road, walls, roofs
+    expect(encoded.drawCalls).toBe(5); // ground, road, walls, roofs + 1 instanced module
     expect(encoded.instanceCount).toBe(1);
   });
 

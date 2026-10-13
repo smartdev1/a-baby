@@ -1,5 +1,5 @@
 /**
- * Role: content of one L0 tile after the cut (tiles.ndjson line): clipped building parts, clipped road lines and places, all in metres local to the tile south-west corner.
+ * Role: content of one L0 tile after the cut (tiles.ndjson line): clipped building parts (with their pitched roof if any), clipped road lines, places and instances, all in metres local to the tile south-west corner.
  * Owner: backend
  */
 
@@ -18,6 +18,15 @@ export interface TileBuildingPart {
   readonly baseYM: number;
   readonly heightM: number;
   readonly polygons: readonly LocalPolygon[];
+  /** Sheet-metal roof (stage 11) of a building lying in this tile only; absent = flat roof. */
+  readonly roof?: TilePitchedRoof;
+}
+
+/** Corners counter-clockwise, corners[0] → corners[1] = long side (low eave of a mono-pitch roof). */
+export interface TilePitchedRoof {
+  readonly kind: 'sheet-gable' | 'sheet-mono';
+  readonly corners: readonly [LocalPoint, LocalPoint, LocalPoint, LocalPoint];
+  readonly riseM: number;
 }
 
 /** Building attributes, stored only in the tile that holds the building's representative point. */
@@ -44,13 +53,16 @@ export interface TilePlaceEntry {
   readonly displayName: string | null;
 }
 
-/** Instanced module in tile-local metres (height added at encode time from the terrain). */
+/** Instanced module in tile-local metres; without `yM` its height comes from the terrain at encode time. */
 export interface TileInstance {
   readonly module: number;
   readonly position: LocalPoint;
   readonly yawRad: number;
   readonly scale: number;
   readonly variant: number;
+  readonly yM?: number;
+  readonly stretchX?: number;
+  readonly stretchY?: number;
 }
 
 export interface TileContent {
