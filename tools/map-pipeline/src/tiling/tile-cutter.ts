@@ -4,6 +4,8 @@
  */
 
 import type { BuildingRecord, ClassifiedRecord, UtmGeometry, UtmPoint } from '../records/map-records.ts';
+import { moduleIndex } from '@skyline/tile-format';
+import type { PlacedInstance } from '../props/placed-instance.ts';
 import { TerrainSampler } from '../terrain/terrain-sampler.ts';
 import type { TileTerrain } from '../terrain/tile-terrain.ts';
 import { clipPolygonsToTile, clipPolylineToTile } from './clip-to-tile.ts';
@@ -56,6 +58,12 @@ export class TileCutter {
     }
     const owner = tileOfPoint(representativePoint(b.footprint));
     if (owner) this.tile(owner).buildingMeta.push({ id: b.id, type: b.type, levels: b.levels, heightM: b.heightM, heightSource: b.heightSource });
+  }
+
+  /** Props and vegetation from stage 12-props, in the tile of their position. */
+  addInstance(p: PlacedInstance): void {
+    const key = tileOfPoint([p.e, p.n]);
+    if (key) this.tile(key).instances.push({ module: moduleIndex(p.module), position: toLocal([p.e, p.n], tileOrigin(key)), yawRad: p.yawRad, scale: p.scale, variant: p.variant });
   }
 
   /** Roads and places come from the classified records. */

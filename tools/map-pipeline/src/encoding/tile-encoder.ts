@@ -4,11 +4,11 @@
  */
 
 import { createHash } from 'node:crypto';
-import { type CollisionData, encodeCollision, parseTileMeta, TILE_FORMAT_VERSION, type TileMeta, type WaterLayer } from '@skyline/tile-format';
+import { type CollisionData, encodeCollision, encodeInstances, type Instance, parseTileMeta, TILE_FORMAT_VERSION, type TileMeta, type WaterLayer } from '@skyline/tile-format';
 import { extrudeBuilding } from '../meshing/extrude-building.ts';
 import { MeshBuffer } from '../meshing/mesh-buffer.ts';
 import { addGroundQuad, addRoadRibbon } from '../meshing/road-ribbon.ts';
-import { addTerrainGrid, addWaterCells } from '../meshing/terrain-mesh.ts';
+import { addTerrainGrid, addWaterCells, isWaterCell } from '../meshing/terrain-mesh.ts';
 import { isPathClass } from '../roads/road-classes.ts';
 import type { TileTerrain } from '../terrain/tile-terrain.ts';
 import type { LocalPoint, TileContent } from '../tiling/tile-content.ts';
@@ -25,6 +25,9 @@ export interface EncodedTile {
   readonly geom: EncodedFile;
   readonly collision: EncodedFile;
   readonly meta: EncodedFile;
+  /** Props / vegetation; absent when the tile has none. */
+  readonly instances: EncodedFile | null;
+  readonly instanceCount: number;
   readonly triangles: number;
   readonly drawCalls: number;
 }
@@ -92,15 +95,29 @@ const metaOf = (tile: TileContent, existing: ReadonlySet<string>): TileMeta =>
     neighbours: neighbourKeys(tile.key).filter((k) => existing.has(k)),
   });
 
+/** Instances standing on the terrain; those on water cells are dropped. */
+const instancesOf = (tile: TileContent): Instance[] => {
+  const groundAt = groundSampler(tile.terrain);
+  const water = tile.terrain?.water;
+  const mask = water ? new Uint8Array(Buffer.from(water.maskBase64, 'base64')) : null;
+  const cell = water ? TILE_SIZE_M / water.cellsPerSide : 1;
+  return tile.instances
+    .filter(({ position: [x, z] }) => !mask || !water || !isWaterCell(mask, water.cellsPerSide, Math.min(water.cellsPerSide - 1, Math.floor(x / cell)), Math.min(water.cellsPerSide - 1, Math.floor(z / cell))))
+    .map((i) => ({ module: i.module, x: i.position[0], y: groundAt(i.position[0], i.position[1]), z: i.position[1], yawRad: i.yawRad, scale: i.scale, variant: i.variant }));
+};
+
 export const encodeTile = async (tile: TileContent, existing: ReadonlySet<string>): Promise<EncodedTile> => {
   const groups = meshGroups(tile);
   const triangles = Object.values(groups).reduce((sum, g) => sum + g.triangleCount, 0);
   const drawCalls = Object.values(groups).filter((g) => g.triangleCount > 0).length;
+  const instances = instancesOf(tile);
   return {
     key: tile.key,
     geom: file(await buildTileGlb(groups, tile.key)),
     collision: file(encodeCollision(collisionOf(tile))),
     meta: file(new TextEncoder().encode(`${JSON.stringify(metaOf(tile, existing))}\n`)),
+    instances: instances.length > 0 ? file(encodeInstances(instances)) : null,
+    instanceCount: instances.length,
     triangles,
     drawCalls,
   };

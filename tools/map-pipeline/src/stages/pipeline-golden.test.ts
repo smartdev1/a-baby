@@ -25,6 +25,8 @@ const CHECKED_OUTPUTS = [
   '08-roads/road-edges.ndjson',
   '08-roads/road-stats.json',
   '09-naming/place-names.ndjson',
+  '10-terrain/terrain-tiles.ndjson',
+  '12-props/props.ndjson',
   '14-tile-cut/tiles.ndjson',
   '16-encode/encode-index.json',
   '17-manifest/world-manifest.pigeons-fixture-2026-10-13.json',

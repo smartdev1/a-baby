@@ -44,14 +44,24 @@ export interface TilePlaceEntry {
   readonly displayName: string | null;
 }
 
+/** Instanced module in tile-local metres (height added at encode time from the terrain). */
+export interface TileInstance {
+  readonly module: number;
+  readonly position: LocalPoint;
+  readonly yawRad: number;
+  readonly scale: number;
+  readonly variant: number;
+}
+
 export interface TileContent {
   readonly key: string;
   readonly buildingParts: TileBuildingPart[];
   readonly buildingMeta: TileBuildingMeta[];
   readonly roads: TileRoad[];
   readonly places: TilePlaceEntry[];
+  readonly instances: TileInstance[];
   /** Relief and water of the tile (stage 10-terrain); null without terrain. */
   terrain: TileTerrain | null;
 }
 
-export const emptyTileContent = (key: string): TileContent => ({ key, buildingParts: [], buildingMeta: [], roads: [], places: [], terrain: null });
+export const emptyTileContent = (key: string): TileContent => ({ key, buildingParts: [], buildingMeta: [], roads: [], places: [], instances: [], terrain: null });

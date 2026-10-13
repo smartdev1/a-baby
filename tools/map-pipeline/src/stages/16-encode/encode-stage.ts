@@ -21,6 +21,7 @@ export interface EncodeIndexEntry {
   readonly geom: string;
   readonly collision: string;
   readonly meta: string;
+  readonly instances?: string;
   readonly bytes: number;
   readonly triangles: number;
 }
@@ -28,22 +29,27 @@ export type EncodeIndex = Record<string, EncodeIndexEntry>;
 
 const writeTile = async (outDir: string, t: EncodedTile): Promise<void> => {
   const key = t.key as Parameters<typeof tileFilePath>[0];
-  for (const kind of ['geom', 'collision', 'meta'] as const) {
-    const path = join(outDir, tileFilePath(key, kind, t[kind].hash));
+  const files = [['geom', t.geom], ['collision', t.collision], ['meta', t.meta], ['instances', t.instances]] as const;
+  for (const [kind, encoded] of files) {
+    if (!encoded) continue;
+    const path = join(outDir, tileFilePath(key, kind, encoded.hash));
     await mkdir(join(path, '..'), { recursive: true });
-    await writeFile(path, t[kind].bytes);
+    await writeFile(path, encoded.bytes);
   }
 };
 
 const indexPaths = (index: EncodeIndex): string[] =>
   Object.entries(index).flatMap(([key, e]) =>
-    (['geom', 'collision', 'meta'] as const).map((kind) => tileFilePath(key as Parameters<typeof tileFilePath>[0], kind, e[kind])),
+    (['geom', 'collision', 'meta', 'instances'] as const).flatMap((kind) => {
+      const hash = e[kind];
+      return hash ? [tileFilePath(key as Parameters<typeof tileFilePath>[0], kind, hash)] : [];
+    }),
   );
 
 export const encodeStage: PipelineStage = {
   id: ENCODE_STAGE_ID,
-  // v7: roads densified (≤ 4 m) and raised 12–15 cm above the draped terrain.
-  version: 7,
+  // v8: instances.bin (props and vegetation, 12-props).
+  version: 8,
   outputs: [ENCODE_INDEX_FILE],
   inputFiles: (ctx) => [ctx.outputOf(TILE_CUT_STAGE_ID, TILES_FILE)],
   params: () => ({ formatVersion: TILE_FORMAT_VERSION }),
@@ -63,7 +69,14 @@ export const encodeStage: PipelineStage = {
       const encoded = await encodeTile(tile, existing);
       violations.push(...budgetViolations(encoded));
       await writeTile(outDir, encoded);
-      index[tile.key] = { geom: encoded.geom.hash, collision: encoded.collision.hash, meta: encoded.meta.hash, bytes: tileBytes(encoded), triangles: encoded.triangles };
+      index[tile.key] = {
+        geom: encoded.geom.hash,
+        collision: encoded.collision.hash,
+        meta: encoded.meta.hash,
+        ...(encoded.instances ? { instances: encoded.instances.hash } : {}),
+        bytes: tileBytes(encoded),
+        triangles: encoded.triangles,
+      };
     }
     if (violations.length > 0) throw new Error(`${violations.length} tile(s) over budget:\n${violations.join('\n')}`);
     await writeFile(join(outDir, ENCODE_INDEX_FILE), `${JSON.stringify(index, null, 2)}\n`);

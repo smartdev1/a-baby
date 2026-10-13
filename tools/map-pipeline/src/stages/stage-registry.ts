@@ -15,6 +15,7 @@ import { heightsStage } from './06-heights/heights-stage.ts';
 import { roadsStage } from './08-roads/roads-stage.ts';
 import { namingStage } from './09-naming/naming-stage.ts';
 import { terrainStage } from './10-terrain/terrain-stage.ts';
+import { propsStage } from './12-props/props-stage.ts';
 import { tileCutStage } from './14-tile-cut/tile-cut-stage.ts';
 import { encodeStage } from './16-encode/encode-stage.ts';
 import { manifestStage } from './17-manifest/manifest-stage.ts';
@@ -28,6 +29,7 @@ const COMMON_STAGES: PipelineStage[] = [
   roadsStage,
   namingStage,
   terrainStage,
+  propsStage,
   tileCutStage,
   encodeStage,
   manifestStage,

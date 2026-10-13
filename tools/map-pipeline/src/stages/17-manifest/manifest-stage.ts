@@ -64,7 +64,12 @@ export const manifestStage: PipelineStage = {
       sourceSnapshot: await snapshotInfo(ctx),
       licence: 'ODbL-1.0',
       attribution: '© OpenStreetMap contributors',
-      tiles: Object.fromEntries(keys.map((k) => [k, { geom: index[k]?.geom, collision: index[k]?.collision, meta: index[k]?.meta }])),
+      tiles: Object.fromEntries(
+        keys.map((k) => {
+          const e = index[k];
+          return [k, { geom: e?.geom, collision: e?.collision, meta: e?.meta, ...(e?.instances ? { instances: e.instances } : {}) }];
+        }),
+      ),
     });
     await writeFile(join(outDir, worldManifestFileName(manifest.release)), `${JSON.stringify(manifest, null, 2)}\n`);
     ctx.logger.info({ release: manifest.release, tiles: keys.length }, 'world manifest written');

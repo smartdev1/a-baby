@@ -15,6 +15,7 @@ const TILE: TileContent = {
   buildingMeta: [{ id: 'osm:way/1', type: 'apartments', levels: 3, heightM: 9.5, heightSource: 'heuristic' }],
   roads: [{ id: 'osm:way/2', roadClass: 'residential', lines: [[[0, 100], [250, 100]]] }],
   places: [{ id: 'osm:node/3', category: 'food.maquis', position: [30, 60], buildingId: null, displayName: 'Maquis Le Bigeon' }],
+  instances: [{ module: 6, position: [100, 100], yawRad: 0, scale: 1, variant: 0 }],
   terrain: null,
 };
 
@@ -28,6 +29,7 @@ describe('encodeTile', () => {
     expect(collision.prisms).toHaveLength(1);
     expect(collision.prisms[0]?.topYM).toBe(9.5);
     expect(encoded.drawCalls).toBe(4); // ground, road, walls, roofs
+    expect(encoded.instanceCount).toBe(1);
   });
 
   it('should give the same hashes on two encodings', async () => {
