@@ -9,7 +9,7 @@ Infrastructure artifacts PREPARED, NEVER EXECUTED by agents: Dockerfiles, Compos
 
 ## How it works
 
-Humans run them. Any change requires the owner's approval (CLAUDE.md).
+Humans run them. Any change requires the owner's approval (CLAUDE.md). Folders: `docker/` (osmium, latency probe), `ci/` (prepared GitHub Actions workflow), `compose/`, `observability/`.
 
 ## Rules
 

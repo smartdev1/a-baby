@@ -1,0 +1,35 @@
+# Role: prepared GitHub Actions workflow (lint, boundaries, repo checks, typecheck, tests incl. pipeline golden) on Linux and Windows.
+# NOT ACTIVE: copy it to .github/workflows/ci.yml to enable it (owner decision, see infra/ci/README.md). No secret is used.
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: verify (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4 # version read from package.json "packageManager"
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      # lint = ESLint + dependency-cruiser + repo checks (Role headers, folder READMEs, ≤ 12 files per folder)
+      # test = Vitest, including the map pipeline golden test (byte-identical outputs on both OSes)
+      - run: pnpm verify
