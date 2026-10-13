@@ -8,6 +8,10 @@
 
 import fs from 'fs';
 import path from 'path';
+import { fileURLToPath } from 'url';
+
+/** Repository root, resolved from this script (works on every machine). */
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
 const PROHIBITED_NAMES = /utils|helpers|common|misc|stuff|core/;
 const IGNORED_DIRS = new Set(['node_modules', '.git', 'dist', 'build']);
@@ -27,8 +31,8 @@ function walkDir(dir, callback) {
 }
 
 // Check source files (.ts, .js) for prohibited names in their path or filename
-walkDir('C:\\Users\\Aristide Adouko\\Downloads\\a_baby', (filePath) => {
-  const relPath = path.relative('C:\\Users\\Aristide Adouko\\Downloads\\a_baby', filePath);
+walkDir(ROOT, (filePath) => {
+  const relPath = path.relative(ROOT, filePath);
 
   // Skip non-source files
   if (!/.(ts|js|mjs|cjs)$/.test(relPath)) return;
