@@ -1,14 +1,20 @@
 # `tools/map-pipeline/src/heuristics/`
 
 - **Owner:** backend developer
-- **Status:** Planned — T-011
+- **Status:** Active — T-011 (default profile); neighbourhood profiles in J2
 
 ## Role
 
-Height and shape heuristics when OSM data is missing (89 % of buildings have no levels).
+Plausible values when OSM is silent — first of all building heights (98.7 % missing in Yopougon, spike SP2).
+
+## How it works (`height-heuristics.ts`)
+
+1. `height` tag → source `osm` (levels derived if absent).
+2. `building:levels` → source `osm`, height = 3.5 m ground floor + 3 m per upper floor.
+3. Otherwise source `heuristic`: single-volume types (church, mosque, warehouse, kiosk…) draw a height range; other types draw levels from a weighted distribution by type (`apartments` R+2..R+5…) or, for `building=yes`, by footprint area. Draws use `rngFor(seed, osmId)`: the same building always gets the same height.
+
+Yopougon result (snapshot 2026-10-01): 74 702 buildings, 1 240 from OSM, 73 462 heuristic; 59 % 1 level, 28 % 2, 10 % 3.
 
 ## Rules
 
-- Every source file starts with a `Role:` header comment.
-- Keep this README up to date when the folder content changes.
-- See `ARCHITECTURE.md` and `docs/rules/` for the full rules.
+- Changing a distribution changes outputs: bump `06-heights` version and update the golden hashes.

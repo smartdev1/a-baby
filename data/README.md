@@ -1,7 +1,7 @@
 # `data/`
 
 - **Owner:** backend developer
-- **Status:** Planned — T-022
+- **Status:** Active — T-022
 
 ## Role
 

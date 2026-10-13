@@ -39,7 +39,7 @@ export const runPipeline = async ({ repoRoot, config, stages, logger, force = fa
     await mkdir(outDir, { recursive: true });
     const inputHash = await computeInputHash(stage, ctx);
 
-    if (!force && (await isUpToDate(stage, outDir, inputHash))) {
+    if (!force && (await isUpToDate(stage, ctx, outDir, inputHash))) {
       reports.push({ id: stage.id, status: 'cached', durationMs: performance.now() - startedAt });
       logger.info({ stage: stage.id }, 'stage up to date, skipped');
       continue;
@@ -47,7 +47,8 @@ export const runPipeline = async ({ repoRoot, config, stages, logger, force = fa
 
     logger.info({ stage: stage.id }, 'stage running');
     await stage.run(ctx, outDir);
-    await writeCache(stage, outDir, inputHash);
+    // Recomputed after the run: a stage may create one of its own inputs (01-acquire downloads the snapshot it declares).
+    await writeCache(stage, ctx, outDir, await computeInputHash(stage, ctx));
     reports.push({ id: stage.id, status: 'ran', durationMs: performance.now() - startedAt });
   }
   return reports;

@@ -5,7 +5,7 @@
 
 ## Role
 
-Pipeline tests resources.
+Pipeline test resources: `fixtures/` (golden OSM sample) and `golden/` (expected output hashes).
 
 ## Rules
 

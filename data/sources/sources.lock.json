@@ -1,0 +1,20 @@
+{
+  "osm": {
+    "provider": "geofabrik",
+    "region": "africa/ivory-coast",
+    "url": "https://download.geofabrik.de/africa/ivory-coast-261001.osm.pbf",
+    "snapshotDate": "2026-10-01",
+    "fileName": "ivory-coast-261001.osm.pbf",
+    "sizeBytes": 85505577,
+    "sha256": "68ec1fda487642c3bd67dc0401174c14eee0fe21ffa7b028414c0aa14f6d18d5",
+    "md5": "416ad067c28022d0eb10c059d9c05821",
+    "licence": "ODbL-1.0",
+    "attribution": "© OpenStreetMap contributors"
+  },
+  "boundaries": {
+    "yopougon": {
+      "osmRelationId": 3377881,
+      "note": "admin_level=8, name=Yopougon, wikidata Q1470529 — confirmed by spike SP2 (T-018)"
+    }
+  }
+}
