@@ -325,7 +325,11 @@ importers:
         specifier: ^10.4.0
         version: 10.4.0
 
-  packages/physics: {}
+  packages/physics:
+    dependencies:
+      '@skyline/tile-format':
+        specifier: workspace:*
+        version: link:../tile-format
 
   packages/protocol:
     dependencies:
@@ -420,6 +424,9 @@ importers:
       '@skyline/observability':
         specifier: workspace:*
         version: link:../../packages/observability
+      '@skyline/physics':
+        specifier: workspace:*
+        version: link:../../packages/physics
       '@skyline/tile-format':
         specifier: workspace:*
         version: link:../../packages/tile-format
