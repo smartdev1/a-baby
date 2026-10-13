@@ -9,7 +9,7 @@ Pipeline stages, one folder per stage named `<nn>-<name>` (ARCHITECTURE §11.2).
 
 ## How it works
 
-`stage-registry.ts` (`stagesFor(config)`) lists the stages in execution order: fixture = `01-source → 03-export`; OSM snapshot = `01-acquire → 02-extract → 03-export`. Adding a stage = a new folder with a `PipelineStage` implementation + its README + one line in the registry.
+`stage-registry.ts` (`stagesFor(config)`) lists the stages in execution order: fixture = `01-source → 03-export`; OSM snapshot = `01-acquire → 02-extract → 03-export`; then both `04-normalize → 05-classify → 06-heights → 18-report`. `pipeline-golden.test.ts` checks byte-identical outputs on the fixture. Adding a stage = a new folder with a `PipelineStage` implementation + its README + one line in the registry.
 
 | Stage | Status |
 |---|---|
@@ -18,7 +18,9 @@ Pipeline stages, one folder per stage named `<nn>-<name>` (ARCHITECTURE §11.2).
 | `02-extract` | Active (osmium bbox extract + tags filter) |
 | `03-export` | Active (GeoJSONSeq, both sources) |
 | `18-report` | Active (coverage report, spike SP2) |
-| normalize / classify / heights | T-011 |
+| `04-normalize` | Active (stable ids, UTM metres, parsed tags) |
+| `05-classify` | Active (buildings, place categories, roads) |
+| `06-heights` | Active (levels and heights with source) |
 | tile-cut / encode / manifest | T-012 |
 
 ## Rules
