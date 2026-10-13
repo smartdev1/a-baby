@@ -17,6 +17,8 @@ const ServicesConfigSchema = z.object({
   SKYLINE_RUNTIME_DIR: z.string().default(repoPath('data/runtime')),
   /** Session tickets per minute and per IP (raise only for local load tests). */
   SESSION_TICKETS_PER_MIN: z.coerce.number().int().min(1).max(100_000).default(10),
+  /** Internal routes for gateways in other processes (multi-process mode); loopback callers only. */
+  SERVICES_INTERNAL_ROUTES: z.enum(['true', 'false']).default('false'),
 });
 
 export interface ServicesConfig {
@@ -28,6 +30,7 @@ export interface ServicesConfig {
   /** Mutable local state until the database exists (git-ignored data/runtime/). */
   runtimeDir: string;
   ticketsPerMin: number;
+  internalRoutes: boolean;
 }
 
 export const readServicesConfig = (env: Record<string, string | undefined>): ServicesConfig => {
@@ -39,5 +42,6 @@ export const readServicesConfig = (env: Record<string, string | undefined>): Ser
     contentDir: parsed.SKYLINE_CONTENT_DIR,
     runtimeDir: parsed.SKYLINE_RUNTIME_DIR,
     ticketsPerMin: parsed.SESSION_TICKETS_PER_MIN,
+    internalRoutes: parsed.SERVICES_INTERNAL_ROUTES === 'true',
   };
 };

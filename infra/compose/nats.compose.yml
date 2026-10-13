@@ -1,0 +1,11 @@
+# Role: local NATS server for the multi-process mode (spike SP3): pinned image, client port on loopback only, no persistence.
+# Owner: backend
+# Usage (owner): docker compose -f infra/compose/nats.compose.yml up -d
+services:
+  nats:
+    # nats:2.11-alpine (nats-server v2.11.17), pinned by digest
+    image: nats@sha256:e4bf19f15fd3218814a4e3c9e0064e1334bd8aa20d5984b9f1a0afd084f8cc00
+    container_name: skyline-nats
+    ports:
+      - '127.0.0.1:4222:4222'
+    restart: unless-stopped

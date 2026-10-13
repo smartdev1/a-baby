@@ -1,7 +1,7 @@
 # `docs/spikes/`
 
 - **Owner:** shared (any developer, reviewed by the other one)
-- **Status:** Active — SP2 delivered (`SP2-osm-coverage.md`)
+- **Status:** Active — SP2 delivered (`SP2-osm-coverage.md`), SP3 delivered (`SP3-mmo.md`), SP4 kit ready (`SP4-latency.md`)
 
 ## Role
 
