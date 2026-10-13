@@ -18,7 +18,14 @@ import { stagesFor } from './stage-registry.ts';
 const packageDir = fileURLToPath(new URL('../../', import.meta.url));
 const GOLDEN_FILE = join(packageDir, 'test/golden/pigeons-fixture.sha256.json');
 const FIXTURE = 'tools/map-pipeline/test/fixtures/pigeons-sample.geojson';
-const CHECKED_OUTPUTS = ['04-normalize/normalized.ndjson', '05-classify/classified.ndjson', '06-heights/buildings.ndjson'];
+const CHECKED_OUTPUTS = [
+  '04-normalize/normalized.ndjson',
+  '05-classify/classified.ndjson',
+  '06-heights/buildings.ndjson',
+  '14-tile-cut/tiles.ndjson',
+  '16-encode/encode-index.json',
+  '17-manifest/world-manifest.pigeons-fixture-2026-10-13.json',
+];
 const logger = createLogger({ service: 'golden', level: 'silent' });
 
 const roots: string[] = [];

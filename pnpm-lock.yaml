@@ -399,6 +399,15 @@ importers:
 
   tools/map-pipeline:
     dependencies:
+      '@gltf-transform/core':
+        specifier: ^4.5.1
+        version: 4.5.1
+      '@gltf-transform/extensions':
+        specifier: ^4.5.1
+        version: 4.5.1
+      '@gltf-transform/functions':
+        specifier: ^4.5.1
+        version: 4.5.1(@types/node@26.6.5)
       '@skyline/geo':
         specifier: workspace:*
         version: link:../../packages/geo
@@ -414,6 +423,9 @@ importers:
       flatbush:
         specifier: ^4.6.2
         version: 4.6.2
+      meshoptimizer:
+        specifier: ^1.3.0
+        version: 1.3.0
       polygon-clipping:
         specifier: ^0.15.7
         version: 0.15.7

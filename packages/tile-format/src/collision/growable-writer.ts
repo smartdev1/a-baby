@@ -21,15 +21,18 @@ export class GrowableWriter {
   }
 
   u16(value: number): void {
-    this.view.setUint16(this.reserve(2), value, true);
+    const at = this.reserve(2); // reserve first: it may replace this.view
+    this.view.setUint16(at, value, true);
   }
 
   u32(value: number): void {
-    this.view.setUint32(this.reserve(4), value, true);
+    const at = this.reserve(4); // reserve first: it may replace this.view
+    this.view.setUint32(at, value, true);
   }
 
   f32(value: number): void {
-    this.view.setFloat32(this.reserve(4), value, true);
+    const at = this.reserve(4); // reserve first: it may replace this.view
+    this.view.setFloat32(at, value, true);
   }
 
   f32Array(values: Float32Array): void {

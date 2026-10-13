@@ -22,15 +22,20 @@ export interface PipelineStage {
   readonly id: string;
   /** Bump when the stage code changes its output, to invalidate caches. */
   readonly version: number;
-  /** File names the stage writes into its output folder. */
-  readonly outputs: readonly string[];
+  /** File names the stage writes into its output folder (a function when they depend on the config). */
+  readonly outputs: readonly string[] | ((ctx: StageContext) => readonly string[]);
   /** Absolute paths of every file the stage reads. */
   inputFiles(ctx: StageContext): string[];
   /** JSON-serializable configuration slice that influences the output. */
   params(ctx: StageContext): unknown;
   /** Writes every declared output into `outDir`. */
   run(ctx: StageContext, outDir: string): Promise<void>;
+  /** Optional extra check of undeclared outputs (e.g. thousands of tile files listed in an index). */
+  extraOutputsPresent?(outDir: string): Promise<boolean>;
 }
+
+export const outputsOf = (stage: PipelineStage, ctx: StageContext): readonly string[] =>
+  typeof stage.outputs === 'function' ? stage.outputs(ctx) : stage.outputs;
 
 export type StageStatus = 'ran' | 'cached';
 

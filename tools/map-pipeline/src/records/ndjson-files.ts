@@ -15,7 +15,7 @@ export async function* readNdjson<T>(path: string): AsyncGenerator<T> {
 }
 
 /** Writes one JSON value per line, respecting stream back-pressure. */
-export const writeNdjson = async <T>(path: string, values: AsyncIterable<T>): Promise<number> => {
+export const writeNdjson = async <T>(path: string, values: AsyncIterable<T> | Iterable<T>): Promise<number> => {
   const out = createWriteStream(path, 'utf8');
   let count = 0;
   for await (const value of values) {

@@ -12,10 +12,21 @@ import { createExportStage } from './03-export/export-stage.ts';
 import { normalizeStage } from './04-normalize/normalize-stage.ts';
 import { classifyStage } from './05-classify/classify-stage.ts';
 import { heightsStage } from './06-heights/heights-stage.ts';
+import { tileCutStage } from './14-tile-cut/tile-cut-stage.ts';
+import { encodeStage } from './16-encode/encode-stage.ts';
+import { manifestStage } from './17-manifest/manifest-stage.ts';
 import { createReportStage } from './18-report/report-stage.ts';
 
 /** Stages shared by every source, after 03-export. */
-const COMMON_STAGES: PipelineStage[] = [normalizeStage, classifyStage, heightsStage, createReportStage()];
+const COMMON_STAGES: PipelineStage[] = [
+  normalizeStage,
+  classifyStage,
+  heightsStage,
+  tileCutStage,
+  encodeStage,
+  manifestStage,
+  createReportStage(),
+];
 
 /** Execution order (ARCHITECTURE §11.2). Both source kinds end with 03-export → features.geojsonseq. */
 export const stagesFor = (config: PipelineConfig): PipelineStage[] =>

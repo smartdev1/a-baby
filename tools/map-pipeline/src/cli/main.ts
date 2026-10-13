@@ -22,6 +22,6 @@ const main = async (): Promise<void> => {
 };
 
 main().catch((error: unknown) => {
-  process.stderr.write(`map-pipeline failed: ${error instanceof Error ? error.message : String(error)}\n`);
+  process.stderr.write(`map-pipeline failed: ${error instanceof Error ? (process.env['DEBUG'] ? (error.stack ?? error.message) : error.message) : String(error)}\n`);
   process.exitCode = 1;
 });

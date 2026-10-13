@@ -17,6 +17,8 @@ const LocalFileSource = z.object({
   kind: z.literal('local-file'),
   format: z.literal('geojson'),
   path: RepoRelativePath,
+  /** Date the extract was taken (written in the world manifest). */
+  snapshotDate: z.iso.date(),
 });
 
 /** Frozen OSM snapshot described in a sources lock file (acquisition implemented in T-022). */
