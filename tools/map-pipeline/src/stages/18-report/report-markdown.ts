@@ -30,6 +30,52 @@ const int = (n: number): string => n.toLocaleString('en-US').replace(/,/g, ' ');
 const table = (header: string, rows: [string, string][]): string =>
   [`| ${header} | |`, '|---|---:|', ...rows.map(([a, b]) => `| ${a} | ${b} |`)].join('\n');
 
+const summaryRows = (stats: ReportFacts['stats'], busRoutes: ReportFacts['busRoutes']): [string, string][] => {
+  const totalKm = Object.values(stats.roadKmByClass).reduce((a, b) => a + b, 0);
+  return [
+    ['Features read / inside the commune', `${int(stats.featuresRead)} / ${int(stats.featuresInside)}`],
+    ['Buildings', int(stats.buildings)],
+    ['… with `height`', `${int(stats.buildingsWithHeight)} (${pct(stats.buildingsWithHeight, stats.buildings)})`],
+    [
+      '… with `building:levels`',
+      `${int(stats.buildingsWithLevels)} (${pct(stats.buildingsWithLevels, stats.buildings)})`,
+    ],
+    ['L0 tiles (250 m) with at least one building', int(Object.keys(stats.buildingsPerTile).length)],
+    ['Roads and paths', `${totalKm.toFixed(1)} km`],
+    ['POIs / named', `${int(stats.pois)} / ${int(stats.poisNamed)} (${pct(stats.poisNamed, stats.pois)})`],
+    ['Bus / shared-taxi route relations', busRoutes === null ? '—' : int(busRoutes.length)],
+  ];
+};
+
+/** Road graph and route relation sections. */
+const networkSections = (
+  roadGraph: ReportFacts['roadGraph'],
+  routes: NonNullable<ReportFacts['busRoutes']>,
+): string[] => [
+  '## Road graph',
+  '',
+  table('Measure', [
+    ['Nodes / edges', `${int(roadGraph.nodes)} / ${int(roadGraph.edges)}`],
+    ['Routable length', `${roadGraph.lengthKm} km`],
+    ['Connected components', int(roadGraph.components)],
+    ['Largest component (share of length)', `${(roadGraph.largestComponentShare * 100).toFixed(1)} %`],
+    ['Streets with generated sidewalks', int(roadGraph.edgesWithGeneratedSidewalks)],
+  ]),
+  '',
+  '## Route relations by network',
+  '',
+  routes.length === 0
+    ? 'None in the snapshot.'
+    : table(
+        '`route` · `network`',
+        topEntries(
+          countBy(routes, (r) => `${r.route} · ${r.network ?? '(none)'}`),
+          30,
+        ).map(([k, n]) => [k, int(n)]),
+      ),
+  '',
+];
+
 export const renderReportMarkdown = ({
   commune,
   snapshot,
@@ -41,9 +87,6 @@ export const renderReportMarkdown = ({
   roadGraph,
 }: ReportFacts): string => {
   const roads = topEntries(stats.roadKmByClass, 20).map(([k, km]): [string, string] => [k, `${km.toFixed(1)} km`]);
-  const totalKm = Object.values(stats.roadKmByClass).reduce((a, b) => a + b, 0);
-  const tilesWithBuildings = Object.keys(stats.buildingsPerTile).length;
-  const routes = busRoutes ?? [];
   return [
     `# Coverage report — ${commune}`,
     '',
@@ -51,19 +94,7 @@ export const renderReportMarkdown = ({
     '',
     '## Summary',
     '',
-    table('Measure', [
-      ['Features read / inside the commune', `${int(stats.featuresRead)} / ${int(stats.featuresInside)}`],
-      ['Buildings', int(stats.buildings)],
-      ['… with `height`', `${int(stats.buildingsWithHeight)} (${pct(stats.buildingsWithHeight, stats.buildings)})`],
-      [
-        '… with `building:levels`',
-        `${int(stats.buildingsWithLevels)} (${pct(stats.buildingsWithLevels, stats.buildings)})`,
-      ],
-      ['L0 tiles (250 m) with at least one building', int(tilesWithBuildings)],
-      ['Roads and paths', `${totalKm.toFixed(1)} km`],
-      ['POIs / named', `${int(stats.pois)} / ${int(stats.poisNamed)} (${pct(stats.poisNamed, stats.pois)})`],
-      ['Bus / shared-taxi route relations', busRoutes === null ? '—' : int(routes.length)],
-    ]),
+    table('Measure', summaryRows(stats, busRoutes)),
     '',
     '## Building-free tiles inside the commune',
     '',
@@ -94,28 +125,7 @@ export const renderReportMarkdown = ({
       topEntries(stats.poiCategories, 30).map(([k, n]) => [k, int(n)]),
     ),
     '',
-    '## Road graph',
-    '',
-    table('Measure', [
-      ['Nodes / edges', `${int(roadGraph.nodes)} / ${int(roadGraph.edges)}`],
-      ['Routable length', `${roadGraph.lengthKm} km`],
-      ['Connected components', int(roadGraph.components)],
-      ['Largest component (share of length)', `${(roadGraph.largestComponentShare * 100).toFixed(1)} %`],
-      ['Streets with generated sidewalks', int(roadGraph.edgesWithGeneratedSidewalks)],
-    ]),
-    '',
-    '## Route relations by network',
-    '',
-    routes.length === 0
-      ? 'None in the snapshot.'
-      : table(
-          '`route` · `network`',
-          topEntries(
-            countBy(routes, (r) => `${r.route} · ${r.network ?? '(none)'}`),
-            30,
-          ).map(([k, n]) => [k, int(n)]),
-        ),
-    '',
+    ...networkSections(roadGraph, busRoutes ?? []),
     'Full list (id, ref, name) in `coverage-report.json`. Relations crossing the extract are counted even when most of the route is outside the commune.',
     '',
     '© OpenStreetMap contributors (ODbL).',

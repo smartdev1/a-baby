@@ -40,7 +40,7 @@ describe('ZoneCell', () => {
     cell.stop();
     expect(got[0]).toMatchObject({
       type: 'welcome',
-      body: { playerEntityId: 1, tickRateHz: 20, cellKey: CELL, frameOrigin: { eastingM: 381_000 } },
+      body: { playerEntityId: entityIdOf('s1'), tickRateHz: 20, cellKey: CELL, frameOrigin: { eastingM: 381_000 } },
     });
     expect(got[1]).toMatchObject({ type: 'worldClock', body: { ratio: 12 } });
   });
