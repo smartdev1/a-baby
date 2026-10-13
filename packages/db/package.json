@@ -1,0 +1,19 @@
+{
+  "name": "@skyline/db",
+  "version": "0.1.0",
+  "description": "PostgreSQL schema (Prisma), migrations and client. Imported ONLY by apps/services.",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@prisma/client": "^7.10.0"
+  },
+  "devDependencies": {
+    "prisma": "8.0.0-rc.22"
+  }
+}

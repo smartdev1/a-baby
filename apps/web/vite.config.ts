@@ -1,23 +1,18 @@
+/**
+ * Role: Vite build and dev-server configuration of the web client.
+ * Owner: frontend
+ */
+
+import preact from '@preact/preset-vite';
 import { defineConfig } from 'vite';
-import { resolve } from 'path';
 
 export default defineConfig({
-  root: '.',
-  base: '',
-  publicDir: false,
-  resolve: {
-    alias: {
-      'world-generator': resolve(__dirname, '../../packages/world-generator/src/index.ts')
-    }
-  },
+  plugins: [preact()],
+  server: { port: 5173, strictPort: true },
   build: {
-    outDir: '../dist',
+    outDir: 'dist',
     emptyOutDir: true,
     sourcemap: true,
-    rollupOptions: {
-      input: {
-        main: resolve(__dirname, 'index.html')
-      }
-    }
-  }
+    target: 'es2023',
+  },
 });

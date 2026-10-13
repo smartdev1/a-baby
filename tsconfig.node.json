@@ -1,0 +1,8 @@
+{
+  "//": "Role: profile for Node code (servers, offline tools, Node-only packages): Node types, no DOM.",
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "lib": ["ES2023"],
+    "types": ["node"]
+  }
+}

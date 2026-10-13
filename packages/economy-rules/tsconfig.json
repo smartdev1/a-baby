@@ -1,0 +1,7 @@
+{
+  "//": "Role: TypeScript settings of @skyline/economy-rules (pure profile).",
+  "extends": "../../tsconfig.pure.json",
+  "include": [
+    "src/**/*.ts"
+  ]
+}

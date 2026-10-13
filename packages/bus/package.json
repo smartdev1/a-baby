@@ -1,0 +1,16 @@
+{
+  "name": "@skyline/bus",
+  "version": "0.1.0",
+  "description": "MessageBus interface with typed subjects; in-memory implementation (tests, all-in-one) and NATS implementation (distributed).",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "nats": "^2.29.3"
+  }
+}

@@ -1,17 +1,5 @@
 {
-  "extends": "../../tsconfig.base.json",
-  "compilerOptions": {
-    "outDir": "../../dist/web",
-    "rootDir": "src",
-    "paths": {
-      "world-generator": ["../../packages/world-generator/src"]
-    }
-  },
-  "include": [
-    "src/**/*"
-  ],
-  "exclude": [
-    "node_modules",
-    "dist"
-  ]
+  "//": "Role: TypeScript settings of @skyline/web (browser profile).",
+  "extends": "../../tsconfig.browser.json",
+  "include": ["src/**/*.ts", "src/**/*.tsx", "vite.config.ts"]
 }

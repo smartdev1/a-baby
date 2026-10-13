@@ -1,0 +1,18 @@
+# `packages/bus/`
+
+- **Owner:** backend developer
+- **Status:** Skeleton — J5
+
+## Role
+
+MessageBus interface with typed subjects; in-memory implementation (tests, all-in-one) and NATS implementation (distributed).
+
+## How it works
+
+Public API is exported from `src/index.ts` only. Profile: `node`. First implementation: J5.
+
+## Rules
+
+- Every source file starts with a `Role:` header comment.
+- Keep this README up to date when the folder content changes.
+- See `ARCHITECTURE.md` and `docs/rules/` for the full rules.

@@ -1,0 +1,14 @@
+{
+  "name": "@skyline/sim-transport",
+  "version": "0.1.0",
+  "description": "Transport rules: timetables, deterministic line-vehicle positions, fares, routing (gbaka, woro-woro, taxi, bus).",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {}
+}

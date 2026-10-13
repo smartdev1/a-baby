@@ -1,0 +1,8 @@
+{
+  "//": "Role: profile for pure packages (game rules, formats): ES2023 only, no DOM, no Node types.",
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "lib": ["ES2023"],
+    "types": []
+  }
+}

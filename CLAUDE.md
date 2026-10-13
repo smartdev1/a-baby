@@ -7,11 +7,29 @@ Chaque projet peut le compléter dans sa propre section "Contexte projet" en bas
 
 | Agent | Fichier | Rôle |
 |---|---|---|
+| `frontend-dev` | `.claude/agents/frontend-dev.md` | Développement frontend (rendu 3D, UI, assets) — règles `docs/rules/FRONTEND.md` |
+| `backend-dev` | `.claude/agents/backend-dev.md` | Développement backend (pipeline, simulation, services) — règles `docs/rules/BACKEND.md` |
 | `tech-lead-po` | `.claude/agents/tech-lead-po.md` | Cadrage, backlog, architecture, revue, décision de livraison |
 | `fullstack-devops` | `.claude/agents/fullstack-devops.md` | Implémentation front/back, infra, CI/CD (préparation uniquement) |
 | `fullstack-qa` | `.claude/agents/fullstack-qa.md` | Stratégie de tests, recette, blocage qualité, développement |
 
 Le propriétaire (l'utilisateur) a toujours le dernier mot.
+
+## Rôle du développeur (frontend / backend)
+
+L'équipe compte deux développeurs : **frontend** et **backend**. Sur chaque machine, le rôle est déclaré dans `.claude/role.local` (fichier ignoré par git, une ligne : `frontend` ou `backend`) ou par la variable `SKYLINE_ROLE`.
+
+- Claude lit d'abord `docs/rules/FRONTEND.md` ou `docs/rules/BACKEND.md` selon ce rôle, et **ne travaille que dans le périmètre de ce rôle**. Si une tâche exige un changement de l'autre côté, il le décrit dans la tâche au lieu de le coder.
+- Le hook `.claude/hooks/enforce-role.mjs` (déclaré dans `.claude/settings.json`) bloque toute modification hors périmètre, d'après `.claude/ownership.json`.
+- Sans rôle déclaré, ou avec `SKYLINE_ROLE=owner`, aucune restriction (session du propriétaire). `CLAUDE.md`, `ARCHITECTURE.md`, `docs/adr`, `docs/rules` et `.claude/` sont réservés au propriétaire.
+- Agents dédiés : `frontend-dev` et `backend-dev` (`.claude/agents/`). Skills du projet : `new-module`, `babylon-rendering`, `3d-asset-pipeline`.
+
+## Règles de structure du code (contrôlées par `pnpm lint`)
+
+- **Chaque fichier source commence par un en-tête `Role:`** (et `Owner:`) qui décrit son rôle en une phrase.
+- **Chaque dossier contient un `README.md`** qui explique son contenu et son fonctionnement ; il est mis à jour quand le dossier change.
+- Pas de fichier fourre-tout : ≤ 400 lignes par fichier, ≤ 12 fichiers source par dossier, noms qui disent ce que fait le fichier (règles complètes : ARCHITECTURE §9).
+- Aucune ligne de co-auteur Claude (`Co-Authored-By`) dans les commits ni les PR.
 
 ## Langues
 
@@ -185,44 +203,24 @@ docs/
 
 ## Contexte projet
 
-**Client** : Projet indépendant / développeur individuel  
-**Objectif** : Créer un MVP d'un jeu d'action 3D web inspiré de GTA, situé dans un quartier urbain fictif d'Abidjan. Le joueur explore librement, interagit avec des PNJ, accomplit des missions, combat des ennemis et gagne la monnaie fictive du jeu (Djai).  
-**Contraintes** : 
-- Plateforme cible : Navigateur web sur ordinateur (clavier / souris)
-- Aucun véhicule conduisible dans le MVP
-- Aucun système de police ou de poursuite dans le MVP
-- Quartier de jeu compact : 300m × 300m (environ 9 hectares)
-- Sessions multijoueur : 8 joueurs maximum par session (test jusqu'à 12)
-- Missions et objectifs strictement individuels (entités de mission privées à chaque joueur)
-- Monnaie virtuelle : Le Djai (aucune valeur réelle)
-**Stack retenue** : 
-- Moteur 3D : Babylon.js
-- Langage : TypeScript
-- Build : Vite
-- Réseau temps réel : Colyseus (gestion des rooms et synchronisation)
-- Runtime serveur : Node.js
-- API backend : Node.js + TypeScript avec Prisma ORM
-- Base de données : PostgreSQL
-- Tests unitaires : Vitest
-- Validation des données : Bibliothèque de schémas (Zod/Valibot à choisir)
-- Observabilité : Logs structurés et métriques
-**Public cible** : Joueurs sur ordinateurs de gamme variée (de l'entrée de gamme aux configurations moyennes)  
-**Délais** : 
-- Développement solo : environ 9-14 mois avec approche hybride (assets "héros" et "kit" internes, "fond" sous licence)
-- Avec petite équipe : basé sur le découpage en lots (Lot 0: 2-3 semaines, Lot 1: 7-10 semaines, Lot 2: 13-21 semaines)
-- Méthodologie : Alignement sur les phases du CDC (Customer Development Cycle) définies dans les documents de projet
+**Vision** (ADR 0001, remplace le CDC v1.1 archivé dans `docs/archive/`) : SkyLine est un jeu web 3D de **vie virtuelle** en monde ouvert, à la 3e personne, qui reproduit **toute la commune de Yopougon (Abidjan) à l'échelle réelle 1:1** à partir des données OpenStreetMap. Les joueurs y vivent ensemble dans un **monde unique persistant, sans limite de joueurs** : ils travaillent, se déplacent (marche, taxi, woro-woro, gbaka, bus, moto), louent ou achètent un logement, ouvrent un commerce, gagnent et dépensent des **Djai** (monnaie fictive). Combat, missions, police et criminalité arrivent en **v2**.
+**Équipe** : le propriétaire + deux développeurs (frontend, backend), tout est produit en interne (y compris les assets 3D).
+**Plateforme** : navigateur sur PC d'abord, architecture prête pour le mobile.
+**Décisions clés** : tuiles de 250 m en streaming (ADR 0002) ; passerelle + cellules serveur + NATS, sans Colyseus (ADR 0003) ; moteur d'actions piloté par les données (ADR 0004) ; rendu semi-réaliste par kits modulaires (ADR 0005) ; ODbL respectée (ADR 0006) ; monorepo pnpm, Node 24 (ADR 0007) ; `@babylonjs/core` (ADR 0008) ; grand livre Djai en partie double (ADR 0009) ; toponymie réelle et marques parodiées (ADR 0010) ; horloge interne du monde (ADR 0011) ; invité uniquement au MVP (ADR 0012) ; chat texte de proximité ; français + nouchi dans les dialogues.
+**Stack** : TypeScript strict, Babylon.js (ES modules), Preact + signals, Vite, Node 24, Fastify, `ws`, NATS, PostgreSQL + Prisma, Zod, pino + OpenTelemetry, Vitest, fast-check, Playwright, ESLint + dependency-cruiser, pnpm.
+**Références** : `ARCHITECTURE.md` (architecture cible et règles), `docs/roadmap.md` (jalons J0→J7), `docs/adr/`, `docs/backlog/`, `docs/rules/`.
 
 ---
 ### Règles spécifiques au projet SKYLINE
 
-1. **Architecture réseau** : Le serveur est autoritaire ; le client ne transmet que ses intentions, jamais des états finaux. Toute validation critique (tirs, déplacements, économie) doit se faire côté serveur.
-2. **Séparation état partagé/vue privée** : L'état du jeu se divise en données visibles par tous (position, santé) et données privées par joueur (mission, munitions, progrès).
-3. **Gestion de la monnaie** : Toutes les transactions Djai doivent être atomiques et idempotentes, avec journalisation complète.
-4. **Isolation des missions** : Chaque joueur possède sa propre instance des ennemis et objets de mission, même en session multijoueur.
-5. **Assets 3D** : Respecter les conventions de nommage (`categorie_nom_variante_lod`), pivots et échelle (1 unité = 1 mètre). Privilégier les atlases et matériaux partagés.
-6. **Sécurité** : Valider strictement tous les inputs clients (position, intentions), jamais faire confiance aux données côté client pour la logique de jeu critique.
-7. **Performance** : Surveiller constamment les FPS client (>30 FPS minimum) et la latence réseau (<100 ms RTT cible en environnement de test).
-8. **Tests** : Couvrir les scénarios critiques : connexion/déconnexion, actions concurrentes, idempotence des transactions économiques, validation serveur des tirs et déplacements.
+1. **Serveur autoritaire** : le client ne transmet que des intentions ; déplacements, actions, achats, salaires et loyers sont validés côté serveur.
+2. **Économie** : toute écriture de Djai est atomique, idempotente et journalisée dans le grand livre (module `economy` uniquement).
+3. **Temps** : toute règle horaire utilise l'horloge interne du monde (`@skyline/sim-clock`), jamais l'heure réelle.
+4. **Monde réel** : données OSM sous ODbL (attribution obligatoire, couches séparées) ; noms de marques et commerces parodiés, aucun logo réel.
+5. **Assets 3D** : nommage `categorie_nom_variante_lod`, 1 unité = 1 mètre, pivot au sol, LOD, KTX2/meshopt, atlases et matériaux partagés.
+6. **Sécurité** : valider strictement toute entrée client ; aucune donnée personnelle dans les logs ; RGPD et loi ivoirienne 2013-450.
+7. **Performance** : ≥ 30 FPS sur la machine de référence basse ; latence mesurée ; toute optimisation s'appuie sur une mesure.
+8. **Tests** : scénarios critiques couverts (connexion/déconnexion, actions concurrentes, idempotence économique, validation serveur des déplacements et actions).
 
 ## Principes de développement pour un jeu 3D web
 

@@ -1,27 +1,45 @@
-<!DOCTYPE html>
+<!doctype html>
+<!-- Role: HTML shell of the web client: render canvas, UI root and mandatory OpenStreetMap attribution. -->
 <html lang="fr">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>SKYLINE — Abidjan District</title>
+    <title>SkyLine — Yopougon</title>
     <style>
-      body, html {
+      html,
+      body {
         margin: 0;
-        padding: 0;
-        overflow: hidden;
         width: 100%;
         height: 100%;
+        overflow: hidden;
         background: #000;
       }
-      #renderCanvas {
+      #render-canvas {
+        display: block;
         width: 100%;
         height: 100%;
-        display: block;
+      }
+      #osm-attribution {
+        position: fixed;
+        right: 8px;
+        bottom: 6px;
+        font: 12px sans-serif;
+        color: #fff;
+        background: rgba(0, 0, 0, 0.5);
+        padding: 2px 6px;
+        border-radius: 3px;
+      }
+      #osm-attribution a {
+        color: inherit;
       }
     </style>
   </head>
   <body>
-    <canvas id="renderCanvas"></canvas>
-    <script type="module" src="/src/main.ts"></script>
+    <canvas id="render-canvas"></canvas>
+    <div id="ui-root"></div>
+    <div id="osm-attribution">
+      © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>
+    </div>
+    <script type="module" src="/src/app/main.ts"></script>
   </body>
 </html>

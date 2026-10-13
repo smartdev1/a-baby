@@ -1,0 +1,20 @@
+{
+  "name": "@skyline/services",
+  "version": "0.1.0",
+  "description": "Modular monolith (HTTP /api/v1 + bus handlers): accounts, sessions, characters, economy ledger, property, businesses, world clock, moderation, privacy.",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json",
+    "dev": "tsx watch src/app/main.ts",
+    "start": "tsx src/app/main.ts"
+  },
+  "dependencies": {
+    "@fastify/cors": "^11.3.1",
+    "@fastify/helmet": "^13.1.2",
+    "@fastify/rate-limit": "^11.2.1",
+    "@skyline/observability": "workspace:*",
+    "fastify": "^5.12.5",
+    "zod": "^4.6.6"
+  }
+}

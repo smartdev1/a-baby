@@ -1,0 +1,13 @@
+# Role: declares the pnpm workspace packages of the SkyLine monorepo (apps, libraries, offline tools).
+packages:
+  - apps/*
+  - packages/*
+  - tools/*
+
+# Packages allowed to run install scripts (native binaries, Prisma engines).
+allowBuilds:
+  esbuild: true
+  prisma: true
+  '@prisma/client': true
+  '@prisma/engines': true
+  workerd: false

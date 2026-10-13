@@ -1,0 +1,14 @@
+{
+  "name": "@skyline/physics",
+  "version": "0.1.0",
+  "description": "Deterministic 2.5D character controller, arcade vehicle model and collision queries shared by client prediction and server.",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {}
+}

@@ -1,27 +1,41 @@
 {
-  "name": "skyline-abidjan-district",
+  "name": "skyline",
   "version": "0.1.0",
-  "description": "Un jeu d'action 3D en monde ouvert inspiré de GTA, situé dans un quartier urbain fictif d'Abidjan",
+  "description": "SkyLine: 3D web virtual-life game set in Yopougon (Abidjan), real 1:1 scale, generated from OpenStreetMap",
   "private": true,
-  "workspaces": [
-    "apps/web",
-    "apps/server",
-    "packages/*"
-  ],
+  "type": "module",
+  "packageManager": "pnpm@12.10.1",
+  "engines": {
+    "node": ">=24"
+  },
   "scripts": {
-    "dev": "concurrently \"npm:dev-web\" \"npm:dev-server\"",
-    "dev-web": "npm run dev --prefix apps/web",
-    "dev-server": "npm run dev --prefix apps/server",
-    "build": "npm run build --prefix apps/web && npm run build --prefix apps/server",
-    "start": "npm run start --prefix apps/server",
+    "dev": "pnpm --filter @skyline/web dev",
+    "dev:services": "pnpm --filter @skyline/services dev",
+    "build": "pnpm -r --if-present build",
+    "typecheck": "pnpm -r --if-present typecheck",
+    "lint": "eslint . && depcruise apps packages tools --config .dependency-cruiser.cjs && node tools/repo-checks/src/run-all.mjs",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "test:e2e": "playwright test",
+    "check:repo": "node tools/repo-checks/src/run-all.mjs"
   },
   "devDependencies": {
-    "concurrently": "^8.2.0",
-    "vitest": "^1.2.0"
-  },
-  "engines": {
-    "node": ">=18.0.0"
+    "@eslint/js": "^10.0.1",
+    "@playwright/test": "^1.64.0",
+    "@types/node": "^26.6.5",
+    "@vitest/coverage-v8": "^5.0.4",
+    "dependency-cruiser": "^18.6.0",
+    "eslint": "^10.12.0",
+    "eslint-config-prettier": "^10.1.8",
+    "fast-check": "^4.10.2",
+    "globals": "^17.13.0",
+    "prettier": "^3.9.10",
+    "tsx": "^4.23.15",
+    "typescript": "~6.0.3",
+    "typescript-eslint": "^8.71.1",
+    "vitest": "^5.0.4"
   }
 }

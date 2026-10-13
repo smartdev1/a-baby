@@ -1,23 +1,26 @@
 {
-  "name": "skyline-web",
+  "name": "@skyline/web",
   "version": "0.1.0",
-  "description": "Client 3D du jeu SKYLINE (Babylon.js + Vite)",
+  "description": "Browser client of SkyLine: Babylon.js rendering, tile streaming, inputs, prediction, Preact UI",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "typecheck": "tsc -p tsconfig.json"
   },
   "dependencies": {
-    "babylonjs": "^7.0.0",
-    "babylonjs-gui": "^7.0.0",
-    "colyseus.js": "^0.15.0",
-    "world-generator": "../../packages/world-generator"
+    "@babylonjs/core": "^9.30.0",
+    "@babylonjs/loaders": "^9.30.0",
+    "@babylonjs/materials": "^9.30.0",
+    "@preact/signals": "^2.11.3",
+    "earcut": "^3.2.4",
+    "preact": "^11.0.1"
   },
   "devDependencies": {
-    "typescript": "^5.0.0",
-    "vite": "^5.0.0",
-    "vite-plugin-babel-macros": "^1.0.0",
-    "@types/node": "^20.0.0"
+    "@preact/preset-vite": "^2.10.6",
+    "@types/earcut": "^3.2.4",
+    "vite": "^8.3.4"
   }
 }

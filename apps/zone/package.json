@@ -1,0 +1,15 @@
+{
+  "name": "@skyline/zone",
+  "version": "0.1.0",
+  "description": "Cell server: authoritative 20 Hz simulation of world cells (movement, actions, needs, transport, NPCs, chat, replication).",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json",
+    "dev": "tsx watch src/app/main.ts",
+    "start": "tsx src/app/main.ts"
+  },
+  "dependencies": {
+    "@skyline/observability": "workspace:*"
+  }
+}
