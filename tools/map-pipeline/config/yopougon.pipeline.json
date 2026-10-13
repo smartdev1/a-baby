@@ -7,13 +7,8 @@
     "lockFile": "data/sources/sources.lock.json"
   },
   "boundary": {
-    "osmRelationId": null,
-    "provisionalBboxLonLat": [
-      -4.175,
-      5.295,
-      -4.005,
-      5.43
-    ]
+    "osmRelationId": 3377881,
+    "provisionalBboxLonLat": null
   },
   "marginM": 300,
   "outputDir": "data/build/yopougon"

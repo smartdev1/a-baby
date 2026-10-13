@@ -9,9 +9,10 @@ import { createAcquireStage } from './01-acquire/acquire-stage.ts';
 import { sourceStage } from './01-source/source-stage.ts';
 import { createExtractStage } from './02-extract/extract-stage.ts';
 import { createExportStage } from './03-export/export-stage.ts';
+import { createReportStage } from './18-report/report-stage.ts';
 
 /** Execution order (ARCHITECTURE §11.2). Both source kinds end with 03-export → features.geojsonseq. */
 export const stagesFor = (config: PipelineConfig): PipelineStage[] =>
   config.source.kind === 'osm-snapshot'
-    ? [createAcquireStage(), createExtractStage(), createExportStage()]
-    : [sourceStage, createExportStage()];
+    ? [createAcquireStage(), createExtractStage(), createExportStage(), createReportStage()]
+    : [sourceStage, createExportStage(), createReportStage()];

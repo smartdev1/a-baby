@@ -79,3 +79,41 @@ export const exportGeojsonSeqArgs = (input: string, output: string): string[] =>
   output,
   input,
 ];
+
+/** Boundary relation with its member ways and nodes. */
+export const getRelationArgs = (input: string, output: string, relationId: number): string[] => [
+  'getid',
+  '--add-referenced',
+  '--output-format',
+  PBF_NO_METADATA,
+  '--overwrite',
+  '--output',
+  output,
+  input,
+  `r${relationId}`,
+];
+
+export const exportPolygonsArgs = (input: string, output: string): string[] => [
+  'export',
+  '--output-format',
+  'geojson',
+  '--geometry-types',
+  'polygon',
+  '--overwrite',
+  '--output',
+  output,
+  input,
+];
+
+/** Bus route relations as OPL text (one relation per line), for the coverage report. */
+export const busRoutesFilterArgs = (input: string, output: string): string[] => [
+  'tags-filter',
+  '--omit-referenced',
+  '--output-format',
+  'opl,add_metadata=false',
+  '--overwrite',
+  '--output',
+  output,
+  input,
+  'r/route=bus,share_taxi,minibus',
+];

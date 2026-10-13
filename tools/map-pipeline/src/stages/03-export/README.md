@@ -12,4 +12,4 @@ Produces `features.geojsonseq` (one GeoJSON feature per line), the common input 
 | `export-stage.ts` | `osm-snapshot` → `osmium export -f geojsonseq` with `@type`/`@id`; `local-file` → conversion of the fixture |
 | `geojson-to-seq.ts` | FeatureCollection → GeoJSONSeq |
 
-Yopougon (snapshot 2026-10-01, provisional bbox): ≈ 297 500 features, ≈ 79 MB.
+Yopougon (snapshot 2026-10-01, boundary bbox + 300 m): ≈ 183 700 features.

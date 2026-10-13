@@ -12,6 +12,9 @@
     "attribution": "© OpenStreetMap contributors"
   },
   "boundaries": {
-    "yopougon": { "osmRelationId": null, "note": "to be confirmed by spike SP2 (T-018)" }
+    "yopougon": {
+      "osmRelationId": 3377881,
+      "note": "admin_level=8, name=Yopougon, wikidata Q1470529 — confirmed by spike SP2 (T-018)"
+    }
   }
 }

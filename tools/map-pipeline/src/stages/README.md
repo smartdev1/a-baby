@@ -17,6 +17,7 @@ Pipeline stages, one folder per stage named `<nn>-<name>` (ARCHITECTURE §11.2).
 | `01-acquire` | Active (frozen Geofabrik snapshot) |
 | `02-extract` | Active (osmium bbox extract + tags filter) |
 | `03-export` | Active (GeoJSONSeq, both sources) |
+| `18-report` | Active (coverage report, spike SP2) |
 | normalize / classify / heights | T-011 |
 | tile-cut / encode / manifest | T-012 |
 
