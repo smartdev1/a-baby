@@ -14,7 +14,6 @@ export default tseslint.config(
       '**/node_modules/**',
       '**/dist/**',
       'docs/archive/**',
-      'tools/map-pipeline/legacy/**',
       'data/**',
       'coverage/**',
     ],

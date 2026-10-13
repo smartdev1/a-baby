@@ -18,7 +18,7 @@ pnpm map:build --config tools/map-pipeline/config/fixture.pipeline.json         
 pnpm map:build --config tools/map-pipeline/config/fixture.pipeline.json --force  # re-run every stage
 ```
 
-Output: `data/build/<commune>/stages/<nn>-<stage>/` (git-ignored). Folders: `src/cli` (command), `src/config` (validated config), `src/runner` (incremental runner), `src/determinism` (seeded RNG), `src/stages` (one folder per stage), `config/` (one file per commune), `legacy/` (prototype code, reference only).
+Output: `data/build/<commune>/stages/<nn>-<stage>/` (git-ignored). Folders: `src/cli` (command), `src/config` (validated config), `src/runner` (incremental runner), `src/determinism` (seeded RNG), `src/stages` (one folder per stage), `config/` (one file per commune).
 
 ## Rules
 
