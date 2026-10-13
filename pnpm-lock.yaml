@@ -397,6 +397,12 @@ importers:
         specifier: ^4.6.6
         version: 4.6.6
 
+  tools/latency-probe:
+    dependencies:
+      ws:
+        specifier: ^8.22.0
+        version: 8.22.0
+
   tools/map-pipeline:
     dependencies:
       '@gltf-transform/core':

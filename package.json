@@ -23,6 +23,7 @@
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "test:e2e": "playwright test",
+    "verify": "pnpm lint && pnpm typecheck && pnpm test",
     "check:repo": "node tools/repo-checks/src/run-all.mjs"
   },
   "devDependencies": {

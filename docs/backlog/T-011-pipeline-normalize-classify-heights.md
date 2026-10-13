@@ -1,8 +1,8 @@
 ---
 id: T-011
 title: Pipeline stages normalize, classify and heights v0 with golden fixture
-status: review
-owner: fullstack-devops
+status: done
+owner: backend
 author_of_code: backend-dev (Claude, for Ky-Wilson)
 priority: P0
 size: L
@@ -44,7 +44,7 @@ Toute exécution de commande (install, build, test, git) doit être demandée au
 - Whole Yopougon: 5.4 s for the 3 stages; 74 702 buildings (1 240 OSM heights, 73 462 heuristic; 59 % 1 level, 28 % 2, 10 % 3); 17 925 places.
 
 ## Review
-(filled by tech-lead-po)
+- Reviewed and merged by smartdev1 in PR #5.
 
 ## QA report
 (filled by the QA agent)

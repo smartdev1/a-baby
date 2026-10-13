@@ -1,8 +1,8 @@
 ---
 id: T-010
 title: Create tools/map-pipeline CLI skeleton and retire world-generator
-status: review
-owner: fullstack-devops
+status: done
+owner: backend
 author_of_code: backend-dev (Claude, for Ky-Wilson)
 priority: P0
 size: M
@@ -47,7 +47,7 @@ Toute exécution de commande (install, build, test, git) doit être demandée au
 - Tests: 21 in the package; `pnpm lint`, `pnpm typecheck`, `pnpm test` green.
 
 ## Review
-(filled by tech-lead-po)
+- Reviewed and merged by smartdev1 in PR #4.
 
 ## QA report
 (filled by the QA agent)

@@ -1,0 +1,6 @@
+{
+  "//": "Role: TypeScript settings of @skyline/latency-probe (node profile; plain .mjs sources are imported by the TS tests).",
+  "extends": "../../tsconfig.node.json",
+  "compilerOptions": { "allowJs": true, "checkJs": false },
+  "include": ["src/**/*.ts"]
+}

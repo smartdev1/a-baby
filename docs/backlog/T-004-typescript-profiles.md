@@ -1,8 +1,8 @@
 ---
 id: T-004
 title: TypeScript base config with browser, node and pure profiles
-status: todo
-owner: fullstack-devops
+status: done
+owner: backend
 author_of_code:
 priority: P0
 size: S
@@ -17,10 +17,10 @@ Jalon : **J0 — Assainissement & fondations** (`docs/roadmap.md`). Dépend de :
 En tant que développeur, je veux que chaque paquet compile avec le bon environnement afin qu'un paquet pur ne puisse pas utiliser le DOM ou Node par erreur.
 
 ## Acceptance criteria
-- [ ] Given `tsconfig.base.json`, Then il garde la sévérité actuelle (`strict`, `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes`, etc.) et ne déclare plus de `lib` DOM.
-- [ ] Given `tsconfig.browser.json`, `tsconfig.node.json` et `tsconfig.pure.json`, Then ils héritent de la base ; `pure` n'expose que `ES2023` (ni DOM ni types Node).
-- [ ] Given un paquet pur qui référence `document` ou `process`, When on lance `pnpm typecheck`, Then la compilation échoue (test de fumée documenté).
-- [ ] Given les références de projet TypeScript, Then `pnpm typecheck` vérifie tout le monorepo en une commande.
+- [x] Given `tsconfig.base.json`, Then il garde la sévérité actuelle (`strict`, `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes`, etc.) et ne déclare plus de `lib` DOM.
+- [x] Given `tsconfig.browser.json`, `tsconfig.node.json` et `tsconfig.pure.json`, Then ils héritent de la base ; `pure` n'expose que `ES2023` (ni DOM ni types Node).
+- [x] Given un paquet pur qui référence `document` ou `process`, When on lance `pnpm typecheck`, Then la compilation échoue (test de fumée documenté).
+- [x] Given les références de projet TypeScript, Then `pnpm typecheck` vérifie tout le monorepo en une commande.
 
 ## Out of scope
 - Corriger les erreurs de type du code legacy voué à disparaître (T-010, T-015).
@@ -31,10 +31,10 @@ Modification de configuration de build : accord du propriétaire requis. Réf. A
 Toute exécution de commande (install, build, test, git) doit être demandée au propriétaire (CLAUDE.md). Règles de modularité : ARCHITECTURE.md §9.
 
 ## Implementation log
-(filled by the implementer)
+- Done in PR #2: `tsconfig.base.json` (strict, no DOM) + `browser` / `node` / `pure` profiles; `pnpm typecheck` runs every package. 2026-10-13 smoke test: a pure package using `document` and `process` fails with TS2584 / TS2591 (no project references needed: each package is checked by `pnpm -r typecheck`).
 
 ## Review
-(filled by tech-lead-po)
+- Reviewed and merged by smartdev1 in PR #2.
 
 ## QA report
 (filled by the QA agent)

@@ -1,8 +1,8 @@
 ---
 id: T-022
 title: Reproducible OSM acquisition: sources.lock, osmium Docker image, acquire and extract stages
-status: review
-owner: fullstack-devops
+status: done
+owner: backend
 author_of_code: backend-dev (Claude, for Ky-Wilson)
 priority: P0
 size: M
@@ -42,7 +42,7 @@ Toute exécution de commande (install, build, test, git) doit être demandée au
 - Tests: 31 in the package (acquire with fake downloader, osmium args, bbox margin, fixture conversion).
 
 ## Review
-(filled by tech-lead-po)
+- Reviewed and merged by smartdev1 in PR #5.
 
 ## QA report
 (filled by the QA agent)

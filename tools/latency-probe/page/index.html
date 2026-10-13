@@ -1,0 +1,36 @@
+<!doctype html>
+<!-- Role: latency probe page opened by testers in Abidjan on their phone or PC (spike SP4). -->
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>SkyLine — mesure de latence</title>
+    <style>
+      body { font: 16px system-ui, sans-serif; margin: 16px; max-width: 640px; color: #1f1f1d; background: #fff; }
+      label { display: block; margin: 12px 0 4px; font-weight: 600; }
+      select, button { font: inherit; padding: 10px; width: 100%; min-height: 44px; }
+      button { margin-top: 16px; }
+      table { width: 100%; border-collapse: collapse; margin-top: 16px; }
+      th, td { border-bottom: 1px solid #ddd; padding: 6px; text-align: right; }
+      th:first-child, td:first-child { text-align: left; }
+    </style>
+  </head>
+  <body>
+    <h1>Mesure de latence SkyLine</h1>
+    <p>Environ 1 minute par région. Restez sur cette page, écran allumé, sans autre téléchargement en cours.</p>
+    <label for="operator">Opérateur</label>
+    <select id="operator"><option>Orange</option><option>MTN</option><option>Moov</option><option value="fixe">Fibre/ADSL</option></select>
+    <label for="access">Type d'accès</label>
+    <select id="access"><option>4G</option><option>3G</option><option>fixe</option><option>wifi-box</option></select>
+    <label for="slot">Créneau</label>
+    <select id="slot"><option value="matin">matin (7h-10h)</option><option value="midi">midi (12h-14h)</option><option value="soir">soir (19h-23h)</option></select>
+    <button id="start">Démarrer la mesure</button>
+    <p id="progress"></p>
+    <table>
+      <thead><tr><th>Région</th><th>p50 (ms)</th><th>p95 (ms)</th><th>gigue (ms)</th><th>perte (%)</th></tr></thead>
+      <tbody id="rows"></tbody>
+    </table>
+    <button id="download" disabled>Télécharger le résultat (.json)</button>
+    <script type="module" src="/probe.mjs"></script>
+  </body>
+</html>
