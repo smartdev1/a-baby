@@ -1,0 +1,14 @@
+{
+  "default": {
+    "treeDensity": 0.05,
+    "streetLightDensity": 0.1
+  },
+  "x2": {
+    "treeDensity": 0.1,
+    "streetLightDensity": 0.2
+  },
+  "max": {
+    "treeDensity": 0.25,
+    "streetLightDensity": 0.5
+  }
+}

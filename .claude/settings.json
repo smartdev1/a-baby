@@ -1,0 +1,22 @@
+{
+  "agentTimeoutSeconds": 120,
+  "agentIdleSeconds": 60,
+  "permissionPolicy": "acceptEdits",
+  "customAgentDefinitions": {},
+  "permissions": {
+    "allow": [
+      "read",
+      "write",
+      "bash",
+      "webfetch",
+      "websearch",
+      "ticket",
+      "todo",
+      "agent"
+    ],
+    "deny": []
+  },
+  "usage": {
+    "reportIntervalMinutes": 60
+  }
+}

@@ -1,0 +1,1244 @@
+[
+  {
+    "id": "prop_poi_poi_node_8789713000",
+    "type": "bench",
+    "position": {
+      "x": 142.11498728543893,
+      "y": 249.28939762466536
+    },
+    "rotation": 3.4431631459634993,
+    "scale": 0.8,
+    "originalRef": "node/8789713000"
+  },
+  {
+    "id": "prop_poi_poi_node_8789781956",
+    "type": "bench",
+    "position": {
+      "x": 220.13072155118448,
+      "y": 272.86275571252605
+    },
+    "rotation": 2.636632366065598,
+    "scale": 0.8,
+    "originalRef": "node/8789781956"
+  },
+  {
+    "id": "prop_poi_poi_node_8789979532",
+    "type": "bench",
+    "position": {
+      "x": 136.85831214240642,
+      "y": 239.29188031260205
+    },
+    "rotation": 0.5367833135456929,
+    "scale": 0.8,
+    "originalRef": "node/8789979532"
+  },
+  {
+    "id": "prop_poi_poi_node_8789979533",
+    "type": "bench",
+    "position": {
+      "x": 137.30332167831315,
+      "y": 234.5543029554347
+    },
+    "rotation": 1.0095873940332996,
+    "scale": 0.8,
+    "originalRef": "node/8789979533"
+  },
+  {
+    "id": "prop_poi_poi_node_8789979537",
+    "type": "bench",
+    "position": {
+      "x": 137.86514621742967,
+      "y": 242.83388979894968
+    },
+    "rotation": 2.6789360277082364,
+    "scale": 0.8,
+    "originalRef": "node/8789979537"
+  },
+  {
+    "id": "prop_poi_poi_node_8789979549",
+    "type": "bench",
+    "position": {
+      "x": 138.7579465988504,
+      "y": 248.24467242915847
+    },
+    "rotation": 4.365495187301273,
+    "scale": 0.8,
+    "originalRef": "node/8789979549"
+  },
+  {
+    "id": "prop_poi_poi_node_8789979550",
+    "type": "bench",
+    "position": {
+      "x": 137.24769548634026,
+      "y": 247.21670753090308
+    },
+    "rotation": 1.493344435056977,
+    "scale": 0.8,
+    "originalRef": "node/8789979550"
+  },
+  {
+    "id": "prop_poi_poi_node_8789979551",
+    "type": "bench",
+    "position": {
+      "x": 145.32461856326094,
+      "y": 250.07154482984134
+    },
+    "rotation": 2.1594838162387657,
+    "scale": 0.8,
+    "originalRef": "node/8789979551"
+  },
+  {
+    "id": "prop_poi_poi_node_8789991824",
+    "type": "bench",
+    "position": {
+      "x": 211.30840750158484,
+      "y": 215.41963025702404
+    },
+    "rotation": 1.577617642600304,
+    "scale": 0.8,
+    "originalRef": "node/8789991824"
+  },
+  {
+    "id": "prop_poi_poi_node_8791586213",
+    "type": "bench",
+    "position": {
+      "x": 133.61252383978842,
+      "y": 237.30578508798064
+    },
+    "rotation": 4.96068879723657,
+    "scale": 0.8,
+    "originalRef": "node/8791586213"
+  },
+  {
+    "id": "prop_poi_poi_node_8791596320",
+    "type": "bench",
+    "position": {
+      "x": 132.45549904641612,
+      "y": 235.95378777615554
+    },
+    "rotation": 2.8149287167959547,
+    "scale": 0.8,
+    "originalRef": "node/8791596320"
+  },
+  {
+    "id": "prop_poi_poi_node_8811932879",
+    "type": "bench",
+    "position": {
+      "x": 130.1442307692294,
+      "y": 247.08821191860875
+    },
+    "rotation": 3.2974687118037,
+    "scale": 0.8,
+    "originalRef": "node/8811932879"
+  },
+  {
+    "id": "prop_poi_poi_node_8815684340",
+    "type": "bench",
+    "position": {
+      "x": 206.16020343294025,
+      "y": 243.6942517246656
+    },
+    "rotation": 1.3219532518186932,
+    "scale": 0.8,
+    "originalRef": "node/8815684340"
+  },
+  {
+    "id": "prop_poi_poi_node_8789713002",
+    "type": "signage",
+    "position": {
+      "x": 144.9129847425182,
+      "y": 254.88175014178157
+    },
+    "rotation": 4.4178063835819525,
+    "scale": 0.5,
+    "originalRef": "node/8789713002"
+  },
+  {
+    "id": "prop_poi_poi_node_8789713008",
+    "type": "signage",
+    "position": {
+      "x": 141.10815321041568,
+      "y": 262.78981706283116
+    },
+    "rotation": 4.05886321367672,
+    "scale": 0.5,
+    "originalRef": "node/8789713008"
+  },
+  {
+    "id": "prop_poi_poi_node_8789988707",
+    "type": "signage",
+    "position": {
+      "x": 218.84297520661534,
+      "y": 232.3922246096729
+    },
+    "rotation": 3.802167171754111,
+    "scale": 0.5,
+    "originalRef": "node/8789988707"
+  },
+  {
+    "id": "prop_poi_poi_node_8789988710",
+    "type": "signage",
+    "position": {
+      "x": 214.12587412586578,
+      "y": 221.40584975959933
+    },
+    "rotation": 3.609175702140702,
+    "scale": 0.5,
+    "originalRef": "node/8789988710"
+  },
+  {
+    "id": "prop_poi_poi_node_8790026344",
+    "type": "signage",
+    "position": {
+      "x": 185.23641131595895,
+      "y": 248.13293711411563
+    },
+    "rotation": 0.21627974151064389,
+    "scale": 0.5,
+    "originalRef": "node/8790026344"
+  },
+  {
+    "id": "prop_poi_poi_node_8791575658",
+    "type": "signage",
+    "position": {
+      "x": 145.99491417674068,
+      "y": 205.79642625030965
+    },
+    "rotation": 1.2867529827059967,
+    "scale": 0.5,
+    "originalRef": "node/8791575658"
+  },
+  {
+    "id": "prop_poi_poi_node_8791586208",
+    "type": "signage",
+    "position": {
+      "x": 132.38040368721687,
+      "y": 231.4201273689141
+    },
+    "rotation": 4.913088620773929,
+    "scale": 0.5,
+    "originalRef": "node/8791586208"
+  },
+  {
+    "id": "prop_poi_poi_node_8796119344",
+    "type": "signage",
+    "position": {
+      "x": 155.47083598220104,
+      "y": 243.91772235472652
+    },
+    "rotation": 4.290260990268534,
+    "scale": 0.5,
+    "originalRef": "node/8796119344"
+  },
+  {
+    "id": "prop_poi_poi_node_8811932878",
+    "type": "signage",
+    "position": {
+      "x": 131.39303877939528,
+      "y": 247.32844284592113
+    },
+    "rotation": 1.6913205379298832,
+    "scale": 0.5,
+    "originalRef": "node/8811932878"
+  },
+  {
+    "id": "prop_light_nncf9s",
+    "type": "street_light",
+    "position": {
+      "x": 26.468134138592433,
+      "y": 240.2588563513829
+    },
+    "rotation": 0,
+    "scale": 1
+  },
+  {
+    "id": "prop_light_kpq2um",
+    "type": "street_light",
+    "position": {
+      "x": 37.35974253019501,
+      "y": 240.25978747901075
+    },
+    "rotation": 0,
+    "scale": 1
+  },
+  {
+    "id": "prop_light_orfojn",
+    "type": "street_light",
+    "position": {
+      "x": 48.25135092179758,
+      "y": 240.2607186066386
+    },
+    "rotation": 0,
+    "scale": 1
+  },
+  {
+    "id": "prop_light_cecuy6",
+    "type": "street_light",
+    "position": {
+      "x": 88.62831770502221,
+      "y": 241.80452820926496
+    },
+    "rotation": 0,
+    "scale": 1
+  },
+  {
+    "id": "prop_light_vgfzkh",
+    "type": "street_light",
+    "position": {
+      "x": 99.7438215193859,
+      "y": 242.84087325614607
+    },
+    "rotation": 0,
+    "scale": 1
+  },
+  {
+    "id": "prop_light_i3td6l",
+    "type": "street_light",
+    "position": {
+      "x": 154.57594961856864,
+      "y": 247.13150935319157
+    },
+    "rotation": 0,
+    "scale": 1
+  },
+  {
+    "id": "prop_light_qlfg2t",
+    "type": "street_light",
+    "position": {
+      "x": 169.00677447552266,
+      "y": 248.15109410282128
+    },
+    "rotation": 0,
+    "scale": 1
+  },
+  {
+    "id": "prop_light_l0ribc",
+    "type": "street_light",
+    "position": {
+      "x": 206.7581849968157,
+      "y": 245.55045464556335
+    },
+    "rotation": 0,
+    "scale": 1
+  },
+  {
+    "id": "prop_light_lpaul8",
+    "type": "street_light",
+    "position": {
+      "x": 217.28822314049972,
+      "y": 241.59223111071327
+    },
+    "rotation": 0,
+    "scale": 1
+  },
+  {
+    "id": "prop_light_r952bm",
+    "type": "street_light",
+    "position": {
+      "x": 229.55750688705191,
+      "y": 236.79878609605345
+    },
+    "rotation": 0,
+    "scale": 1
+  },
+  {
+    "id": "prop_light_5py9xp",
+    "type": "street_light",
+    "position": {
+      "x": 239.73339160839566,
+      "y": 232.61150516540852
+    },
+    "rotation": 0,
+    "scale": 1
+  },
+  {
+    "id": "prop_light_s2am0h",
+    "type": "street_light",
+    "position": {
+      "x": 249.9092763297394,
+      "y": 228.4242242347636
+    },
+    "rotation": 0,
+    "scale": 1
+  },
+  {
+    "id": "prop_light_8b46zq",
+    "type": "street_light",
+    "position": {
+      "x": 269.94710545136536,
+      "y": 198.83112604979777
+    },
+    "rotation": 0,
+    "scale": 1
+  },
+  {
+    "id": "prop_light_mdiuc1",
+    "type": "street_light",
+    "position": {
+      "x": 272.9015515734287,
+      "y": 187.11288488631504
+    },
+    "rotation": 0,
+    "scale": 1
+  },
+  {
+    "id": "prop_light_hz97hf",
+    "type": "street_light",
+    "position": {
+      "x": 275.85599769549196,
+      "y": 175.39464372283234
+    },
+    "rotation": 0,
+    "scale": 1
+  },
+  {
+    "id": "prop_light_x56s4j",
+    "type": "street_light",
+    "position": {
+      "x": 278.8104438175553,
+      "y": 163.6764025593496
+    },
+    "rotation": 0,
+    "scale": 1
+  },
+  {
+    "id": "prop_light_yv82oa",
+    "type": "street_light",
+    "position": {
+      "x": 285.07082406229966,
+      "y": 140.83351409346253
+    },
+    "rotation": 0,
+    "scale": 1
+  },
+  {
+    "id": "prop_light_3w7ydd",
+    "type": "street_light",
+    "position": {
+      "x": 288.3569413540999,
+      "y": 129.1627604388631
+    },
+    "rotation": 0,
+    "scale": 1
+  },
+  {
+    "id": "prop_light_e6yas4",
+    "type": "street_light",
+    "position": {
+      "x": 193.432235378264,
+      "y": 37.65223577728173
+    },
+    "rotation": 0,
+    "scale": 1
+  },
+  {
+    "id": "prop_light_96pnns",
+    "type": "street_light",
+    "position": {
+      "x": 194.15954783853266,
+      "y": 48.32994181957045
+    },
+    "rotation": 0,
+    "scale": 1
+  },
+  {
+    "id": "prop_light_23m2yk",
+    "type": "street_light",
+    "position": {
+      "x": 195.875615861408,
+      "y": 89.19364156219282
+    },
+    "rotation": 0,
+    "scale": 1
+  },
+  {
+    "id": "prop_light_1x71zw",
+    "type": "street_light",
+    "position": {
+      "x": 196.66689844245903,
+      "y": 102.20242561423703
+    },
+    "rotation": 0,
+    "scale": 1
+  },
+  {
+    "id": "prop_light_0sxlhx",
+    "type": "street_light",
+    "position": {
+      "x": 191.3132251271502,
+      "y": 142.8255452566773
+    },
+    "rotation": 0,
+    "scale": 1
+  },
+  {
+    "id": "prop_light_3nfl4s",
+    "type": "street_light",
+    "position": {
+      "x": 185.59971988239235,
+      "y": 151.3348878417225
+    },
+    "rotation": 0,
+    "scale": 1
+  },
+  {
+    "id": "prop_light_aml23q",
+    "type": "street_light",
+    "position": {
+      "x": 179.8862146376345,
+      "y": 159.8442304267677
+    },
+    "rotation": 0,
+    "scale": 1
+  },
+  {
+    "id": "prop_light_bqoau4",
+    "type": "street_light",
+    "position": {
+      "x": 174.17270939287667,
+      "y": 168.3535730118129
+    },
+    "rotation": 0,
+    "scale": 1
+  },
+  {
+    "id": "prop_light_iunzr0",
+    "type": "street_light",
+    "position": {
+      "x": 155.0786713286661,
+      "y": 196.24585019835575
+    },
+    "rotation": 0,
+    "scale": 1
+  },
+  {
+    "id": "prop_light_0lb1pi",
+    "type": "street_light",
+    "position": {
+      "x": 148.73172282262632,
+      "y": 205.4193195620896
+    },
+    "rotation": 0,
+    "scale": 1
+  },
+  {
+    "id": "prop_light_tl86qh",
+    "type": "street_light",
+    "position": {
+      "x": 222.28484583597924,
+      "y": 233.56893714604746
+    },
+    "rotation": 0,
+    "scale": 1
+  },
+  {
+    "id": "prop_light_drotb1",
+    "type": "street_light",
+    "position": {
+      "x": 217.9154084551776,
+      "y": 222.92195831539058
+    },
+    "rotation": 0,
+    "scale": 1
+  },
+  {
+    "id": "prop_light_6ekhjw",
+    "type": "street_light",
+    "position": {
+      "x": 213.14963445644864,
+      "y": 211.0193538821107
+    },
+    "rotation": 0,
+    "scale": 1
+  },
+  {
+    "id": "prop_light_6egxd0",
+    "type": "street_light",
+    "position": {
+      "x": 207.9875238397923,
+      "y": 197.86112384620785
+    },
+    "rotation": 0,
+    "scale": 1
+  },
+  {
+    "id": "prop_light_73i9pz",
+    "type": "street_light",
+    "position": {
+      "x": 200.24852987921875,
+      "y": 224.30677787601016
+    },
+    "rotation": 0,
+    "scale": 1
+  },
+  {
+    "id": "prop_light_3v2zaz",
+    "type": "street_light",
+    "position": {
+      "x": 210.5699698029241,
+      "y": 219.8345718920448
+    },
+    "rotation": 0,
+    "scale": 1
+  },
+  {
+    "id": "prop_light_aghhsq",
+    "type": "street_light",
+    "position": {
+      "x": 175.31895661157012,
+      "y": 263.6927780773842
+    },
+    "rotation": 0,
+    "scale": 1
+  },
+  {
+    "id": "prop_light_pti123",
+    "type": "street_light",
+    "position": {
+      "x": 175.92111013985647,
+      "y": 253.67151701088545
+    },
+    "rotation": 0,
+    "scale": 1
+  },
+  {
+    "id": "prop_light_7w0qbc",
+    "type": "street_light",
+    "position": {
+      "x": 145.36031203644745,
+      "y": 276.64127161569127
+    },
+    "rotation": 0,
+    "scale": 1
+  },
+  {
+    "id": "prop_light_9hqram",
+    "type": "street_light",
+    "position": {
+      "x": 146.16040209790515,
+      "y": 264.6334497607655
+    },
+    "rotation": 0,
+    "scale": 1
+  },
+  {
+    "id": "prop_light_pkr391",
+    "type": "street_light",
+    "position": {
+      "x": 146.9604921593628,
+      "y": 252.62562790583965
+    },
+    "rotation": 0,
+    "scale": 1
+  },
+  {
+    "id": "prop_light_6qt9wa",
+    "type": "street_light",
+    "position": {
+      "x": 187.22018038778262,
+      "y": 191.0711084211403
+    },
+    "rotation": 0,
+    "scale": 1
+  },
+  {
+    "id": "prop_light_ag0rlq",
+    "type": "street_light",
+    "position": {
+      "x": 183.833935950404,
+      "y": 201.9569214876678
+    },
+    "rotation": 0,
+    "scale": 1
+  },
+  {
+    "id": "prop_poi_poi_node_8796119345",
+    "type": "street_light",
+    "position": {
+      "x": 166.4347584233873,
+      "y": 246.1915360155312
+    },
+    "rotation": 3.556585180144294,
+    "scale": 0.5,
+    "originalRef": "node/8796119345"
+  },
+  {
+    "id": "prop_poi_poi_node_8789979534",
+    "type": "trash",
+    "position": {
+      "x": 136.96956452637693,
+      "y": 236.64375334644842
+    },
+    "rotation": 5.191719728551356,
+    "scale": 0.7,
+    "originalRef": "node/8789979534"
+  },
+  {
+    "id": "prop_poi_poi_node_8789979535",
+    "type": "trash",
+    "position": {
+      "x": 137.08081691037214,
+      "y": 237.61305720429888
+    },
+    "rotation": 4.728289220480483,
+    "scale": 0.7,
+    "originalRef": "node/8789979535"
+  },
+  {
+    "id": "prop_poi_poi_node_8789988708",
+    "type": "trash",
+    "position": {
+      "x": 217.79720279721357,
+      "y": 231.347499414166
+    },
+    "rotation": 3.3479120188968112,
+    "scale": 0.7,
+    "originalRef": "node/8789988708"
+  },
+  {
+    "id": "prop_poi_poi_node_8789988709",
+    "type": "trash",
+    "position": {
+      "x": 215.31905594405873,
+      "y": 221.38629607948917
+    },
+    "rotation": 4.241743144180329,
+    "scale": 0.7,
+    "originalRef": "node/8789988709"
+  },
+  {
+    "id": "prop_poi_poi_node_8789988711",
+    "type": "trash",
+    "position": {
+      "x": 214.27328353465694,
+      "y": 221.9086586772178
+    },
+    "rotation": 5.400111883384367,
+    "scale": 0.7,
+    "originalRef": "node/8789988711"
+  },
+  {
+    "id": "prop_poi_poi_node_8791575657",
+    "type": "trash",
+    "position": {
+      "x": 145.0270184361207,
+      "y": 208.05347961386286
+    },
+    "rotation": 1.3804729338070654,
+    "scale": 0.7,
+    "originalRef": "node/8791575657"
+  },
+  {
+    "id": "prop_poi_poi_node_8791596318",
+    "type": "trash",
+    "position": {
+      "x": 133.5290845518167,
+      "y": 235.20795454834118
+    },
+    "rotation": 1.134590143464621,
+    "scale": 0.7,
+    "originalRef": "node/8791596318"
+  },
+  {
+    "id": "prop_poi_poi_node_8791596319",
+    "type": "trash",
+    "position": {
+      "x": 132.9394469167261,
+      "y": 233.88389106527677
+    },
+    "rotation": 3.8910916812107854,
+    "scale": 0.7,
+    "originalRef": "node/8791596319"
+  },
+  {
+    "id": "prop_poi_poi_node_8791596329",
+    "type": "trash",
+    "position": {
+      "x": 131.09543865225504,
+      "y": 241.82827196371278
+    },
+    "rotation": 5.6579001650317675,
+    "scale": 0.7,
+    "originalRef": "node/8791596329"
+  },
+  {
+    "id": "prop_poi_poi_node_8796119335",
+    "type": "trash",
+    "position": {
+      "x": 143.90615066751968,
+      "y": 262.75350308544466
+    },
+    "rotation": 3.2956589068675415,
+    "scale": 0.7,
+    "originalRef": "node/8796119335"
+  },
+  {
+    "id": "prop_poi_poi_node_8815684339",
+    "type": "trash",
+    "position": {
+      "x": 215.37468213605632,
+      "y": 240.85896810586235
+    },
+    "rotation": 5.07958042428895,
+    "scale": 0.7,
+    "originalRef": "node/8815684339"
+  },
+  {
+    "id": "prop_tree_mpsmm3",
+    "type": "tree",
+    "position": {
+      "x": 14.196025369139985,
+      "y": 240.76576963990124
+    },
+    "rotation": 4.691146473361089,
+    "scale": 0.9626282184059097
+  },
+  {
+    "id": "prop_tree_fjvq90",
+    "type": "tree",
+    "position": {
+      "x": 26.565107276026342,
+      "y": 240.2890506924264
+    },
+    "rotation": 1.2331470615308122,
+    "scale": 1.068851783005922
+  },
+  {
+    "id": "prop_tree_ey32ib",
+    "type": "tree",
+    "position": {
+      "x": 87.07444345290767,
+      "y": 243.42566018686415
+    },
+    "rotation": 4.554276037822376,
+    "scale": 0.8763182726007965
+  },
+  {
+    "id": "prop_tree_cozp0t",
+    "type": "tree",
+    "position": {
+      "x": 115.32352870038073,
+      "y": 244.80342521350067
+    },
+    "rotation": 6.062450677566375,
+    "scale": 0.8636397578346413
+  },
+  {
+    "id": "prop_tree_wq0z84",
+    "type": "tree",
+    "position": {
+      "x": 134.12846924383507,
+      "y": 246.63776073433976
+    },
+    "rotation": 0.7069040788278282,
+    "scale": 1.0582112606835754
+  },
+  {
+    "id": "prop_tree_5c5233",
+    "type": "tree",
+    "position": {
+      "x": 152.306286095936,
+      "y": 247.02725805259263
+    },
+    "rotation": 2.370171287309857,
+    "scale": 0.9979012821135251
+  },
+  {
+    "id": "prop_tree_rxr2vq",
+    "type": "tree",
+    "position": {
+      "x": 175.85494712243323,
+      "y": 250.6166249991107
+    },
+    "rotation": 0.9198477210462808,
+    "scale": 0.8146301604354008
+  },
+  {
+    "id": "prop_tree_50tx9i",
+    "type": "tree",
+    "position": {
+      "x": 205.60098178412332,
+      "y": 247.80798968254086
+    },
+    "rotation": 5.601635436867055,
+    "scale": 1.0115924042250055
+  },
+  {
+    "id": "prop_tree_z4ivoa",
+    "type": "tree",
+    "position": {
+      "x": 227.07942298652287,
+      "y": 238.8007277198509
+    },
+    "rotation": 1.2611398884961353,
+    "scale": 0.9296731343566882
+  },
+  {
+    "id": "prop_tree_gajgoi",
+    "type": "tree",
+    "position": {
+      "x": 272.19499342517884,
+      "y": 199.37610785099582
+    },
+    "rotation": 2.3451940591339824,
+    "scale": 1.05382087074038
+  },
+  {
+    "id": "prop_tree_18y5jz",
+    "type": "tree",
+    "position": {
+      "x": 275.6702009807324,
+      "y": 179.78351854726677
+    },
+    "rotation": 0.36805237451154055,
+    "scale": 1.0653771481127179
+  },
+  {
+    "id": "prop_tree_qdvv2w",
+    "type": "tree",
+    "position": {
+      "x": 280.38028122728895,
+      "y": 156.33843596922532
+    },
+    "rotation": 2.2799571452259557,
+    "scale": 0.9529378556323628
+  },
+  {
+    "id": "prop_tree_6425o2",
+    "type": "tree",
+    "position": {
+      "x": 286.76763071233864,
+      "y": 143.62354271122783
+    },
+    "rotation": 1.1636859151020338,
+    "scale": 1.0711963256067483
+  },
+  {
+    "id": "prop_tree_k6xx11",
+    "type": "tree",
+    "position": {
+      "x": 195.08734429486623,
+      "y": 32.832167185320294
+    },
+    "rotation": 1.3597426611291163,
+    "scale": 0.917745036892726
+  },
+  {
+    "id": "prop_tree_724k9g",
+    "type": "tree",
+    "position": {
+      "x": 195.2171627595495,
+      "y": 59.941964333349944
+    },
+    "rotation": 1.385630981027477,
+    "scale": 0.8806507816416816
+  },
+  {
+    "id": "prop_tree_ct67rg",
+    "type": "tree",
+    "position": {
+      "x": 195.43075152220484,
+      "y": 73.23069506946499
+    },
+    "rotation": 3.245408083210577,
+    "scale": 1.0875316321606352
+  },
+  {
+    "id": "prop_tree_2vif4y",
+    "type": "tree",
+    "position": {
+      "x": 194.3957986740954,
+      "y": 89.92790533780126
+    },
+    "rotation": 0.7923448684176186,
+    "scale": 0.8922681145172441
+  },
+  {
+    "id": "prop_tree_a15v2y",
+    "type": "tree",
+    "position": {
+      "x": 197.94587541652163,
+      "y": 114.17473827018233
+    },
+    "rotation": 3.793730058876926,
+    "scale": 0.9599890947244556
+  },
+  {
+    "id": "prop_tree_bek67h",
+    "type": "tree",
+    "position": {
+      "x": 189.8547600193017,
+      "y": 142.53107491681195
+    },
+    "rotation": 2.858173963211386,
+    "scale": 1.0648662011273957
+  },
+  {
+    "id": "prop_tree_3f7nye",
+    "type": "tree",
+    "position": {
+      "x": 184.52780399570446,
+      "y": 157.62178107118444
+    },
+    "rotation": 5.519269182892368,
+    "scale": 1.0213589644509242
+  },
+  {
+    "id": "prop_tree_g6qtes",
+    "type": "tree",
+    "position": {
+      "x": 164.3900762643801,
+      "y": 186.61353166367454
+    },
+    "rotation": 5.502703271009229,
+    "scale": 0.9891335796048157
+  },
+  {
+    "id": "prop_tree_4468dw",
+    "type": "tree",
+    "position": {
+      "x": 156.21605634353904,
+      "y": 197.60026848891877
+    },
+    "rotation": 0.5457913299240952,
+    "scale": 0.8787925463543481
+  },
+  {
+    "id": "prop_tree_kaugv8",
+    "type": "tree",
+    "position": {
+      "x": 144.88065535388165,
+      "y": 213.554415425172
+    },
+    "rotation": 5.227888524079321,
+    "scale": 1.0978071593897711
+  },
+  {
+    "id": "prop_tree_llh2ep",
+    "type": "tree",
+    "position": {
+      "x": 137.59379938660334,
+      "y": 233.66406989999956
+    },
+    "rotation": 3.2179873613910415,
+    "scale": 0.8495377251119661
+  },
+  {
+    "id": "prop_tree_u6wxg4",
+    "type": "tree",
+    "position": {
+      "x": 224.77245227888523,
+      "y": 233.4156120976728
+    },
+    "rotation": 3.360646443643952,
+    "scale": 0.8521377246090162
+  },
+  {
+    "id": "prop_tree_axbgis",
+    "type": "tree",
+    "position": {
+      "x": 213.91287480213305,
+      "y": 215.01489949496556
+    },
+    "rotation": 5.329201486320601,
+    "scale": 1.0625593467537835
+  },
+  {
+    "id": "prop_tree_ujjpxe",
+    "type": "tree",
+    "position": {
+      "x": 198.57686190499268,
+      "y": 188.26971343314005
+    },
+    "rotation": 4.775358661421761,
+    "scale": 0.9015730488655685
+  },
+  {
+    "id": "prop_tree_crqumi",
+    "type": "tree",
+    "position": {
+      "x": 178.88035606548559,
+      "y": 185.146155123585
+    },
+    "rotation": 5.25105539947719,
+    "scale": 0.9533281941839955
+  },
+  {
+    "id": "prop_tree_dsve49",
+    "type": "tree",
+    "position": {
+      "x": 146.69086452631427,
+      "y": 215.32945584282655
+    },
+    "rotation": 3.74936154701624,
+    "scale": 0.8087881680948368
+  },
+  {
+    "id": "prop_tree_r506oa",
+    "type": "tree",
+    "position": {
+      "x": 170.25436820586438,
+      "y": 226.39162232988997
+    },
+    "rotation": 3.0787905979944266,
+    "scale": 1.0852961412156121
+  },
+  {
+    "id": "prop_tree_oa5bfr",
+    "type": "tree",
+    "position": {
+      "x": 198.1220062673366,
+      "y": 226.6094942297529
+    },
+    "rotation": 1.7993841199453762,
+    "scale": 0.8756093494821445
+  },
+  {
+    "id": "prop_tree_gmj9rg",
+    "type": "tree",
+    "position": {
+      "x": 172.2400428901519,
+      "y": 282.2923655287481
+    },
+    "rotation": 5.9843694687097,
+    "scale": 1.0828069134719804
+  },
+  {
+    "id": "prop_tree_1k2zs6",
+    "type": "tree",
+    "position": {
+      "x": 175.6748451241325,
+      "y": 268.0931399409918
+    },
+    "rotation": 5.889385059288394,
+    "scale": 0.9492563703665812
+  },
+  {
+    "id": "prop_tree_1lspud",
+    "type": "tree",
+    "position": {
+      "x": 147.9894704803265,
+      "y": 280.6068597531565
+    },
+    "rotation": 3.1106840304462295,
+    "scale": 0.9911874236931432
+  },
+  {
+    "id": "prop_tree_y3wzgk",
+    "type": "tree",
+    "position": {
+      "x": 191.68734180606253,
+      "y": 282.096106711389
+    },
+    "rotation": 3.503749328891784,
+    "scale": 0.9052759223058741
+  },
+  {
+    "id": "prop_tree_qh06zm",
+    "type": "tree",
+    "position": {
+      "x": 190.6726314963812,
+      "y": 190.31120027181393
+    },
+    "rotation": 4.4983428812574235,
+    "scale": 1.011087801961231
+  },
+  {
+    "id": "prop_tree_mxxk3y",
+    "type": "tree",
+    "position": {
+      "x": 187.57085034577057,
+      "y": 209.26707796241504
+    },
+    "rotation": 4.5512886481906865,
+    "scale": 0.872954945831207
+  },
+  {
+    "id": "prop_poi_poi_node_5383119074",
+    "type": "tree",
+    "position": {
+      "x": 171.9195009536001,
+      "y": 244.69986955990248
+    },
+    "rotation": 3.1495808121053135,
+    "scale": 1,
+    "originalRef": "node/5383119074"
+  },
+  {
+    "id": "prop_poi_poi_node_8789713001",
+    "type": "tree",
+    "position": {
+      "x": 145.24952320406172,
+      "y": 252.38446585091597
+    },
+    "rotation": 0.4098575795598055,
+    "scale": 1,
+    "originalRef": "node/8789713001"
+  },
+  {
+    "id": "prop_poi_poi_node_8789713007",
+    "type": "tree",
+    "position": {
+      "x": 137.11697393514342,
+      "y": 265.51336536661637
+    },
+    "rotation": 2.18974857037928,
+    "scale": 1,
+    "originalRef": "node/8789713007"
+  },
+  {
+    "id": "prop_poi_poi_node_8789713009",
+    "type": "tree",
+    "position": {
+      "x": 139.20573744436442,
+      "y": 258.50197434864435
+    },
+    "rotation": 0.7463984117450313,
+    "scale": 1,
+    "originalRef": "node/8789713009"
+  },
+  {
+    "id": "prop_poi_poi_node_8789754422",
+    "type": "tree",
+    "position": {
+      "x": 137.0057215511729,
+      "y": 273.42143228766594
+    },
+    "rotation": 1.030031826760744,
+    "scale": 1,
+    "originalRef": "node/8789754422"
+  },
+  {
+    "id": "prop_poi_poi_node_8789979531",
+    "type": "tree",
+    "position": {
+      "x": 143.19691671963668,
+      "y": 243.58251640964755
+    },
+    "rotation": 1.9236905924574927,
+    "scale": 1,
+    "originalRef": "node/8789979531"
+  },
+  {
+    "id": "prop_poi_poi_node_8789979552",
+    "type": "tree",
+    "position": {
+      "x": 156.6640178003693,
+      "y": 273.7929522101314
+    },
+    "rotation": 4.131041543221549,
+    "scale": 1,
+    "originalRef": "node/8789979552"
+  },
+  {
+    "id": "prop_poi_poi_node_10068480563",
+    "type": "tree",
+    "position": {
+      "x": 150.71201525746557,
+      "y": 256.4488379350171
+    },
+    "rotation": 1.4767469590548388,
+    "scale": 1,
+    "originalRef": "node/10068480563"
+  }
+]
