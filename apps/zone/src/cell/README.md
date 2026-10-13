@@ -1,18 +1,12 @@
 # `apps/zone/src/cell/`
 
 - **Owner:** backend developer
-- **Status:** Planned — J1
+- **Status:** Active — T-108
 
 ## Role
 
-CellRuntime, 20 Hz tick loop, entity registry.
-
-## How it works
-
-Tick order: inputs → physics → actions → needs → transport → NPCs → interest → snapshots.
+`zone-cell.ts` (20 Hz authoritative tick: inputs → `@skyline/physics`, acks every tick, snapshots at 10 Hz, welcome + world clock on join), `player-slot.ts` (input queue: replays refused, ≤ 2 inputs per tick), `entity-state-code.ts`, `tick-stats.ts`.
 
 ## Rules
 
-- Every source file starts with a `Role:` header comment.
-- Keep this README up to date when the folder content changes.
-- See `ARCHITECTURE.md` and `docs/rules/` for the full rules.
+- Every source file starts with a `Role:` header comment; keep this README up to date.

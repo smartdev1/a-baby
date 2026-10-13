@@ -1,14 +1,12 @@
 # `apps/gateway/src/session/`
 
 - **Owner:** backend developer
-- **Status:** Planned — J1
+- **Status:** Active — T-108
 
 ## Role
 
-Connection state, rate limiting, violation counter.
+`client-session.ts` (handshake: version + ticket, then inputs to the cell and cell messages back; malformed/flooding clients disconnected), `rate-limiter.ts` (token bucket 60/s, burst 120).
 
 ## Rules
 
-- Every source file starts with a `Role:` header comment.
-- Keep this README up to date when the folder content changes.
-- See `ARCHITECTURE.md` and `docs/rules/` for the full rules.
+- Every source file starts with a `Role:` header comment; keep this README up to date.

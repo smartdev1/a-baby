@@ -10,6 +10,15 @@
     "start": "tsx src/app/main.ts"
   },
   "dependencies": {
-    "@skyline/observability": "workspace:*"
+    "@skyline/bus": "workspace:*",
+    "@skyline/geo": "workspace:*",
+    "@skyline/observability": "workspace:*",
+    "@skyline/physics": "workspace:*",
+    "@skyline/protocol": "workspace:*",
+    "@skyline/sim-clock": "workspace:*",
+    "@skyline/tile-format": "workspace:*"
+  },
+  "exports": {
+    ".": "./src/index.ts"
   }
 }

@@ -1,0 +1,102 @@
+/**
+ * Role: one client connection: handshake (protocol version + single-use ticket), then inputs forwarded to the player's cell and cell messages forwarded back; malformed or flooding clients are disconnected.
+ * Owner: backend
+ */
+
+import { randomUUID } from 'node:crypto';
+import { type MessageBus, subjects, type Unsubscribe } from '@skyline/bus';
+import type { Logger } from '@skyline/observability';
+import { checkHello, decodeClientMessage, encodeServerMessage, ProtocolDecodeError, type ClientMessage, type ServerErrorCode, type ServerMessage } from '@skyline/protocol';
+import type { TicketVerifier } from '../auth/ticket-verifier.ts';
+import { RateLimiter } from './rate-limiter.ts';
+
+/** What the session needs from the socket. */
+export interface ClientLink {
+  send(frame: Uint8Array): void;
+  close(): void;
+}
+
+export interface ClientSessionDeps {
+  readonly bus: MessageBus;
+  readonly tickets: TicketVerifier;
+  /** Cell where new players appear (J1: one spawn cell). */
+  readonly spawnCell: string;
+  readonly logger: Logger;
+  readonly now?: () => number;
+}
+
+const RATE_PER_S = 60;
+const BURST = 120;
+const MAX_VIOLATIONS = 20;
+
+export class ClientSession {
+  readonly sessionId = randomUUID();
+  private phase: 'awaiting-hello' | 'playing' | 'closed' = 'awaiting-hello';
+  private cellKey: string | null = null;
+  private unsubscribe: Unsubscribe | null = null;
+  private violations = 0;
+  private readonly limiter: RateLimiter;
+
+  constructor(
+    private readonly link: ClientLink,
+    private readonly deps: ClientSessionDeps,
+  ) {
+    this.limiter = new RateLimiter(RATE_PER_S, BURST, deps.now ?? (() => Date.now()));
+  }
+
+  receive(frame: Uint8Array): void {
+    if (this.phase === 'closed') return;
+    if (!this.limiter.allow()) return this.violation('rate_limited', 'too many messages');
+    let message: ClientMessage;
+    try {
+      message = decodeClientMessage(frame);
+    } catch (error) {
+      if (error instanceof ProtocolDecodeError) return this.violation('malformed_message', error.code);
+      throw error;
+    }
+    this.handle(message);
+  }
+
+  /** Socket closed by the client or the network. */
+  close(): void {
+    if (this.phase === 'closed') return;
+    this.phase = 'closed';
+    this.unsubscribe?.();
+    if (this.cellKey) this.deps.bus.publish(subjects.cellLeave(this.cellKey), { sessionId: this.sessionId });
+  }
+
+  private handle(message: ClientMessage): void {
+    if (message.type === 'ping') return this.send({ type: 'pong', body: { clientTimeMs: message.body.clientTimeMs, serverTimeMs: Date.now() } });
+    if (this.phase === 'awaiting-hello') {
+      if (message.type !== 'hello') return this.violation('malformed_message', 'hello expected first');
+      return this.handshake(message.body);
+    }
+    if (message.type === 'input' && this.cellKey) this.deps.bus.publish(subjects.cellInput(this.cellKey), { sessionId: this.sessionId, input: message.body });
+  }
+
+  private handshake(hello: Extract<ClientMessage, { type: 'hello' }>['body']): void {
+    const versionError = checkHello(hello);
+    if (versionError) return this.reject(versionError.code, versionError.message);
+    if (!this.deps.tickets.consume(hello.ticket)) return this.reject('invalid_ticket', 'invalid or expired session ticket');
+    this.phase = 'playing';
+    this.cellKey = this.deps.spawnCell;
+    this.unsubscribe = this.deps.bus.subscribe<ServerMessage>(subjects.sessionOut(this.sessionId), (m) => this.send(m));
+    this.deps.bus.publish(subjects.cellJoin(this.cellKey), { sessionId: this.sessionId });
+  }
+
+  private violation(code: ServerErrorCode, message: string): void {
+    this.violations++;
+    if (this.violations > MAX_VIOLATIONS || this.phase === 'awaiting-hello') this.reject(code, message);
+  }
+
+  private reject(code: ServerErrorCode, message: string): void {
+    this.deps.logger.info({ sessionId: this.sessionId, code }, 'client rejected');
+    this.send({ type: 'error', body: { code, message } });
+    this.close();
+    this.link.close();
+  }
+
+  private send(message: ServerMessage): void {
+    if (this.phase !== 'closed') this.link.send(encodeServerMessage(message));
+  }
+}

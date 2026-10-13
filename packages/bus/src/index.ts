@@ -1,7 +1,8 @@
 /**
- * Role: public API of @skyline/bus. MessageBus interface with typed subjects; in-memory implementation (tests, all-in-one) and NATS implementation (distributed).
+ * Role: public API of @skyline/bus. MessageBus interface with typed subjects; in-memory implementation (tests, all-in-one) and NATS implementation (distributed, J5).
  * Owner: backend
  */
 
-// Implemented in J5 (docs/roadmap.md). Only re-export from here.
-export {};
+export type { MessageBus, Unsubscribe } from './message-bus.ts';
+export { InMemoryBus } from './in-memory-bus.ts';
+export { subjects, type CellInput, type CellJoin, type CellLeave, type SessionOut } from './world-subjects.ts';

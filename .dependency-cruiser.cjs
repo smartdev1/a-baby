@@ -49,9 +49,16 @@ module.exports = {
     },
     {
       name: 'apps-do-not-import-apps',
+      comment: 'Exception: apps/all-in-one is a pure composition root (rule below limits it to public entries).',
       severity: 'error',
-      from: { path: '^apps/([^/]+)/' },
+      from: { path: '^apps/([^/]+)/', pathNot: '^apps/all-in-one/' },
       to: { path: '^apps/', pathNot: '^apps/$1/' },
+    },
+    {
+      name: 'all-in-one-uses-public-app-entries-only',
+      severity: 'error',
+      from: { path: '^apps/all-in-one/' },
+      to: { path: '^apps/(gateway|zone|services|web)/', pathNot: '^apps/(gateway|zone|services)/src/index\\.ts$' },
     },
     {
       name: 'no-deep-package-imports',

@@ -1,0 +1,26 @@
+{
+  "name": "@skyline/all-in-one",
+  "version": "0.1.0",
+  "description": "All-in-one mode: one Node process hosting gateway + zone cell + services with an in-memory bus (development, tests, J1-J4).",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json",
+    "dev": "tsx watch src/app/main.ts",
+    "start": "tsx src/app/main.ts"
+  },
+  "dependencies": {
+    "@skyline/bus": "workspace:*",
+    "@skyline/gateway": "workspace:*",
+    "@skyline/geo": "workspace:*",
+    "@skyline/observability": "workspace:*",
+    "@skyline/protocol": "workspace:*",
+    "@skyline/services": "workspace:*",
+    "@skyline/zone": "workspace:*",
+    "ws": "^8.22.0",
+    "zod": "^4.6.6"
+  },
+  "devDependencies": {
+    "@types/ws": "^8.18.2"
+  }
+}

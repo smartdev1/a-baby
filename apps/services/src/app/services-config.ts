@@ -15,6 +15,8 @@ const ServicesConfigSchema = z.object({
   SERVICES_CORS_ORIGIN: z.string().default('http://localhost:5173'),
   SKYLINE_CONTENT_DIR: z.string().default(repoPath('content')),
   SKYLINE_RUNTIME_DIR: z.string().default(repoPath('data/runtime')),
+  /** Session tickets per minute and per IP (raise only for local load tests). */
+  SESSION_TICKETS_PER_MIN: z.coerce.number().int().min(1).max(100_000).default(10),
 });
 
 export interface ServicesConfig {
@@ -25,6 +27,7 @@ export interface ServicesConfig {
   contentDir: string;
   /** Mutable local state until the database exists (git-ignored data/runtime/). */
   runtimeDir: string;
+  ticketsPerMin: number;
 }
 
 export const readServicesConfig = (env: Record<string, string | undefined>): ServicesConfig => {
@@ -35,5 +38,6 @@ export const readServicesConfig = (env: Record<string, string | undefined>): Ser
     corsOrigin: parsed.SERVICES_CORS_ORIGIN,
     contentDir: parsed.SKYLINE_CONTENT_DIR,
     runtimeDir: parsed.SKYLINE_RUNTIME_DIR,
+    ticketsPerMin: parsed.SESSION_TICKETS_PER_MIN,
   };
 };
