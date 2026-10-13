@@ -1,0 +1,12 @@
+{
+  "commune": "yopougon",
+  "displayName": "Yopougon",
+  "seed": "yopougon-v1",
+  "source": {
+    "kind": "osm-snapshot",
+    "lockFile": "data/sources/sources.lock.json"
+  },
+  "boundary": { "osmRelationId": null },
+  "marginM": 300,
+  "outputDir": "data/build/yopougon"
+}
