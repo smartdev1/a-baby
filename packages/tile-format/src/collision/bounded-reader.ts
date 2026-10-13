@@ -62,6 +62,15 @@ export class BoundedReader {
     return out;
   }
 
+  u8(what: string): number {
+    return this.view.getUint8(this.take(1, what));
+  }
+
+  bytes(length: number, what: string): Uint8Array {
+    const at = this.take(length, what);
+    return new Uint8Array(this.view.buffer.slice(this.view.byteOffset + at, this.view.byteOffset + at + length));
+  }
+
   ascii(length: number, what: string): string {
     const at = this.take(length, what);
     let text = '';

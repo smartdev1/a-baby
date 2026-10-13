@@ -1,5 +1,5 @@
 /**
- * Role: Zod schema of a commune pipeline configuration (`config/<commune>.pipeline.json`): source, boundary, margin, seed, output.
+ * Role: Zod schema of a commune pipeline configuration (`config/<commune>.pipeline.json`): source, boundary, margin, seed, output, facade options.
  * Owner: backend
  */
 
@@ -54,6 +54,13 @@ export const PipelineConfigSchema = z
     marginM: z.number().min(0).max(5_000),
     /** Repository-relative build folder (git-ignored under data/build/). */
     outputDir: RepoRelativePath,
+    facades: z
+      .object({
+        /** Leave the walls covered by facade bays out of geom.glb. Keep false until the client renders the facade kit (frontend J1-06). */
+        stripBayWalls: z.boolean().default(false),
+      })
+      .strict()
+      .default({ stripBayWalls: false }),
   })
   .strict()
   .refine(

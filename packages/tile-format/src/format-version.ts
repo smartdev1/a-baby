@@ -3,4 +3,5 @@
  * Owner: backend
  */
 
-export const TILE_FORMAT_VERSION = 0;
+/** v1: water layer in collision.bin (T-103). */
+export const TILE_FORMAT_VERSION = 1;

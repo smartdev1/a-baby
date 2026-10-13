@@ -1,5 +1,5 @@
 /**
- * Role: runs an osmium command inside the frozen Docker image with read-only input and writable output bind mounts (Windows and Linux).
+ * Role: runs a tool of the frozen Docker image (osmium, gdalwarp…) with read-only input and writable output bind mounts (Windows and Linux).
  * Owner: backend
  */
 
@@ -37,11 +37,14 @@ export const ensureOsmiumImage = async (): Promise<void> => {
   if (code !== 0) throw new Error(`Docker image ${OSMIUM_IMAGE} is missing: run "pnpm map:osmium-image" once`);
 };
 
-export const runOsmium: RunOsmium = async (args, { inputDir, outputDir }) => {
+/** Runs `tool` (entrypoint) of the image; osmium is the default entrypoint. */
+export const runTool = async (tool: string, args: readonly string[], { inputDir, outputDir }: OsmiumMounts): Promise<void> => {
   const dockerArgs = [
     'run',
     '--rm',
     ...userArgs(),
+    '--entrypoint',
+    tool,
     '--mount',
     `type=bind,source=${inputDir},target=/in,readonly`,
     '--mount',
@@ -50,5 +53,7 @@ export const runOsmium: RunOsmium = async (args, { inputDir, outputDir }) => {
     ...args,
   ];
   const { code, stderr } = await runDocker(dockerArgs);
-  if (code !== 0) throw new Error(`osmium ${args[0] ?? ''} failed (exit ${code}): ${stderr.trim()}`);
+  if (code !== 0) throw new Error(`${tool} ${args[0] ?? ''} failed (exit ${code}): ${stderr.trim()}`);
 };
+
+export const runOsmium: RunOsmium = (args, mounts) => runTool('osmium', args, mounts);

@@ -36,5 +36,9 @@ export {
   type CollisionData,
   type HeightField,
   type Prism,
+  type WaterLayer,
+  waterMaskBytes,
 } from './collision/collision-codec.ts';
 export { CollisionDecodeError, type CollisionDecodeErrorCode } from './collision/bounded-reader.ts';
+export { INSTANCE_MODULES, moduleIndex, moduleName, type InstanceModule } from './instances/instance-catalogue.ts';
+export { decodeInstances, encodeInstances, INSTANCES_MAGIC, INSTANCES_VERSION, MAX_INSTANCES_PER_TILE, type Instance } from './instances/instances-codec.ts';

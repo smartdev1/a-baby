@@ -1,5 +1,5 @@
 /**
- * Role: tests the cell runtime: join → welcome + world clock, inputs → authoritative acks, replayed and flooded inputs refused, snapshots with every player.
+ * Role: tests the cell runtime: join → welcome + world clock, inputs → authoritative acks, replayed and flooded inputs refused, one snapshot per cell with every player, closed sessions removed.
  * Owner: backend
  */
 
@@ -8,6 +8,7 @@ import { createLogger } from '@skyline/observability';
 import { CollisionWorld } from '@skyline/physics';
 import type { InputMessage, ServerMessage } from '@skyline/protocol';
 import { describe, expect, it } from 'vitest';
+import { entityIdOf } from '../handoff/cell-handoff.ts';
 import { ZoneCell } from './zone-cell.ts';
 
 const CELL = 'C_81_49';
@@ -57,6 +58,7 @@ describe('ZoneCell', () => {
     });
     const got: ServerMessage[] = [];
     bus.subscribe<ServerMessage>(subjects.sessionOut('s1'), (m) => got.push(m));
+    bus.subscribe<ServerMessage>(subjects.cellSnapshot(CELL), (m) => got.push(m));
     cell.start({ ticking: false });
     bus.publish(subjects.cellJoin(CELL), { sessionId: 's1' });
     await new Promise((r) => setTimeout(r, 0));
@@ -69,6 +71,8 @@ describe('ZoneCell', () => {
     expect(last?.type === 'inputAck' && last.body.lastSeq).toBe(20);
     expect(last?.type === 'inputAck' && last.body.position.z).toBeCloseTo(10 + 1.6, 5); // 1 s of walking
     expect(got.some((m) => m.type === 'snapshot' && m.body.entities.length === 1)).toBe(true);
+    bus.publish(subjects.sessionClosed(), { sessionId: 's1' });
+    expect(cell.tickStats().players).toBe(0);
   });
 
   it('should refuse replayed inputs and cap flooding to 2 inputs per tick', async () => {

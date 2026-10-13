@@ -14,7 +14,8 @@
     "@skyline/bus": "workspace:*",
     "@skyline/observability": "workspace:*",
     "@skyline/protocol": "workspace:*",
-    "ws": "^8.22.0"
+    "ws": "^8.22.0",
+    "zod": "^4.6.6"
   },
   "devDependencies": {
     "@types/ws": "^8.18.2"

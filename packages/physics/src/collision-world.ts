@@ -57,11 +57,25 @@ export class CollisionWorld {
     }
   }
 
+  /** True when (x, z) is in a water cell of a loaded tile (not walkable: no swimming in J1). */
+  isWater(x: number, z: number): boolean {
+    const tile = this.tileAt(x, z);
+    const water = tile?.data.water;
+    if (!tile || !water) return false;
+    const cell = tile.sizeM / water.cellsPerSide;
+    const i = Math.min(water.cellsPerSide - 1, Math.floor((x - tile.offsetX) / cell));
+    const j = Math.min(water.cellsPerSide - 1, Math.floor((z - tile.offsetZ) / cell));
+    const k = j * water.cellsPerSide + i;
+    return ((water.mask[k >> 3] ?? 0) & (1 << (k & 7))) !== 0;
+  }
+
+  private tileAt(x: number, z: number): PlacedTile | undefined {
+    return this.tiles.find((t) => x >= t.offsetX && x <= t.offsetX + t.sizeM && z >= t.offsetZ && z <= t.offsetZ + t.sizeM);
+  }
+
   /** Bilinear ground height; 0 outside loaded tiles. */
   groundHeightAt(x: number, z: number): number {
-    const tile = this.tiles.find(
-      (t) => x >= t.offsetX && x <= t.offsetX + t.sizeM && z >= t.offsetZ && z <= t.offsetZ + t.sizeM,
-    );
+    const tile = this.tileAt(x, z);
     if (!tile) return 0;
     const { resolution, cellSizeM, heightsM } = tile.data.heightField;
     const fx = Math.min((x - tile.offsetX) / cellSizeM, resolution - 1.000001);

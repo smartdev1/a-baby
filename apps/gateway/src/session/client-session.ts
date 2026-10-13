@@ -1,5 +1,5 @@
 /**
- * Role: one client connection: handshake (protocol version + single-use ticket), then inputs forwarded to the player's cell and cell messages forwarded back; malformed or flooding clients are disconnected.
+ * Role: one client connection: handshake (protocol version + single-use ticket), then inputs forwarded to the player's current cell (updated on each cell welcome after a handoff), session messages and the cell's shared snapshots forwarded back; malformed or flooding clients are disconnected.
  * Owner: backend
  */
 
@@ -16,6 +16,7 @@ import {
   type ServerMessage,
 } from '@skyline/protocol';
 import type { TicketVerifier } from '../auth/ticket-verifier.ts';
+import type { CellFanout } from '../routing/cell-fanout.ts';
 import { RateLimiter } from './rate-limiter.ts';
 
 /** What the session needs from the socket. */
@@ -33,21 +34,27 @@ export interface ClientSessionDeps {
   readonly now?: () => number;
 }
 
+/** Shared by every session of one gateway. */
+export interface SessionContext extends ClientSessionDeps {
+  readonly fanout: CellFanout;
+}
+
 const RATE_PER_S = 60;
 const BURST = 120;
 const MAX_VIOLATIONS = 20;
 
 export class ClientSession {
   readonly sessionId = randomUUID();
-  private phase: 'awaiting-hello' | 'playing' | 'closed' = 'awaiting-hello';
+  private phase: 'awaiting-hello' | 'checking-ticket' | 'playing' | 'closed' = 'awaiting-hello';
   private cellKey: string | null = null;
   private unsubscribe: Unsubscribe | null = null;
+  private leaveSnapshots: (() => void) | null = null;
   private violations = 0;
   private readonly limiter: RateLimiter;
 
   constructor(
     private readonly link: ClientLink,
-    private readonly deps: ClientSessionDeps,
+    private readonly deps: SessionContext,
   ) {
     this.limiter = new RateLimiter(RATE_PER_S, BURST, deps.now ?? (() => Date.now()));
   }
@@ -70,7 +77,8 @@ export class ClientSession {
     if (this.phase === 'closed') return;
     this.phase = 'closed';
     this.unsubscribe?.();
-    if (this.cellKey) this.deps.bus.publish(subjects.cellLeave(this.cellKey), { sessionId: this.sessionId });
+    this.leaveSnapshots?.();
+    if (this.cellKey) this.deps.bus.publish(subjects.sessionClosed(), { sessionId: this.sessionId });
   }
 
   private handle(message: ClientMessage): void {
@@ -78,21 +86,40 @@ export class ClientSession {
       return this.send({ type: 'pong', body: { clientTimeMs: message.body.clientTimeMs, serverTimeMs: Date.now() } });
     if (this.phase === 'awaiting-hello') {
       if (message.type !== 'hello') return this.violation('malformed_message', 'hello expected first');
-      return this.handshake(message.body);
+      return void this.handshake(message.body);
     }
     if (message.type === 'input' && this.cellKey)
       this.deps.bus.publish(subjects.cellInput(this.cellKey), { sessionId: this.sessionId, input: message.body });
   }
 
-  private handshake(hello: Extract<ClientMessage, { type: 'hello' }>['body']): void {
+  private async handshake(hello: Extract<ClientMessage, { type: 'hello' }>['body']): Promise<void> {
     const versionError = checkHello(hello);
     if (versionError) return this.reject(versionError.code, versionError.message);
-    if (!this.deps.tickets.consume(hello.ticket))
-      return this.reject('invalid_ticket', 'invalid or expired session ticket');
+    this.phase = 'checking-ticket';
+    const valid = await Promise.resolve(this.deps.tickets.consume(hello.ticket)).catch(() => false);
+    if (this.phase !== 'checking-ticket') return; // closed while the ticket was checked
+    if (!valid) return this.reject('invalid_ticket', 'invalid or expired session ticket');
     this.phase = 'playing';
     this.cellKey = this.deps.spawnCell;
-    this.unsubscribe = this.deps.bus.subscribe<ServerMessage>(subjects.sessionOut(this.sessionId), (m) => this.send(m));
+    this.unsubscribe = this.deps.bus.subscribe<ServerMessage>(subjects.sessionOut(this.sessionId), (m) => this.fromCell(m));
+    this.followCell(this.cellKey);
     this.deps.bus.publish(subjects.cellJoin(this.cellKey), { sessionId: this.sessionId });
+  }
+
+  /** A welcome from another cell means the player was handed over: later inputs and snapshots come from that cell. */
+  private fromCell(message: ServerMessage): void {
+    if (message.type === 'welcome' && message.body.cellKey !== this.cellKey) {
+      this.cellKey = message.body.cellKey;
+      this.followCell(this.cellKey);
+    }
+    this.send(message);
+  }
+
+  private followCell(cellKey: string): void {
+    this.leaveSnapshots?.();
+    this.leaveSnapshots = this.deps.fanout.join(cellKey, (frame) => {
+      if (this.phase === 'playing') this.link.send(frame);
+    });
   }
 
   private violation(code: ServerErrorCode, message: string): void {

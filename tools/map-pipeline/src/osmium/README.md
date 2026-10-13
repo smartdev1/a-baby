@@ -5,7 +5,7 @@
 
 ## Role
 
-Everything about osmium-tool, which always runs inside the frozen Docker image `skyline/osmium:1.18.0` (`infra/docker/osmium/`).
+Everything about osmium-tool, which always runs inside the frozen Docker image `skyline/osm-tools:2` (`infra/docker/osmium/`).
 
 | File                 | Role                                                                                                                        |
 | -------------------- | --------------------------------------------------------------------------------------------------------------------------- |

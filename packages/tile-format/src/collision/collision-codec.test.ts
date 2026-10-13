@@ -31,12 +31,14 @@ const collisionData: fc.Arbitrary<CollisionData> = fc
         const baseYM = Math.fround(p.base);
         return { baseYM, topYM: Math.max(baseYM, Math.fround(p.base + p.extra)), ring: Float32Array.from(ring) };
       }),
+      water: resolution % 2 === 0 ? { levelM: 0, cellsPerSide: resolution - 1, mask: new Uint8Array(Math.ceil(((resolution - 1) ** 2) / 8)).fill(0b10100101) } : null,
     })),
   );
 
 const SAMPLE: CollisionData = {
   heightField: { resolution: 2, cellSizeM: 250, heightsM: Float32Array.from([1, 2, 3, 4]) },
   prisms: [{ baseYM: 0, topYM: 6, ring: Float32Array.from([0, 0, 10, 0, 10, 8]) }],
+  water: { levelM: 0.5, cellsPerSide: 1, mask: Uint8Array.from([1]) },
 };
 
 describe('collision codec', () => {

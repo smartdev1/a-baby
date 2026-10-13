@@ -82,7 +82,7 @@ const moveHorizontally = (ctx: StepContext, start: Vec3, delta: FlatPoint): Flat
   let current: FlatPoint = { x: start.x, z: start.z };
   for (let k = 0; k < steps; k++) {
     const next = resolve(ctx, { x: current.x + delta.x / steps, z: current.z + delta.z / steps }, start.y);
-    if (!next) break;
+    if (!next || ctx.world.isWater(next.x, next.z)) break; // walls and water stop the move
     const rise = ctx.world.groundHeightAt(next.x, next.z) - ctx.world.groundHeightAt(current.x, current.z);
     if (rise > ctx.cfg.stepUpM + MAX_SLOPE * Math.hypot(next.x - current.x, next.z - current.z)) break; // too steep
     current = next;

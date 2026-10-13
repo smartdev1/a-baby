@@ -1,11 +1,12 @@
 /**
- * Role: encodes and decodes collision.bin v0 (2.5D collision of one tile: height field + obstacle prisms), shared by client prediction and the zone server.
+ * Role: encodes and decodes collision.bin v1 (2.5D collision of one tile: height field + obstacle prisms + water cells), shared by client prediction and the zone server.
  * Owner: backend
  *
  * Layout (little-endian):
  *   magic "SKYC" | u16 version | u16 flags (0)
  *   height field: u16 resolution N (samples per side) | f32 cellSizeM | N×N f32 heights (row-major, south → north, west → east)
  *   prisms: u32 count | per prism: f32 baseYM | f32 topYM | u16 vertexCount | vertexCount × (f32 x, f32 z)
+ *   water (v1): u8 present | if 1: f32 levelM | u16 cellsPerSide | ceil(cells² / 8) mask bytes (bit k = cell k, row-major, south → north)
  * Coordinates are metres local to the tile south-west corner (x = east, z = north).
  */
 
@@ -13,7 +14,7 @@ import { BoundedReader, CollisionDecodeError } from './bounded-reader.ts';
 import { GrowableWriter } from './growable-writer.ts';
 
 export const COLLISION_MAGIC = 'SKYC';
-export const COLLISION_VERSION = 0;
+export const COLLISION_VERSION = 1;
 
 /** Hard limits that bound memory when decoding untrusted files. */
 export const COLLISION_LIMITS = { maxResolution: 1025, maxPrisms: 65_535, maxVerticesPerPrism: 4_096 } as const;
@@ -32,10 +33,21 @@ export interface Prism {
   readonly ring: Float32Array;
 }
 
+/** Cells of the tile covered by water (lagoon, ponds): not walkable. */
+export interface WaterLayer {
+  readonly levelM: number;
+  readonly cellsPerSide: number;
+  /** Bit k set = cell k is water (row-major, south → north, west → east). */
+  readonly mask: Uint8Array;
+}
+
 export interface CollisionData {
   readonly heightField: HeightField;
   readonly prisms: readonly Prism[];
+  readonly water: WaterLayer | null;
 }
+
+export const waterMaskBytes = (cellsPerSide: number): number => Math.ceil((cellsPerSide * cellsPerSide) / 8);
 
 const invalid = (message: string): never => {
   throw new CollisionDecodeError('invalid-value', message);
@@ -47,7 +59,7 @@ const checkCount = (value: number, max: number, what: string, min = 0): number =
   return value;
 };
 
-export const encodeCollision = ({ heightField, prisms }: CollisionData): Uint8Array => {
+export const encodeCollision = ({ heightField, prisms, water }: CollisionData): Uint8Array => {
   const { resolution, cellSizeM, heightsM } = heightField;
   if (heightsM.length !== resolution * resolution)
     invalid(`height field has ${heightsM.length} samples, expected ${resolution ** 2}`);
@@ -72,7 +84,27 @@ export const encodeCollision = ({ heightField, prisms }: CollisionData): Uint8Ar
     out.u16(vertexCount);
     out.f32Array(prism.ring);
   }
+  encodeWater(out, water);
   return out.toBytes();
+};
+
+const encodeWater = (out: GrowableWriter, water: WaterLayer | null): void => {
+  out.u8(water ? 1 : 0);
+  if (!water) return;
+  checkCount(water.cellsPerSide, COLLISION_LIMITS.maxResolution, 'water cells per side', 1);
+  if (water.mask.length !== waterMaskBytes(water.cellsPerSide)) invalid('water mask size does not match cellsPerSide');
+  out.f32(water.levelM);
+  out.u16(water.cellsPerSide);
+  out.bytes(water.mask);
+};
+
+const decodeWater = (reader: BoundedReader): WaterLayer | null => {
+  const present = reader.u8('water flag');
+  if (present === 0) return null;
+  if (present !== 1) invalid('water flag must be 0 or 1');
+  const levelM = reader.f32('water level');
+  const cellsPerSide = checkCount(reader.u16('water cells per side'), COLLISION_LIMITS.maxResolution, 'water cells per side', 1);
+  return { levelM, cellsPerSide, mask: reader.bytes(waterMaskBytes(cellsPerSide), 'water mask') };
 };
 
 const decodeHeader = (reader: BoundedReader): void => {
@@ -111,7 +143,7 @@ export const decodeCollision = (bytes: Uint8Array): CollisionData => {
   const count = checkCount(reader.u32('prism count'), COLLISION_LIMITS.maxPrisms, 'prism count');
   const prisms: Prism[] = [];
   for (let k = 0; k < count; k++) prisms.push(decodePrism(reader, k));
-  if (reader.remaining !== 0)
-    throw new CollisionDecodeError('trailing-bytes', `${reader.remaining} unexpected bytes at the end`);
-  return { heightField, prisms };
+  const water = decodeWater(reader);
+  if (reader.remaining !== 0) throw new CollisionDecodeError('trailing-bytes', `${reader.remaining} unexpected bytes at the end`);
+  return { heightField, prisms, water };
 };

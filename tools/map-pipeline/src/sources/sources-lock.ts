@@ -22,15 +22,26 @@ export const OsmSnapshotLockSchema = z.object({
   attribution: z.string().min(1),
 });
 
+/** Digital elevation model tile (relief), downloaded once like the OSM snapshot. */
+export const DemLockSchema = z.object({
+  provider: z.literal('copernicus'),
+  product: z.literal('GLO-30'),
+  url: z.url().refine((u) => u.startsWith('https://copernicus-dem-30m.s3.amazonaws.com/'), 'must be a Copernicus GLO-30 URL'),
+  fileName: z.string().regex(/^[A-Za-z0-9_]+\.tif$/),
+  sizeBytes: z.number().int().positive(),
+  sha256: Sha256,
+  licence: z.string().min(1),
+  attribution: z.string().min(1),
+});
+
 export const SourcesLockSchema = z.object({
   osm: OsmSnapshotLockSchema,
-  boundaries: z.record(
-    z.string(),
-    z.object({ osmRelationId: z.number().int().positive().nullable(), note: z.string().optional() }),
-  ),
+  dem: DemLockSchema.optional(),
+  boundaries: z.record(z.string(), z.object({ osmRelationId: z.number().int().positive().nullable(), note: z.string().optional() })),
 });
 
 export type OsmSnapshotLock = z.infer<typeof OsmSnapshotLockSchema>;
+export type DemLock = z.infer<typeof DemLockSchema>;
 export type SourcesLock = z.infer<typeof SourcesLockSchema>;
 
 const parseSourcesLock = (text: string, absolutePath: string): SourcesLock => {
@@ -48,3 +59,4 @@ export const loadSourcesLockSync = (absolutePath: string): SourcesLock =>
 
 /** Repository-relative folder where downloaded snapshots are cached (git-ignored). */
 export const OSM_CACHE_DIR = 'data/cache/osm';
+export const DEM_CACHE_DIR = 'data/cache/dem';

@@ -21,7 +21,7 @@ beforeAll(async () => {
   runtimeDir = await mkdtemp(join(tmpdir(), 'aio-'));
   world = await composeWorld(
     { gatewayPort: 0, worldDir: join(runtimeDir, 'no-world'), spawn: { lonDeg: -4.0681, latDeg: 5.329 } },
-    { host: '127.0.0.1', port: 0, corsOrigin: '*', contentDir: content, runtimeDir, ticketsPerMin: 10 },
+    { host: '127.0.0.1', port: 0, corsOrigin: '*', contentDir: content, runtimeDir, ticketsPerMin: 10, internalRoutes: false },
     createLogger({ service: 'e2e', level: 'silent' }),
   );
   await world.services.server.listen({ host: '127.0.0.1', port: 0 });

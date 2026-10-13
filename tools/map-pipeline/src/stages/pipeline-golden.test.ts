@@ -4,7 +4,7 @@
  */
 
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
-import { copyFile, mkdir, mkdtemp, rm } from 'node:fs/promises';
+import { copyFile, cp, mkdir, mkdtemp, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -24,7 +24,13 @@ const CHECKED_OUTPUTS = [
   '06-heights/buildings.ndjson',
   '08-roads/road-edges.ndjson',
   '08-roads/road-stats.json',
+  '09-naming/place-names.ndjson',
+  '10-terrain/terrain-tiles.ndjson',
+  '11-facades-roofs/facades.ndjson',
+  '11-facades-roofs/roofs.ndjson',
+  '12-props/props.ndjson',
   '14-tile-cut/tiles.ndjson',
+  '15-lod-build/lod-index.json',
   '16-encode/encode-index.json',
   '17-manifest/world-manifest.pigeons-fixture-2026-10-13.json',
 ];
@@ -37,6 +43,7 @@ const buildFixtureIn = async (): Promise<Record<string, string>> => {
   roots.push(root);
   await mkdir(join(root, dirname(FIXTURE)), { recursive: true });
   await copyFile(join(packageDir, 'test/fixtures/pigeons-sample.geojson'), join(root, FIXTURE));
+  await cp(join(packageDir, '../../content/place-names'), join(root, 'content/place-names'), { recursive: true });
   const config = await loadPipelineConfig(join(packageDir, 'config/fixture.pipeline.json'));
   await runPipeline({ repoRoot: root, config, stages: stagesFor(config), logger });
   const hashes: Record<string, string> = {};

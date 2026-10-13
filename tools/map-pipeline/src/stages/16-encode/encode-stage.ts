@@ -6,7 +6,7 @@
 import { existsSync } from 'node:fs';
 import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
-import { tileFilePath } from '@skyline/tile-format';
+import { TILE_FORMAT_VERSION, tileFilePath } from '@skyline/tile-format';
 import { budgetViolations, tileBytes } from '../../encoding/tile-budgets.ts';
 import { type EncodedTile, encodeTile } from '../../encoding/tile-encoder.ts';
 import { readNdjson } from '../../records/ndjson-files.ts';
@@ -21,6 +21,7 @@ export interface EncodeIndexEntry {
   readonly geom: string;
   readonly collision: string;
   readonly meta: string;
+  readonly instances?: string;
   readonly bytes: number;
   readonly triangles: number;
 }
@@ -28,27 +29,30 @@ export type EncodeIndex = Record<string, EncodeIndexEntry>;
 
 const writeTile = async (outDir: string, t: EncodedTile): Promise<void> => {
   const key = t.key as Parameters<typeof tileFilePath>[0];
-  for (const kind of ['geom', 'collision', 'meta'] as const) {
-    const path = join(outDir, tileFilePath(key, kind, t[kind].hash));
+  const files = [['geom', t.geom], ['collision', t.collision], ['meta', t.meta], ['instances', t.instances]] as const;
+  for (const [kind, encoded] of files) {
+    if (!encoded) continue;
+    const path = join(outDir, tileFilePath(key, kind, encoded.hash));
     await mkdir(join(path, '..'), { recursive: true });
-    await writeFile(path, t[kind].bytes);
+    await writeFile(path, encoded.bytes);
   }
 };
 
 const indexPaths = (index: EncodeIndex): string[] =>
   Object.entries(index).flatMap(([key, e]) =>
-    (['geom', 'collision', 'meta'] as const).map((kind) =>
-      tileFilePath(key as Parameters<typeof tileFilePath>[0], kind, e[kind]),
-    ),
+    (['geom', 'collision', 'meta', 'instances'] as const).flatMap((kind) => {
+      const hash = e[kind];
+      return hash ? [tileFilePath(key as Parameters<typeof tileFilePath>[0], kind, hash)] : [];
+    }),
   );
 
 export const encodeStage: PipelineStage = {
   id: ENCODE_STAGE_ID,
-  // v2: residential streets 6 m wide (T-014 contract).
-  version: 2,
+  // v9: facade instances (absolute height, stretch; instances.bin v2), sheet-metal roofs, instance draw calls in the budget (T-102).
+  version: 9,
   outputs: [ENCODE_INDEX_FILE],
   inputFiles: (ctx) => [ctx.outputOf(TILE_CUT_STAGE_ID, TILES_FILE)],
-  params: () => ({ formatVersion: 0 }),
+  params: (ctx) => ({ formatVersion: TILE_FORMAT_VERSION, stripFacadeWalls: ctx.config.facades.stripBayWalls }),
   extraOutputsPresent: async (outDir) => {
     const index = JSON.parse(await readFile(join(outDir, ENCODE_INDEX_FILE), 'utf8')) as EncodeIndex;
     return indexPaths(index).every((p) => existsSync(join(outDir, p)));
@@ -62,13 +66,14 @@ export const encodeStage: PipelineStage = {
     const index: EncodeIndex = {};
     const violations: string[] = [];
     for await (const tile of readNdjson<TileContent>(tilesPath)) {
-      const encoded = await encodeTile(tile, existing);
+      const encoded = await encodeTile(tile, existing, { stripFacadeWalls: ctx.config.facades.stripBayWalls });
       violations.push(...budgetViolations(encoded));
       await writeTile(outDir, encoded);
       index[tile.key] = {
         geom: encoded.geom.hash,
         collision: encoded.collision.hash,
         meta: encoded.meta.hash,
+        ...(encoded.instances ? { instances: encoded.instances.hash } : {}),
         bytes: tileBytes(encoded),
         triangles: encoded.triangles,
       };

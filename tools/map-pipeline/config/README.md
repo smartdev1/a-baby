@@ -14,6 +14,8 @@ One pipeline configuration per commune, validated by `src/config/pipeline-config
 
 Adding a commune (e.g. Attécoubé) = adding a config file.
 
+Optional `facades.stripBayWalls` (default `false`): leaves the walls covered by facade bays out of `geom.glb`. Switch it to `true` once the client renders the facade kit (frontend J1-06); until then the walls stay so that buildings remain closed in the preview.
+
 ## Rules
 
 - Paths are repository-relative with `/`; build output goes under `data/build/` (git-ignored).

@@ -1,11 +1,17 @@
 # `tools/bots/src/`
 
 - **Owner:** backend developer
-- **Status:** Skeleton
+- **Status:** Active — T-108, T-110
 
 ## Role
 
-bots sources.
+Load-test bot sources.
+
+| File | Role |
+|---|---|
+| `cli.ts` | Starts N bots, aggregates RTT, bandwidth, handoff and server statistics. |
+| `bot-client.ts` | One bot: ticket → hello → seeded random walk or straight east walk at 20 Hz, 1 ping/s. |
+| `handoff-tracker.ts` | Client-side handoff measurement (ack gap, position jump in absolute UTM). |
 
 ## Rules
 

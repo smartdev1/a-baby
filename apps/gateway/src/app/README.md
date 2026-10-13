@@ -1,15 +1,16 @@
 # `apps/gateway/src/app/`
 
 - **Owner:** backend developer
-- **Status:** Skeleton
+- **Status:** Active — T-110
 
 ## Role
 
-Composition root of the gateway.
+Composition root of the standalone gateway process (multi-process mode).
 
-## How it works
-
-`main.ts` wires transport, auth, sessions and routing.
+| File | Role |
+|---|---|
+| `main.ts` | NATS bus, tickets checked through the services process, WebSocket transport. |
+| `gateway-config.ts` | `GATEWAY_PORT`, `NATS_URL`, `SERVICES_URL`, `SPAWN_CELL`. |
 
 ## Rules
 

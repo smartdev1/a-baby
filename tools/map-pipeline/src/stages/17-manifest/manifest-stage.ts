@@ -6,11 +6,12 @@
 import { readFile, writeFile } from 'node:fs/promises';
 import { basename, join } from 'node:path';
 import { tileBounds } from '@skyline/geo';
-import { parseWorldManifest, worldManifestFileName } from '@skyline/tile-format';
+import { parseWorldManifest, TILE_FORMAT_VERSION, worldManifestFileName } from '@skyline/tile-format';
 import { sha256OfFile } from '../../runner/content-hash.ts';
 import type { PipelineStage, StageContext } from '../../runner/stage-contract.ts';
 import { loadSourcesLockSync } from '../../sources/sources-lock.ts';
 import { ENCODE_INDEX_FILE, ENCODE_STAGE_ID, type EncodeIndex } from '../16-encode/encode-stage.ts';
+import { LOD_INDEX_FILE, LOD_STAGE_ID, type LodIndex } from '../15-lod-build/lod-build-stage.ts';
 
 export const MANIFEST_STAGE_ID = '17-manifest';
 
@@ -54,26 +55,34 @@ const bboxOfTiles = (keys: string[]) => {
   };
 };
 
+/** L0 entries (geom, collision, meta, instances) followed by render-only LOD entries (geom). */
+const tileEntries = (index: EncodeIndex, lod: LodIndex): Record<string, Record<string, string>> => {
+  const tiles: Record<string, Record<string, string>> = {};
+  for (const [key, e] of Object.entries(index)) tiles[key] = { geom: e.geom, collision: e.collision, meta: e.meta, ...(e.instances ? { instances: e.instances } : {}) };
+  for (const [key, e] of Object.entries(lod)) tiles[key] = { geom: e.geom };
+  return tiles;
+};
+
 export const manifestStage: PipelineStage = {
   id: MANIFEST_STAGE_ID,
-  version: 1,
+  // v2: L1 tiles listed (15-lod-build).
+  version: 2,
   outputs: (ctx) => [worldManifestFileName(releaseName(ctx))],
-  inputFiles: (ctx) => [ctx.outputOf(ENCODE_STAGE_ID, ENCODE_INDEX_FILE)],
+  inputFiles: (ctx) => [ctx.outputOf(ENCODE_STAGE_ID, ENCODE_INDEX_FILE), ctx.outputOf(LOD_STAGE_ID, LOD_INDEX_FILE)],
   params: (ctx) => ({ release: releaseName(ctx), commune: ctx.config.displayName, source: ctx.config.source }),
   run: async (ctx, outDir) => {
     const index = JSON.parse(await readFile(ctx.outputOf(ENCODE_STAGE_ID, ENCODE_INDEX_FILE), 'utf8')) as EncodeIndex;
+    const lod = JSON.parse(await readFile(ctx.outputOf(LOD_STAGE_ID, LOD_INDEX_FILE), 'utf8')) as LodIndex;
     const keys = Object.keys(index);
     const manifest = parseWorldManifest({
-      formatVersion: 0,
+      formatVersion: TILE_FORMAT_VERSION,
       release: releaseName(ctx),
       commune: ctx.config.displayName,
       bboxUtm: bboxOfTiles(keys),
       sourceSnapshot: await snapshotInfo(ctx),
       licence: 'ODbL-1.0',
       attribution: '© OpenStreetMap contributors',
-      tiles: Object.fromEntries(
-        keys.map((k) => [k, { geom: index[k]?.geom, collision: index[k]?.collision, meta: index[k]?.meta }]),
-      ),
+      tiles: tileEntries(index, lod),
     });
     await writeFile(join(outDir, worldManifestFileName(manifest.release)), `${JSON.stringify(manifest, null, 2)}\n`);
     ctx.logger.info({ release: manifest.release, tiles: keys.length }, 'world manifest written');

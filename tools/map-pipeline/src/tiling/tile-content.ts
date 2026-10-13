@@ -1,9 +1,10 @@
 /**
- * Role: content of one L0 tile after the cut (tiles.ndjson line): clipped building parts, clipped road lines and places, all in metres local to the tile south-west corner.
+ * Role: content of one L0 tile after the cut (tiles.ndjson line): clipped building parts (with their pitched roof if any), clipped road lines, places and instances, all in metres local to the tile south-west corner.
  * Owner: backend
  */
 
 import type { HeightSource } from '../heuristics/height-heuristics.ts';
+import type { TileTerrain } from '../terrain/tile-terrain.ts';
 import type { OsmId } from '../osm/osm-id.ts';
 
 /** [x = east, z = north] in metres from the tile south-west corner, cm precision. */
@@ -13,8 +14,19 @@ export type LocalPolygon = readonly (readonly LocalPoint[])[];
 
 export interface TileBuildingPart {
   readonly id: OsmId;
+  /** Ground height under the building (lowest footprint vertex). */
+  readonly baseYM: number;
   readonly heightM: number;
   readonly polygons: readonly LocalPolygon[];
+  /** Sheet-metal roof (stage 11) of a building lying in this tile only; absent = flat roof. */
+  readonly roof?: TilePitchedRoof;
+}
+
+/** Corners counter-clockwise, corners[0] → corners[1] = long side (low eave of a mono-pitch roof). */
+export interface TilePitchedRoof {
+  readonly kind: 'sheet-gable' | 'sheet-mono';
+  readonly corners: readonly [LocalPoint, LocalPoint, LocalPoint, LocalPoint];
+  readonly riseM: number;
 }
 
 /** Building attributes, stored only in the tile that holds the building's representative point. */
@@ -37,6 +49,20 @@ export interface TilePlaceEntry {
   readonly category: string;
   readonly position: LocalPoint;
   readonly buildingId: OsmId | null;
+  /** From stage 09-naming only (ADR 0010). */
+  readonly displayName: string | null;
+}
+
+/** Instanced module in tile-local metres; without `yM` its height comes from the terrain at encode time. */
+export interface TileInstance {
+  readonly module: number;
+  readonly position: LocalPoint;
+  readonly yawRad: number;
+  readonly scale: number;
+  readonly variant: number;
+  readonly yM?: number;
+  readonly stretchX?: number;
+  readonly stretchY?: number;
 }
 
 export interface TileContent {
@@ -45,12 +71,9 @@ export interface TileContent {
   readonly buildingMeta: TileBuildingMeta[];
   readonly roads: TileRoad[];
   readonly places: TilePlaceEntry[];
+  readonly instances: TileInstance[];
+  /** Relief and water of the tile (stage 10-terrain); null without terrain. */
+  terrain: TileTerrain | null;
 }
 
-export const emptyTileContent = (key: string): TileContent => ({
-  key,
-  buildingParts: [],
-  buildingMeta: [],
-  roads: [],
-  places: [],
-});
+export const emptyTileContent = (key: string): TileContent => ({ key, buildingParts: [], buildingMeta: [], roads: [], places: [], instances: [], terrain: null });

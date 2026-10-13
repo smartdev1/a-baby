@@ -16,7 +16,8 @@
     "@skyline/physics": "workspace:*",
     "@skyline/protocol": "workspace:*",
     "@skyline/sim-clock": "workspace:*",
-    "@skyline/tile-format": "workspace:*"
+    "@skyline/tile-format": "workspace:*",
+    "zod": "^4.6.6"
   },
   "exports": {
     ".": "./src/index.ts"

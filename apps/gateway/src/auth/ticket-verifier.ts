@@ -4,6 +4,6 @@
  */
 
 export interface TicketVerifier {
-  /** True once per valid ticket. */
-  consume(ticket: string): boolean;
+  /** True once per valid ticket (in process, or asynchronously through the services HTTP API). */
+  consume(ticket: string): boolean | Promise<boolean>;
 }

@@ -528,16 +528,17 @@ Les tests unitaires vivent **à côté** du code (`foo.ts` / `foo.test.ts`) ; `t
 
 `→` signifie « peut importer ». Tout ce qui n'est pas listé est **interdit** et vérifié par dependency-cruiser en CI.
 
-| Depuis \ vers                                                                                                                         | paquets **[pur]**      | `bus`, `observability` | `db`  | `@babylonjs/*`, `preact` | API Node (`fs`, `net`…)                     | autres `apps/*` |
-| ------------------------------------------------------------------------------------------------------------------------------------- | ---------------------- | ---------------------- | ----- | ------------------------ | ------------------------------------------- | --------------- |
-| paquets **[pur]** (`geo`, `tile-format`, `protocol`, `physics`, `content-schema`, `sim-*`, `economy-rules`, `business-rules`, `i18n`) | ✔ (sans cycle) + `zod` | ✘                      | ✘     | ✘                        | ✘ (`lib` ES2023 uniquement, ni DOM ni Node) | ✘               |
-| `bus`, `observability`                                                                                                                | ✔                      | ✔                      | ✘     | ✘                        | ✔                                           | ✘               |
-| `db`                                                                                                                                  | ✘                      | ✘                      | —     | ✘                        | ✔                                           | ✘               |
-| `apps/web`                                                                                                                            | ✔                      | ✘                      | ✘     | ✔                        | ✘                                           | ✘               |
-| `apps/gateway`                                                                                                                        | `protocol`, `geo`      | ✔                      | ✘     | ✘                        | ✔                                           | ✘               |
-| `apps/zone`                                                                                                                           | ✔                      | ✔                      | **✘** | ✘                        | ✔                                           | ✘               |
-| `apps/services`                                                                                                                       | ✔                      | ✔                      | ✔     | ✘                        | ✔                                           | ✘               |
-| `tools/*`                                                                                                                             | ✔                      | `observability`        | ✘     | ✘                        | ✔                                           | ✘               |
+| Depuis \ vers | paquets **[pur]** | `bus`, `observability` | `db` | `@babylonjs/*`, `preact` | API Node (`fs`, `net`…) | autres `apps/*` |
+|---|---|---|---|---|---|---|
+| paquets **[pur]** (`geo`, `tile-format`, `protocol`, `physics`, `content-schema`, `sim-*`, `economy-rules`, `business-rules`, `i18n`) | ✔ (sans cycle) + `zod` | ✘ | ✘ | ✘ | ✘ (`lib` ES2023 uniquement, ni DOM ni Node) | ✘ |
+| `bus`, `observability` | ✔ | ✔ | ✘ | ✘ | ✔ | ✘ |
+| `db` | ✘ | ✘ | — | ✘ | ✔ | ✘ |
+| `apps/web` | ✔ | ✘ | ✘ | ✔ | ✘ | ✘ |
+| `apps/gateway` | `protocol`, `geo` | ✔ | ✘ | ✘ | ✔ | ✘ |
+| `apps/zone` | ✔ | ✔ | **✘** | ✘ | ✔ | ✘ |
+| `apps/services` | ✔ | ✔ | ✔ | ✘ | ✔ | ✘ |
+| `tools/*` | ✔ | `observability` | ✘ | ✘ | ✔ | ✘ |
+| `apps/all-in-one` (composition uniquement, ADR 0013) | ✔ | ✔ | ✘ | ✘ | ✔ | **`src/index.ts` public de `gateway`, `zone`, `services` uniquement** |
 
 Au sein d'une app, la même logique s'applique : `apps/web/src/world-render` n'importe pas `ui`, `ui` n'importe pas `world-render` ; ils communiquent par des stores (signals) exposés par `app/`. Dans `apps/services/src/modules/X`, un module n'importe jamais `infra/` d'un autre module, seulement son `application/` public.
 
@@ -1389,20 +1390,21 @@ Légende : **Garder** (en place) · **Déplacer** · **Réécrire** (la logique 
 
 ## 29. Journal de décisions (index des ADR)
 
-| ADR                                                                    | Décision                                                                                                         | Statut                                                        |
-| ---------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
-| [0001](docs/adr/0001-vie-virtuelle-yopougon-supersede-cdc.md)          | La vision « vie virtuelle Yopougon » remplace le CDC v1.1                                                        | Acceptée (propriétaire, 13/10/2026)                           |
-| [0002](docs/adr/0002-grille-tuiles-250m-utm.md)                        | Grille de tuiles de 250 m en UTM 30N + hiérarchie de LOD ; cellules ≠ tuiles                                     | Proposée                                                      |
-| [0003](docs/adr/0003-architecture-mmo-passerelle-cellules-nats.md)     | Architecture MMO passerelle + cellules + NATS ; abandon de Colyseus                                              | Proposée                                                      |
-| [0004](docs/adr/0004-moteur-actions-data-driven.md)                    | Moteur d'actions piloté par les données                                                                          | Proposée                                                      |
-| [0005](docs/adr/0005-rendu-semi-realiste-kits-proceduraux.md)          | Rendu semi-réaliste par kits modulaires procéduraux                                                              | Proposée (choix du propriétaire, conditions de coût)          |
-| [0006](docs/adr/0006-odbl-separation-couches.md)                       | ODbL : attribution, séparation des couches, publication de la base dérivée                                       | Proposée                                                      |
-| [0007](docs/adr/0007-monorepo-pnpm-regles-modularite.md)               | Monorepo pnpm + règles de modularité outillées                                                                   | Proposée                                                      |
-| [0008](docs/adr/0008-babylon-es-modules.md)                            | `@babylonjs/core` (ES modules) à la place du paquet UMD                                                          | Proposée                                                      |
-| [0009](docs/adr/0009-economie-grand-livre-partie-double.md)            | Économie en grand livre à partie double, idempotente (achats, loyers, titres, commerces, séquestre des salaires) | Proposée                                                      |
-| [0010](docs/adr/0010-noms-lieux-toponymie-reelle-marques-parodiees.md) | Toponymie réelle, marques et commerces parodiés de façon déterministe, avec garde-fous                           | Acceptée (propriétaire)                                       |
-| [0011](docs/adr/0011-horloge-interne-du-monde.md)                      | Horloge interne du monde, autoritaire, ratio configurable, règle hors ligne                                      | Acceptée (propriétaire) ; ratio et règle hors ligne à valider |
-| [0012](docs/adr/0012-invite-uniquement-extension-compte.md)            | Profil invité uniquement au MVP, compte permanent en point d'extension                                           | Acceptée (propriétaire)                                       |
+| ADR | Décision | Statut |
+|---|---|---|
+| [0001](docs/adr/0001-vie-virtuelle-yopougon-supersede-cdc.md) | La vision « vie virtuelle Yopougon » remplace le CDC v1.1 | Acceptée (propriétaire, 13/10/2026) |
+| [0002](docs/adr/0002-grille-tuiles-250m-utm.md) | Grille de tuiles de 250 m en UTM 30N + hiérarchie de LOD ; cellules ≠ tuiles | Proposée |
+| [0003](docs/adr/0003-architecture-mmo-passerelle-cellules-nats.md) | Architecture MMO passerelle + cellules + NATS ; abandon de Colyseus | Proposée |
+| [0004](docs/adr/0004-moteur-actions-data-driven.md) | Moteur d'actions piloté par les données | Proposée |
+| [0005](docs/adr/0005-rendu-semi-realiste-kits-proceduraux.md) | Rendu semi-réaliste par kits modulaires procéduraux | Proposée (choix du propriétaire, conditions de coût) |
+| [0006](docs/adr/0006-odbl-separation-couches.md) | ODbL : attribution, séparation des couches, publication de la base dérivée | Proposée |
+| [0007](docs/adr/0007-monorepo-pnpm-regles-modularite.md) | Monorepo pnpm + règles de modularité outillées | Proposée |
+| [0008](docs/adr/0008-babylon-es-modules.md) | `@babylonjs/core` (ES modules) à la place du paquet UMD | Proposée |
+| [0009](docs/adr/0009-economie-grand-livre-partie-double.md) | Économie en grand livre à partie double, idempotente (achats, loyers, titres, commerces, séquestre des salaires) | Proposée |
+| [0010](docs/adr/0010-noms-lieux-toponymie-reelle-marques-parodiees.md) | Toponymie réelle, marques et commerces parodiés de façon déterministe, avec garde-fous | Acceptée (propriétaire) |
+| [0011](docs/adr/0011-horloge-interne-du-monde.md) | Horloge interne du monde, autoritaire, ratio configurable, règle hors ligne | Acceptée (propriétaire) ; ratio et règle hors ligne à valider |
+| [0012](docs/adr/0012-invite-uniquement-extension-compte.md) | Profil invité uniquement au MVP, compte permanent en point d'extension | Acceptée (propriétaire) |
+| [0013](docs/adr/0013-all-in-one-composition-app.md) | `apps/all-in-one` : seule app autorisée à importer d'autres apps, via leur `src/index.ts` public | Acceptée (propriétaire, 13/10/2026) |
 
 ---
 

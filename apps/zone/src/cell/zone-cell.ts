@@ -1,5 +1,5 @@
 /**
- * Role: authoritative runtime of one cell: players join through the bus, inputs are simulated with @skyline/physics at 20 Hz, acks and snapshots go back on each session subject.
+ * Role: authoritative runtime of one cell: players join through the bus or a border handoff, inputs are simulated with @skyline/physics at 20 Hz, acks go back on each session subject and one snapshot per cell on the cell subject.
  * Owner: backend
  */
 
@@ -16,6 +16,8 @@ import type { Logger } from '@skyline/observability';
 import { type CharacterState, type CollisionWorld, FIXED_STEP_S, stepCharacter } from '@skyline/physics';
 import { type EntityState, MAX_SNAPSHOT_ENTITIES, PROTOCOL_VERSION, type ServerMessage } from '@skyline/protocol';
 import type { ClockSegment } from '@skyline/sim-clock';
+import { entityIdOf, leftCellTowards, stateFromHandoff, toHandoff } from '../handoff/cell-handoff.ts';
+import { InputForwarding } from '../handoff/input-forwarding.ts';
 import { entityStateCode } from './entity-state-code.ts';
 import { PlayerSlot } from './player-slot.ts';
 import { TickStats, type TickStatsSnapshot } from './tick-stats.ts';
@@ -34,6 +36,8 @@ export interface ZoneCellOptions {
   readonly spawn: { readonly x: number; readonly z: number };
   readonly clock: () => Promise<ClockSegment>;
   readonly logger: Logger;
+  /** Cells owned by a running zone (this one included): players may only cross into them. Default: this cell only. */
+  readonly clusterCells?: ReadonlySet<string>;
 }
 
 export class ZoneCell {
@@ -42,7 +46,8 @@ export class ZoneCell {
   private readonly unsubscribes: Unsubscribe[] = [];
   private timer: ReturnType<typeof setInterval> | null = null;
   private tick = 0;
-  private nextEntityId = 1;
+  private readonly handoffMs: number[] = [];
+  private readonly forwarding = new InputForwarding();
 
   constructor(private readonly options: ZoneCellOptions) {}
 
@@ -51,8 +56,12 @@ export class ZoneCell {
     const { bus, cellKey } = this.options;
     this.unsubscribes.push(
       bus.subscribe<CellJoin>(subjects.cellJoin(cellKey), (m) => void this.join(m.sessionId)),
-      bus.subscribe<CellInput>(subjects.cellInput(cellKey), (m) => this.players.get(m.sessionId)?.offer(m.input)),
-      bus.subscribe<CellLeave>(subjects.cellLeave(cellKey), (m) => this.players.delete(m.sessionId)),
+      bus.subscribe<CellInput>(subjects.cellInput(cellKey), (m) => this.input(m)),
+      bus.subscribe<SessionClosed>(subjects.sessionClosed(), (m) => {
+        this.players.delete(m.sessionId);
+        this.forwarding.remove(m.sessionId);
+      }),
+      bus.subscribe<CellHandoff>(subjects.cellHandoff(cellKey), (m) => void this.adopt(m)),
     );
     if (ticking) this.timer = setInterval(() => this.step(), 1000 / TICK_RATE_HZ);
   }
@@ -62,8 +71,10 @@ export class ZoneCell {
     this.unsubscribes.splice(0).forEach((u) => u());
   }
 
-  tickStats(): TickStatsSnapshot {
-    return this.stats.snapshot(this.players.size);
+  tickStats(): TickStatsSnapshot & { handoffsIn: number; handoffP95Ms: number } {
+    const sorted = [...this.handoffMs].sort((a, b) => a - b);
+    const p95 = sorted[Math.min(sorted.length - 1, Math.floor(sorted.length * 0.95))] ?? 0;
+    return { ...this.stats.snapshot(this.players.size), handoffsIn: this.handoffMs.length, handoffP95Ms: Math.round(p95 * 100) / 100 };
   }
 
   /** One simulation tick (public for tests). */
@@ -72,7 +83,18 @@ export class ZoneCell {
     this.tick++;
     for (const player of this.players.values()) this.simulate(player);
     if (this.tick % SNAPSHOT_EVERY_TICKS === 0) this.broadcastSnapshot();
+    if (this.tick % TICK_RATE_HZ === 0) this.forwarding.prune(this.tick);
     this.stats.record(performance.now() - started);
+  }
+
+  private input(m: CellInput): void {
+    const player = this.players.get(m.sessionId);
+    if (player) {
+      player.offer(m.input);
+      return;
+    }
+    const target = this.forwarding.targetOf(m.sessionId);
+    if (target) this.options.bus.publish(subjects.cellInput(target), m);
   }
 
   private async join(sessionId: string): Promise<void> {
@@ -98,6 +120,7 @@ export class ZoneCell {
   }
 
   private simulate(player: PlayerSlot): void {
+    const before = player.state;
     const inputs = player.takeForTick();
     if (inputs.length === 0) {
       player.state = stepCharacter(this.options.world, player.state, {
@@ -118,6 +141,7 @@ export class ZoneCell {
       player.state = stepCharacter(this.options.world, player.state, player.lastInput, { dt: FIXED_STEP_S });
       player.lastSeq = input.seq;
     }
+    if (this.crossBorder(player, before)) return;
     if (player.violations > MAX_VIOLATIONS) {
       this.options.logger.warn(
         { entityId: player.entityId, violations: player.violations },
@@ -139,6 +163,21 @@ export class ZoneCell {
         velocity: player.state.velocity,
       },
     });
+  }
+
+  /** True when the player was handed to another cell; a move into an unowned cell is undone. */
+  private crossBorder(player: PlayerSlot, before: CharacterState): boolean {
+    const target = leftCellTowards(player.state, this.options.frameOrigin);
+    if (target === null) return false;
+    const cluster = this.options.clusterCells ?? new Set([this.options.cellKey]);
+    if (target === this.options.cellKey || !cluster.has(target)) {
+      player.state = { ...before, velocity: { x: 0, y: before.velocity.y, z: 0 } };
+      return false;
+    }
+    this.options.bus.publish(subjects.cellHandoff(target), toHandoff({ ...player, yawRad: player.lastInput.yawRad }, this.options.frameOrigin, Date.now()));
+    this.players.delete(player.sessionId);
+    this.forwarding.add(player.sessionId, target, this.tick);
+    return true;
   }
 
   private broadcastSnapshot(): void {
