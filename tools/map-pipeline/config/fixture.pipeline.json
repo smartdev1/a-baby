@@ -1,0 +1,13 @@
+{
+  "commune": "pigeons-fixture",
+  "displayName": "Pigeons sample (Yopougon, ~1 km², golden fixture)",
+  "seed": "pigeons-fixture-v1",
+  "source": {
+    "kind": "local-file",
+    "format": "geojson",
+    "path": "tools/map-pipeline/test/fixtures/pigeons-sample.geojson"
+  },
+  "boundary": { "osmRelationId": null },
+  "marginM": 0,
+  "outputDir": "data/build/pigeons-fixture"
+}
