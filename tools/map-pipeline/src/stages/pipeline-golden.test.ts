@@ -28,6 +28,7 @@ const CHECKED_OUTPUTS = [
   '10-terrain/terrain-tiles.ndjson',
   '12-props/props.ndjson',
   '14-tile-cut/tiles.ndjson',
+  '15-lod-build/lod-index.json',
   '16-encode/encode-index.json',
   '17-manifest/world-manifest.pigeons-fixture-2026-10-13.json',
 ];

@@ -8,6 +8,7 @@
   "10-terrain/terrain-tiles.ndjson": "418cfad132174da7d2c0299da66407998bf082d1236f8b4925d6d2c6e0085722",
   "12-props/props.ndjson": "82b0dbdcd19d524a9e3aadb4a9c0f26585e825f0923a71e3d6616c323b3ce376",
   "14-tile-cut/tiles.ndjson": "166cb3582ab8632919b77d086052c2397e553e70e236c1643246551ee86a117b",
+  "15-lod-build/lod-index.json": "1f5b3f99383952638861d7760bfa32c6f21fa33b443495e035d4c38b13b77494",
   "16-encode/encode-index.json": "4e6031b08d871778f193c80f041c038dee45e2ca2029e5f8d808164ba6f79466",
-  "17-manifest/world-manifest.pigeons-fixture-2026-10-13.json": "c5254e3a7b27c6d2361aea66df620981b72e5683e899ee08e062647bad5cdb6c"
+  "17-manifest/world-manifest.pigeons-fixture-2026-10-13.json": "b4be8dae8c6a54b24a8d9bba8ef2918a987795d79ee5954671d37cfc03dc4e1b"
 }

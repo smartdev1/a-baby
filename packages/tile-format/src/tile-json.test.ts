@@ -46,6 +46,12 @@ describe('tile JSON schemas', () => {
     expect(() => parseTileMeta(value)).toThrow(TileFormatError);
   });
 
+  it('should require collision and meta for L0 tiles and geom for LOD tiles', () => {
+    expect(() => parseWorldManifest({ ...MANIFEST, tiles: { L0_1_1: { geom: '0123456789abcdef' } } })).toThrow(TileFormatError);
+    expect(parseWorldManifest({ ...MANIFEST, tiles: { L1_1_1: { geom: '0123456789abcdef' } } }).tiles['L1_1_1']?.geom).toBe('0123456789abcdef');
+    expect(() => parseWorldManifest({ ...MANIFEST, tiles: { L1_1_1: {} } })).toThrow(TileFormatError);
+  });
+
   it('should reject a manifest whose licence is not ODbL', () => {
     expect(() => parseWorldManifest({ ...MANIFEST, licence: 'CC0' })).toThrow(TileFormatError);
   });

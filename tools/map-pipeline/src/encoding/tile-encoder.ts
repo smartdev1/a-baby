@@ -50,7 +50,7 @@ const groundSampler =
     return (h(i, j) * (1 - tx) + h(i + 1, j) * tx) * (1 - tz) + (h(i, j + 1) * (1 - tx) + h(i + 1, j + 1) * tx) * tz;
   };
 
-const meshGroups = (tile: TileContent): MeshGroups => {
+export const meshGroups = (tile: TileContent): MeshGroups => {
   const groups = { ground: new MeshBuffer(), water: new MeshBuffer(), road: new MeshBuffer(), path: new MeshBuffer(), walls: new MeshBuffer(), roofs: new MeshBuffer() };
   if (tile.terrain) {
     addTerrainGrid(groups.ground, tile.terrain);
@@ -120,5 +120,23 @@ export const encodeTile = async (tile: TileContent, existing: ReadonlySet<string
     instanceCount: instances.length,
     triangles,
     drawCalls,
+  };
+};
+
+export interface EncodedLodTile {
+  readonly key: string;
+  readonly geom: EncodedFile;
+  readonly triangles: number;
+  readonly drawCalls: number;
+}
+
+/** Render-only tile of a coarser level (L1+): geometry only. */
+export const encodeLodTile = async (tile: TileContent): Promise<EncodedLodTile> => {
+  const groups = meshGroups(tile);
+  return {
+    key: tile.key,
+    geom: file(await buildTileGlb(groups, tile.key)),
+    triangles: Object.values(groups).reduce((sum, g) => sum + g.triangleCount, 0),
+    drawCalls: Object.values(groups).filter((g) => g.triangleCount > 0).length,
   };
 };
