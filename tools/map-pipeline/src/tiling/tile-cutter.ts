@@ -4,6 +4,8 @@
  */
 
 import type { BuildingRecord, ClassifiedRecord, UtmGeometry, UtmPoint } from '../records/map-records.ts';
+import { TerrainSampler } from '../terrain/terrain-sampler.ts';
+import type { TileTerrain } from '../terrain/tile-terrain.ts';
 import { clipPolygonsToTile, clipPolylineToTile } from './clip-to-tile.ts';
 import { emptyTileContent, type TileContent } from './tile-content.ts';
 import { boundsOfPoints, tileOfPoint, tileOrigin, tilesOverlapping, toLocal } from './tile-frame.ts';
@@ -25,8 +27,16 @@ const linesOf = (g: UtmGeometry): readonly (readonly UtmPoint[])[] =>
 export class TileCutter {
   private readonly tiles = new Map<string, TileContent>();
 
-  /** Displayed names by place id, produced by stage 09-naming. */
-  constructor(private readonly displayNames: ReadonlyMap<string, string | null> = new Map()) {}
+  private readonly ground: TerrainSampler;
+
+  /** Displayed names by place id (stage 09-naming) and terrain by tile key (stage 10-terrain): every terrain tile exists, even without buildings. */
+  constructor(
+    private readonly displayNames: ReadonlyMap<string, string | null> = new Map(),
+    terrain: ReadonlyMap<string, TileTerrain> = new Map(),
+  ) {
+    this.ground = new TerrainSampler(terrain);
+    for (const [key, t] of terrain) this.tile(key).terrain = t;
+  }
 
   private tile(key: string): TileContent {
     let content = this.tiles.get(key);
@@ -39,9 +49,10 @@ export class TileCutter {
 
   addBuilding(b: BuildingRecord): void {
     const polygons = b.footprint.coordinates;
+    const baseYM = Math.round(Math.min(...(polygons[0]?.[0] ?? [[0, 0]]).map(([e, n]) => this.ground.heightAt(e, n))) * 100) / 100;
     for (const key of tilesOverlapping(boundsOfPoints(polygons.flat(2)))) {
       const clipped = clipPolygonsToTile(polygons, tileOrigin(key));
-      if (clipped.length > 0) this.tile(key).buildingParts.push({ id: b.id, heightM: b.heightM, polygons: clipped });
+      if (clipped.length > 0) this.tile(key).buildingParts.push({ id: b.id, baseYM, heightM: b.heightM, polygons: clipped });
     }
     const owner = tileOfPoint(representativePoint(b.footprint));
     if (owner) this.tile(owner).buildingMeta.push({ id: b.id, type: b.type, levels: b.levels, heightM: b.heightM, heightSource: b.heightSource });

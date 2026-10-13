@@ -11,10 +11,11 @@ import { encodeTile } from './tile-encoder.ts';
 
 const TILE: TileContent = {
   key: 'L0_325_199',
-  buildingParts: [{ id: 'osm:way/1', heightM: 9.5, polygons: [[[[10, 10], [40, 10], [40, 20], [20, 20], [20, 40], [10, 40], [10, 10]]]] }],
+  buildingParts: [{ id: 'osm:way/1', baseYM: 0, heightM: 9.5, polygons: [[[[10, 10], [40, 10], [40, 20], [20, 20], [20, 40], [10, 40], [10, 10]]]] }],
   buildingMeta: [{ id: 'osm:way/1', type: 'apartments', levels: 3, heightM: 9.5, heightSource: 'heuristic' }],
   roads: [{ id: 'osm:way/2', roadClass: 'residential', lines: [[[0, 100], [250, 100]]] }],
   places: [{ id: 'osm:node/3', category: 'food.maquis', position: [30, 60], buildingId: null, displayName: 'Maquis Le Bigeon' }],
+  terrain: null,
 };
 
 describe('encodeTile', () => {

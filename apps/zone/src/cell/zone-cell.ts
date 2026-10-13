@@ -70,7 +70,8 @@ export class ZoneCell {
 
   private async join(sessionId: string): Promise<void> {
     const { spawn } = this.options;
-    const state: CharacterState = { position: { x: spawn.x, y: 0, z: spawn.z }, velocity: { x: 0, y: 0, z: 0 }, grounded: true };
+    const y = this.options.world.groundHeightAt(spawn.x, spawn.z);
+    const state: CharacterState = { position: { x: spawn.x, y, z: spawn.z }, velocity: { x: 0, y: 0, z: 0 }, grounded: true };
     const player = new PlayerSlot(sessionId, this.nextEntityId++, state);
     this.players.set(sessionId, player);
     this.send(sessionId, {

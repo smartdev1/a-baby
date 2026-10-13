@@ -6,7 +6,7 @@
 import type { BboxLonLat } from '../geometry/expand-bbox.ts';
 
 /** Image built from infra/docker/osmium/Dockerfile (`pnpm map:osmium-image`). Bump with the Dockerfile. */
-export const OSMIUM_IMAGE = 'skyline/osmium:1.18.0';
+export const OSMIUM_IMAGE = 'skyline/osm-tools:2';
 
 /**
  * OSM features kept for the game world (ARCHITECTURE §11.2): buildings, streets, places, land use, water, transport.

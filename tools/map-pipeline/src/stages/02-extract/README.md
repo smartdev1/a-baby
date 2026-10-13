@@ -14,4 +14,4 @@ Cuts the commune out of the national snapshot and keeps only game-relevant featu
 2. `osmium tags-filter` with `OSM_TAG_FILTERS` (buildings, highways, amenities, shops, land use, water, transport…).
 3. Outputs: `commune.osm.pbf` without user metadata (Yopougon ≈ 2.9 MB) and `boundary.geojson`. Deterministic: same snapshot + config ⇒ same sha256.
 
-Needs Docker and the image `skyline/osmium:1.18.0` (`pnpm map:osmium-image`).
+Needs Docker and the image `skyline/osm-tools:2` (`pnpm map:osmium-image`).

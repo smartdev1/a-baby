@@ -12,6 +12,7 @@ import type { MeshBuffer } from '../meshing/mesh-buffer.ts';
 /** Placeholder flat colours (sRGB → linear factors) until the semi-realistic kits of J1. */
 const MATERIALS: Readonly<Record<string, readonly [number, number, number]>> = {
   ground: [0.26, 0.3, 0.18],
+  water: [0.05, 0.16, 0.2],
   road: [0.07, 0.07, 0.075],
   path: [0.48, 0.4, 0.27],
   walls: [0.69, 0.58, 0.43],

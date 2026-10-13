@@ -17,5 +17,7 @@ Encoding a cut tile into its files, through `@skyline/tile-format`.
 
 - `geom.glb` needs Babylon's meshopt decoder (`EXT_meshopt_compression`) — the glTF loader fetches it automatically or it can be bundled.
 - Positions are quantized; precision measured on Yopougon: ≤ 1.3 cm.
-- `collision.bin` v0: flat ground (no relief yet) and one prism per building polygon (courtyards filled).
-- `meta.json` places have `displayName: null` until the naming stage (ADR 0010).
+- `collision.bin` v1 (format v1): relief height field (51 × 51, 5 m), building prisms from the ground (`baseYM`) to the roof, water cells (not walkable).
+- Meshes: `ground` (relief grid), `water`, `road`, `path` (draped, densified ≤ 4 m), `walls`, `roofs`.
+- Frame: Babylon maps glTF (x, y, z) → (−x, y, z), so the pipeline writes x = −east; loaded tiles have **x = east, z = north** (verified with a real Babylon load).
+- `meta.json` places carry their `displayName` from stage 09-naming (ADR 0010).

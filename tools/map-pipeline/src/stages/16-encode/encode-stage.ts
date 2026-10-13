@@ -6,7 +6,7 @@
 import { existsSync } from 'node:fs';
 import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
-import { tileFilePath } from '@skyline/tile-format';
+import { TILE_FORMAT_VERSION, tileFilePath } from '@skyline/tile-format';
 import { budgetViolations, tileBytes } from '../../encoding/tile-budgets.ts';
 import { type EncodedTile, encodeTile } from '../../encoding/tile-encoder.ts';
 import { readNdjson } from '../../records/ndjson-files.ts';
@@ -42,11 +42,11 @@ const indexPaths = (index: EncodeIndex): string[] =>
 
 export const encodeStage: PipelineStage = {
   id: ENCODE_STAGE_ID,
-  // v3: displayed place names in meta (09-naming).
-  version: 3,
+  // v7: roads densified (≤ 4 m) and raised 12–15 cm above the draped terrain.
+  version: 7,
   outputs: [ENCODE_INDEX_FILE],
   inputFiles: (ctx) => [ctx.outputOf(TILE_CUT_STAGE_ID, TILES_FILE)],
-  params: () => ({ formatVersion: 0 }),
+  params: () => ({ formatVersion: TILE_FORMAT_VERSION }),
   extraOutputsPresent: async (outDir) => {
     const index = JSON.parse(await readFile(join(outDir, ENCODE_INDEX_FILE), 'utf8')) as EncodeIndex;
     return indexPaths(index).every((p) => existsSync(join(outDir, p)));

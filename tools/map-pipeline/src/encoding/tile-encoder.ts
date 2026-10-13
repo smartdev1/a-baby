@@ -4,11 +4,13 @@
  */
 
 import { createHash } from 'node:crypto';
-import { type CollisionData, encodeCollision, parseTileMeta, type TileMeta } from '@skyline/tile-format';
+import { type CollisionData, encodeCollision, parseTileMeta, TILE_FORMAT_VERSION, type TileMeta, type WaterLayer } from '@skyline/tile-format';
 import { extrudeBuilding } from '../meshing/extrude-building.ts';
 import { MeshBuffer } from '../meshing/mesh-buffer.ts';
 import { addGroundQuad, addRoadRibbon } from '../meshing/road-ribbon.ts';
+import { addTerrainGrid, addWaterCells } from '../meshing/terrain-mesh.ts';
 import { isPathClass } from '../roads/road-classes.ts';
+import type { TileTerrain } from '../terrain/tile-terrain.ts';
 import type { LocalPoint, TileContent } from '../tiling/tile-content.ts';
 import { neighbourKeys, TILE_SIZE_M } from '../tiling/tile-frame.ts';
 import { buildTileGlb, type MeshGroups } from './tile-glb.ts';
@@ -30,11 +32,32 @@ export interface EncodedTile {
 export const hash16 = (bytes: Uint8Array): string => createHash('sha256').update(bytes).digest('hex').slice(0, 16);
 const file = (bytes: Uint8Array): EncodedFile => ({ hash: hash16(bytes), bytes });
 
+/** Bilinear terrain height in tile-local metres (flat 0 without terrain). */
+const groundSampler =
+  (t: TileTerrain | null) =>
+  (x: number, z: number): number => {
+    if (!t) return 0;
+    const fx = Math.max(0, Math.min(x / t.cellSizeM, t.resolution - 1.000001));
+    const fz = Math.max(0, Math.min(z / t.cellSizeM, t.resolution - 1.000001));
+    const i = Math.floor(fx);
+    const j = Math.floor(fz);
+    const h = (ii: number, jj: number): number => t.heightsM[jj * t.resolution + ii] ?? 0;
+    const tx = fx - i;
+    const tz = fz - j;
+    return (h(i, j) * (1 - tx) + h(i + 1, j) * tx) * (1 - tz) + (h(i, j + 1) * (1 - tx) + h(i + 1, j + 1) * tx) * tz;
+  };
+
 const meshGroups = (tile: TileContent): MeshGroups => {
-  const groups = { ground: new MeshBuffer(), road: new MeshBuffer(), path: new MeshBuffer(), walls: new MeshBuffer(), roofs: new MeshBuffer() };
-  addGroundQuad(groups.ground, TILE_SIZE_M);
-  for (const road of tile.roads) for (const line of road.lines) addRoadRibbon(isPathClass(road.roadClass) ? groups.path : groups.road, line, road.roadClass);
-  for (const part of tile.buildingParts) extrudeBuilding(part.polygons, part.heightM, groups.walls, groups.roofs);
+  const groups = { ground: new MeshBuffer(), water: new MeshBuffer(), road: new MeshBuffer(), path: new MeshBuffer(), walls: new MeshBuffer(), roofs: new MeshBuffer() };
+  if (tile.terrain) {
+    addTerrainGrid(groups.ground, tile.terrain);
+    addWaterCells(groups.water, tile.terrain);
+  } else {
+    addGroundQuad(groups.ground, TILE_SIZE_M);
+  }
+  const groundAt = groundSampler(tile.terrain);
+  for (const road of tile.roads) for (const line of road.lines) addRoadRibbon(isPathClass(road.roadClass) ? groups.path : groups.road, line, road.roadClass, groundAt);
+  for (const part of tile.buildingParts) extrudeBuilding(part, groups);
   return groups;
 };
 
@@ -43,20 +66,26 @@ const flatRing = (ring: readonly LocalPoint[]): Float32Array => {
   return Float32Array.from(open.flat());
 };
 
-/** v0: flat ground (no DEM yet) and one prism per building polygon (outer ring; courtyards are filled). */
+const waterLayerOf = (t: TileTerrain | null): WaterLayer | null =>
+  t?.water ? { levelM: t.water.levelM, cellsPerSide: t.water.cellsPerSide, mask: new Uint8Array(Buffer.from(t.water.maskBase64, 'base64')) } : null;
+
+/** Relief height field, one prism per building polygon (outer ring; courtyards filled), water cells. */
 const collisionOf = (tile: TileContent): CollisionData => ({
-  heightField: { resolution: 2, cellSizeM: TILE_SIZE_M, heightsM: new Float32Array(4) },
+  heightField: tile.terrain
+    ? { resolution: tile.terrain.resolution, cellSizeM: tile.terrain.cellSizeM, heightsM: Float32Array.from(tile.terrain.heightsM) }
+    : { resolution: 2, cellSizeM: TILE_SIZE_M, heightsM: new Float32Array(4) },
   prisms: tile.buildingParts.flatMap((part) =>
     part.polygons
       .map((polygon) => flatRing(polygon[0] ?? []))
       .filter((ring) => ring.length >= 6)
-      .map((ring) => ({ baseYM: 0, topYM: part.heightM, ring })),
+      .map((ring) => ({ baseYM: part.baseYM, topYM: part.baseYM + part.heightM, ring })),
   ),
+  water: waterLayerOf(tile.terrain),
 });
 
 const metaOf = (tile: TileContent, existing: ReadonlySet<string>): TileMeta =>
   parseTileMeta({
-    formatVersion: 0,
+    formatVersion: TILE_FORMAT_VERSION,
     tileKey: tile.key,
     buildings: tile.buildingMeta.map((b) => ({ id: b.id, type: b.type, levels: b.levels, heightM: b.heightM, heightSource: b.heightSource })),
     places: tile.places.map((p) => ({ id: p.id, category: p.category, displayName: p.displayName, position: { x: p.position[0], z: p.position[1] }, buildingId: p.buildingId })),

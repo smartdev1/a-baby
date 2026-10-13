@@ -36,5 +36,7 @@ export {
   type CollisionData,
   type HeightField,
   type Prism,
+  type WaterLayer,
+  waterMaskBytes,
 } from './collision/collision-codec.ts';
 export { CollisionDecodeError, type CollisionDecodeErrorCode } from './collision/bounded-reader.ts';

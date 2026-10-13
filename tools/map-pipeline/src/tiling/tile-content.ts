@@ -4,6 +4,7 @@
  */
 
 import type { HeightSource } from '../heuristics/height-heuristics.ts';
+import type { TileTerrain } from '../terrain/tile-terrain.ts';
 import type { OsmId } from '../osm/osm-id.ts';
 
 /** [x = east, z = north] in metres from the tile south-west corner, cm precision. */
@@ -13,6 +14,8 @@ export type LocalPolygon = readonly (readonly LocalPoint[])[];
 
 export interface TileBuildingPart {
   readonly id: OsmId;
+  /** Ground height under the building (lowest footprint vertex). */
+  readonly baseYM: number;
   readonly heightM: number;
   readonly polygons: readonly LocalPolygon[];
 }
@@ -47,6 +50,8 @@ export interface TileContent {
   readonly buildingMeta: TileBuildingMeta[];
   readonly roads: TileRoad[];
   readonly places: TilePlaceEntry[];
+  /** Relief and water of the tile (stage 10-terrain); null without terrain. */
+  terrain: TileTerrain | null;
 }
 
-export const emptyTileContent = (key: string): TileContent => ({ key, buildingParts: [], buildingMeta: [], roads: [], places: [] });
+export const emptyTileContent = (key: string): TileContent => ({ key, buildingParts: [], buildingMeta: [], roads: [], places: [], terrain: null });

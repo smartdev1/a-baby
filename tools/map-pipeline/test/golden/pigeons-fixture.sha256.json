@@ -5,7 +5,7 @@
   "08-roads/road-edges.ndjson": "463949f08b0b080ac8c6864ca08b4a5d7624c0e43c090f8e486859019c953b51",
   "08-roads/road-stats.json": "b40a1326daf94cf256beec0fa3d7d79bd05b7687b5f762748a84eca0e16cdc96",
   "09-naming/place-names.ndjson": "c2ca374ee83f525730fc6e6aceea074b73d0d660f35246609560f1ba915fd714",
-  "14-tile-cut/tiles.ndjson": "62d849a24690c3a823a76eaa9c512fece2683e85bae94c04f6045270c73f93a4",
-  "16-encode/encode-index.json": "31a83c7d0cd4c1817fb9b15b801606e17ab3ac3fe46d92741562b2a4584ac3e5",
-  "17-manifest/world-manifest.pigeons-fixture-2026-10-13.json": "50234df5cf6107075b2ef74b938229199a15383c560ce9226a99d6b12a10cf0c"
+  "14-tile-cut/tiles.ndjson": "75473623dcf5fcc2cba24d7d4c697951eac3d255eb5f3f3bb30796fd1207e42c",
+  "16-encode/encode-index.json": "428b6dfe1abad4ac9e24175860a8531f04fae969f773ce916a14bd6f2b8a9c7f",
+  "17-manifest/world-manifest.pigeons-fixture-2026-10-13.json": "fff6d8642d0f81f1003dd09c92466f02fa6aa41001e111f9e4d39db8088fa7dc"
 }

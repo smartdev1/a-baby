@@ -6,7 +6,7 @@
 import { readFile, writeFile } from 'node:fs/promises';
 import { basename, join } from 'node:path';
 import { tileBounds } from '@skyline/geo';
-import { parseWorldManifest, worldManifestFileName } from '@skyline/tile-format';
+import { parseWorldManifest, TILE_FORMAT_VERSION, worldManifestFileName } from '@skyline/tile-format';
 import { sha256OfFile } from '../../runner/content-hash.ts';
 import type { PipelineStage, StageContext } from '../../runner/stage-contract.ts';
 import { loadSourcesLockSync } from '../../sources/sources-lock.ts';
@@ -57,7 +57,7 @@ export const manifestStage: PipelineStage = {
     const index = JSON.parse(await readFile(ctx.outputOf(ENCODE_STAGE_ID, ENCODE_INDEX_FILE), 'utf8')) as EncodeIndex;
     const keys = Object.keys(index);
     const manifest = parseWorldManifest({
-      formatVersion: 0,
+      formatVersion: TILE_FORMAT_VERSION,
       release: releaseName(ctx),
       commune: ctx.config.displayName,
       bboxUtm: bboxOfTiles(keys),
