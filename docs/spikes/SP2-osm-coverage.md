@@ -102,6 +102,8 @@ C'est une très bonne nouvelle pour le jalon J4 : **les lignes réelles peuvent 
 
 ### 6.2. Candidats de quartier pilote pour J1 (fenêtres d'environ 1 km²)
 
+> **Décision du propriétaire (13/10/2026) : pas de quartier pilote — J1 porte directement sur toute la commune de Yopougon.** Les candidats ci-dessous restent utiles comme scènes de référence pour mesurer les performances (zone la plus riche en lieux, zone la plus dense en bâti).
+
 Ils sont classés par densité de bâti et de lieux dans un rayon d'environ 600 m autour du point du quartier.
 
 | # | Quartier(s) | Tuiles L0 | Bâtiments (5×5 tuiles) | Lieux | Intérêt |

@@ -11,6 +11,7 @@
     "typecheck": "tsc -p tsconfig.json"
   },
   "dependencies": {
+    "@skyline/geo": "workspace:*",
     "zod": "^4.6.6"
   }
 }
