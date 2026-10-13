@@ -1,7 +1,7 @@
 {
   "name": "skyline",
   "version": "0.1.0",
-  "description": "SkyLine: 3D web virtual-life game set in Yopougon (Abidjan), real 1:1 scale, generated from OpenStreetMap",
+  "description": "vie virtuelle 3D web — Yopougon",
   "private": true,
   "type": "module",
   "packageManager": "pnpm@12.10.1",
@@ -9,18 +9,10 @@
     "node": ">=24"
   },
   "scripts": {
-    "dev": "pnpm --filter @skyline/web dev",
-    "dev:services": "pnpm --filter @skyline/services dev",
-    "build": "pnpm -r --if-present build",
-    "typecheck": "pnpm -r --if-present typecheck",
     "lint": "eslint . && depcruise apps packages tools --config .dependency-cruiser.cjs && node tools/repo-checks/src/run-all.mjs",
-    "lint:fix": "eslint . --fix",
-    "format": "prettier --write .",
-    "format:check": "prettier --check .",
+    "typecheck": "pnpm -r --if-present typecheck",
     "test": "vitest run",
-    "test:watch": "vitest",
-    "test:e2e": "playwright test",
-    "check:repo": "node tools/repo-checks/src/run-all.mjs"
+    "dev": "pnpm --filter @skyline/web dev"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

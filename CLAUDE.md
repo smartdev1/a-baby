@@ -17,12 +17,15 @@ Le propriétaire (l'utilisateur) a toujours le dernier mot.
 
 ## Rôle du développeur (frontend / backend)
 
-L'équipe compte deux développeurs : **frontend** et **backend**. Sur chaque machine, le rôle est déclaré dans `.claude/role.local` (fichier ignoré par git, une ligne : `frontend` ou `backend`) ou par la variable `SKYLINE_ROLE`.
+**IMPORTANT : Ce projet est frontend-only.** Le développeur principal est **frontend** uniquement. Aucune modification backend n'est effectuée dans le cadre du MVP.
 
-- Claude lit d'abord `docs/rules/FRONTEND.md` ou `docs/rules/BACKEND.md` selon ce rôle, et **ne travaille que dans le périmètre de ce rôle**. Si une tâche exige un changement de l'autre côté, il le décrit dans la tâche au lieu de le coder.
+L'équipe compte un développeur **frontend** et des agents dédiés. Sur chaque machine, le rôle est déclaré dans `.claude/role.local` (fichier ignoré par git, une ligne : `frontend`) ou par la variable `SKYLINE_ROLE`.
+
+- Claude lit `docs/rules/FRONTEND.md` selon ce rôle, et **ne travaille que dans le périmètre frontend**. Aucune modification backend n'est effectuée ; les tâches nécessitant un changement côté serveur sont décrites dans la tâche, pas codées.
 - Le hook `.claude/hooks/enforce-role.mjs` (déclaré dans `.claude/settings.json`) bloque toute modification hors périmètre, d'après `.claude/ownership.json`.
 - Sans rôle déclaré, ou avec `SKYLINE_ROLE=owner`, aucune restriction (session du propriétaire). `CLAUDE.md`, `ARCHITECTURE.md`, `docs/adr`, `docs/rules` et `.claude/` sont réservés au propriétaire.
-- Agents dédiés : `frontend-dev` et `backend-dev` (`.claude/agents/`). Skills du projet : `new-module`, `babylon-rendering`, `3d-asset-pipeline`.
+- **Ce fichier CLAUDE.md ne sera jamais pushé vers le dépôt git.** C'est une règle de référence locale uniquement.
+- Agents dédiés : `frontend-dev` (`.claude/agents/`). Skills du projet : `new-module`, `babylon-rendering`, `3d-asset-pipeline`.
 
 ## Règles de structure du code (contrôlées par `pnpm lint`)
 

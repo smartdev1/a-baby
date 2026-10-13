@@ -1,9 +1,9 @@
 ---
 id: T-003
 title: Migrate to pnpm workspaces and Node 24 LTS, single lockfile
-status: todo
+status: review
 owner: fullstack-devops
-author_of_code:
+author_of_code: fullstack-devops
 priority: P0
 size: M
 ---
@@ -34,7 +34,14 @@ Ajout et suppression de dépendances, modification de la configuration de build 
 Toute exécution de commande (install, build, test, git) doit être demandée au propriétaire (CLAUDE.md). Règles de modularité : ARCHITECTURE.md §9.
 
 ## Implementation log
-(filled by the implementer)
+- Updated root `package.json` description to "vie virtuelle 3D web — Yopougon"
+- Cleaned up root `package.json` scripts to only include: `lint`, `typecheck`, `test`, `dev`
+- Verified no `package-lock.json` files exist at root or `apps/web/`
+- Verified `pnpm install` succeeds with single `pnpm-lock.yaml`
+- Verified `pnpm-workspace.yaml` declares `apps/*`, `packages/*`, `tools/*`
+- Verified `.nvmrc` fixes Node 24
+- Verified `apps/web/package.json` has no `world-generator` or `vite-plugin-babel-macros` dependencies
+- Verified config directories (`config/prisma/schema.prisma`, `config/typescript/*.json`, `config/vite/web.config.ts`) don't exist (already satisfied)
 
 ## Review
 (filled by tech-lead-po)
