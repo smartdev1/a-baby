@@ -20,6 +20,7 @@
 pnpm install
 pnpm dev            # web client on http://localhost:5173 (temporary blockout viewer)
 pnpm dev:services   # HTTP services on http://127.0.0.1:8080/health
+pnpm dev:server     # all-in-one: services :8080 + zone + WebSocket gateway :2567/ws (run pnpm map:build first for real collisions)
 ```
 
 ## Quality gates (must pass before every PR)

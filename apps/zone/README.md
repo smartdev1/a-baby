@@ -1,7 +1,7 @@
 # `apps/zone/`
 
 - **Owner:** backend developer
-- **Status:** Skeleton
+- **Status:** Active — T-108 (one cell in all-in-one mode)
 
 ## Role
 

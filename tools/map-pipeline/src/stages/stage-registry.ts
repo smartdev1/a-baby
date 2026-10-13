@@ -12,6 +12,7 @@ import { createExportStage } from './03-export/export-stage.ts';
 import { normalizeStage } from './04-normalize/normalize-stage.ts';
 import { classifyStage } from './05-classify/classify-stage.ts';
 import { heightsStage } from './06-heights/heights-stage.ts';
+import { roadsStage } from './08-roads/roads-stage.ts';
 import { tileCutStage } from './14-tile-cut/tile-cut-stage.ts';
 import { encodeStage } from './16-encode/encode-stage.ts';
 import { manifestStage } from './17-manifest/manifest-stage.ts';
@@ -22,6 +23,7 @@ const COMMON_STAGES: PipelineStage[] = [
   normalizeStage,
   classifyStage,
   heightsStage,
+  roadsStage,
   tileCutStage,
   encodeStage,
   manifestStage,

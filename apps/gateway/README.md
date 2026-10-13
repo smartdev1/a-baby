@@ -1,7 +1,7 @@
 # `apps/gateway/`
 
 - **Owner:** backend developer
-- **Status:** Skeleton
+- **Status:** Active — T-108 (standalone process with NATS in J5; runs inside all-in-one now)
 
 ## Role
 

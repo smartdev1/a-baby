@@ -19,6 +19,9 @@ export default defineConfig({
       thresholds: {
         'packages/geo/src/**': { lines: 85 },
         'packages/tile-format/src/**': { lines: 85 },
+        'packages/protocol/src/**': { lines: 85 },
+        'packages/physics/src/**': { lines: 85 },
+        'packages/sim-clock/src/**': { lines: 85 },
       },
     },
   },

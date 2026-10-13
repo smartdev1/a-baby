@@ -2,7 +2,9 @@
   "04-normalize/normalized.ndjson": "d9566e9a58d2ed131ea6b36dfd77221fe2c8c1e62d74db6ec8d378d7a1bfd5d5",
   "05-classify/classified.ndjson": "84ad609706c04e7ed6f8ee4f7fd05e4fb9560624e97fbd0092db1fd90e1c463f",
   "06-heights/buildings.ndjson": "ffad5003f47d4870c205fb058066ddfe70523f00bd9b4c1b715f782fb129c7a4",
+  "08-roads/road-edges.ndjson": "463949f08b0b080ac8c6864ca08b4a5d7624c0e43c090f8e486859019c953b51",
+  "08-roads/road-stats.json": "b40a1326daf94cf256beec0fa3d7d79bd05b7687b5f762748a84eca0e16cdc96",
   "14-tile-cut/tiles.ndjson": "0badd68d3ed2c8520b2419238c3d377c2d7e328d75f1d7bcb3d8fa2a4f7260d2",
-  "16-encode/encode-index.json": "eb96bed9cd741956f897e1d9cfdda85a567b742d781cdda97100576df023bd0b",
-  "17-manifest/world-manifest.pigeons-fixture-2026-10-13.json": "2ab4da0564a0b0da0b520adc26c06eb524f9b7135b1878427c5445edac4b459f"
+  "16-encode/encode-index.json": "dc6140b222fc67ec29be59ecd31d9467436a1d63b3d81b03acb35a7d1828c66e",
+  "17-manifest/world-manifest.pigeons-fixture-2026-10-13.json": "5ec81487e31af222245d18bd948bdd4c54e642ffbd913fa0a0926583d18c265d"
 }

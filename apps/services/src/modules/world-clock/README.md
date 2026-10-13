@@ -1,7 +1,7 @@
 # `apps/services/src/modules/world-clock/`
 
 - **Owner:** backend developer
-- **Status:** Planned — J3
+- **Status:** Active — T-109 (file store until the database, J6)
 
 ## Role
 

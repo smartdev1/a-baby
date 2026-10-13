@@ -1,15 +1,15 @@
 /**
- * Role: composition root of the services process: builds the HTTP server and starts listening.
+ * Role: composition root of the standalone services process: builds the services and starts listening.
  * Owner: backend
  */
 
 import { createLogger } from '@skyline/observability';
-import { buildHttpServer } from './http-server.ts';
+import { buildServices } from './build-services.ts';
 import { readServicesConfig } from './services-config.ts';
 
 const config = readServicesConfig(process.env);
 const logger = createLogger({ service: 'services' });
-const server = await buildHttpServer({ logger, corsOrigin: config.corsOrigin });
+const { server } = await buildServices({ config, logger });
 
 const shutdown = async (signal: string): Promise<void> => {
   logger.info({ signal }, 'shutting down');

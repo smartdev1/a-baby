@@ -42,7 +42,8 @@ const indexPaths = (index: EncodeIndex): string[] =>
 
 export const encodeStage: PipelineStage = {
   id: ENCODE_STAGE_ID,
-  version: 1,
+  // v2: residential streets 6 m wide (T-014 contract).
+  version: 2,
   outputs: [ENCODE_INDEX_FILE],
   inputFiles: (ctx) => [ctx.outputOf(TILE_CUT_STAGE_ID, TILES_FILE)],
   params: () => ({ formatVersion: 0 }),

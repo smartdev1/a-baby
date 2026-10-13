@@ -1,14 +1,12 @@
 # `apps/services/src/modules/session-tickets/`
 
 - **Owner:** backend developer
-- **Status:** Planned — J1
+- **Status:** Active — T-108
 
 ## Role
 
-Issues single-use gateway connection tickets.
+Single-use gateway tickets (128-bit, 60 s; only hashes kept) — `POST /api/v1/session-tickets`, rate-limited per IP (`SESSION_TICKETS_PER_MIN`, default 10). Guest profiles come in J6.
 
 ## Rules
 
-- Every source file starts with a `Role:` header comment.
-- Keep this README up to date when the folder content changes.
-- See `ARCHITECTURE.md` and `docs/rules/` for the full rules.
+- Every source file starts with a `Role:` header comment; keep this README up to date.
