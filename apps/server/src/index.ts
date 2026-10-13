@@ -1,4 +1,4 @@
-import { Server } from "@colyseus/http";
+import { Server } from "colyseus";
 import { monitor } from "@colyseus/monitor";
 import express from "express";
 import { GameConfig } from "packages/contracts";
