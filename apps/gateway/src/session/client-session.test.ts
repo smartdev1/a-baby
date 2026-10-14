@@ -73,10 +73,14 @@ describe('ClientSession', () => {
     bus.publish(subjects.sessionOut(session.sessionId), { type: 'welcome', body: welcome });
     session.receive(input(2));
     expect(east).toHaveLength(1);
-    const snapshot = { type: 'snapshot' as const, body: { tick: 1, entities: [] } };
+    const self = { id: 7, position: { x: 0, y: 0, z: 0 }, yawRad: 0, state: 0 };
+    const near = { ...self, id: 8, position: { x: 20, y: 0, z: 0 } };
+    const far = { ...self, id: 9, position: { x: 400, y: 0, z: 0 } };
+    const snapshot = { type: 'snapshot' as const, body: { tick: 1, entities: [self, near, far] } };
     bus.publish(subjects.cellSnapshot('C_1_1'), snapshot); // old cell: no longer followed
     bus.publish(subjects.cellSnapshot('C_2_1'), snapshot);
-    expect(sent.filter((m) => m.type === 'snapshot')).toHaveLength(1);
+    // Interest set: the player and its neighbour, not the one 400 m away.
+    expect(sent.filter((m) => m.type === 'snapshot')).toMatchObject([{ body: { entities: [{ id: 7 }, { id: 8 }] } }]);
     const closed: unknown[] = [];
     bus.subscribe(subjects.sessionClosed(), (m) => closed.push(m));
     session.close();

@@ -9,7 +9,7 @@ Routes cell traffic to the sessions of this gateway.
 
 | File | Role |
 |---|---|
-| `cell-fanout.ts` | One subscription per cell with local players; each snapshot is encoded once and the same frame is sent to every session in the cell. |
+| `cell-fanout.ts` | One subscription per cell with local players; each snapshot is indexed once (spatial hash) and every session receives the frame of its interest set (`../interest/`); sessions not yet in the snapshot get nothing. `entitiesPerFrame()` tracks the bandwidth. |
 
 The session itself switches cell when a new cell sends `welcome` after a border handoff (`session/client-session.ts`).
 

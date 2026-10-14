@@ -1,5 +1,5 @@
 /**
- * Role: one client connection: handshake (protocol version + single-use ticket), then inputs forwarded to the player's current cell (updated on each cell welcome after a handoff), session messages and the cell's shared snapshots forwarded back; malformed or flooding clients are disconnected.
+ * Role: one client connection: handshake (protocol version + single-use ticket), then inputs forwarded to the player's current cell (updated on each cell welcome after a handoff), session messages and the cell snapshots forwarded back filtered by the player's interest set; malformed or flooding clients are disconnected.
  * Owner: backend
  */
 
@@ -49,6 +49,7 @@ export class ClientSession {
   private cellKey: string | null = null;
   private unsubscribe: Unsubscribe | null = null;
   private leaveSnapshots: (() => void) | null = null;
+  private entityId: number | null = null;
   private violations = 0;
   private readonly limiter: RateLimiter;
 
@@ -110,6 +111,7 @@ export class ClientSession {
 
   /** A welcome from another cell means the player was handed over: later inputs and snapshots come from that cell. */
   private fromCell(message: ServerMessage): void {
+    if (message.type === 'welcome') this.entityId = message.body.playerEntityId;
     if (message.type === 'welcome' && message.body.cellKey !== this.cellKey) {
       this.cellKey = message.body.cellKey;
       this.followCell(this.cellKey);
@@ -119,8 +121,11 @@ export class ClientSession {
 
   private followCell(cellKey: string): void {
     this.leaveSnapshots?.();
-    this.leaveSnapshots = this.deps.fanout.join(cellKey, (frame) => {
-      if (this.phase === 'playing') this.link.send(frame);
+    this.leaveSnapshots = this.deps.fanout.join(cellKey, {
+      send: (frame) => {
+        if (this.phase === 'playing') this.link.send(frame);
+      },
+      entityId: () => this.entityId,
     });
   }
 
