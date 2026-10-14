@@ -355,6 +355,9 @@ importers:
       '@skyline/sim-needs':
         specifier: workspace:*
         version: link:../../packages/sim-needs
+      '@skyline/sim-transport':
+        specifier: workspace:*
+        version: link:../../packages/sim-transport
       '@skyline/tile-format':
         specifier: workspace:*
         version: link:../../packages/tile-format

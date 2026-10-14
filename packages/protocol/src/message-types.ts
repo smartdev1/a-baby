@@ -3,7 +3,7 @@
  * Owner: backend
  */
 
-export const CLIENT_MESSAGE = { hello: 1, input: 2, ping: 3, actionRequest: 4, actionCancel: 5, chatSend: 6, chatBlock: 7, chatReport: 8 } as const;
+export const CLIENT_MESSAGE = { hello: 1, input: 2, ping: 3, actionRequest: 4, actionCancel: 5, chatSend: 6, chatBlock: 7, chatReport: 8, rideRequest: 9 } as const;
 export const SERVER_MESSAGE = {
   welcome: 101,
   inputAck: 102,
@@ -16,6 +16,7 @@ export const SERVER_MESSAGE = {
   walletUpdate: 109,
   chatMessage: 110,
   chatRejected: 111,
+  rideUpdate: 112,
 } as const;
 
 export type ClientMessageType = keyof typeof CLIENT_MESSAGE;

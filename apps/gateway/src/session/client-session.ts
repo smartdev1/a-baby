@@ -91,7 +91,7 @@ export class ClientSession {
     }
     if (!this.cellKey) return;
     if (message.type === 'input') this.deps.bus.publish(subjects.cellInput(this.cellKey), { sessionId: this.sessionId, input: message.body });
-    else if (message.type === 'actionRequest' || message.type === 'actionCancel')
+    else if (message.type === 'actionRequest' || message.type === 'actionCancel' || message.type === 'rideRequest')
       this.deps.bus.publish(subjects.cellAction(this.cellKey), { sessionId: this.sessionId, message });
     else if (message.type === 'chatSend' || message.type === 'chatBlock' || message.type === 'chatReport')
       this.deps.bus.publish(subjects.cellChat(this.cellKey), { sessionId: this.sessionId, message });

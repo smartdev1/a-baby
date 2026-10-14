@@ -20,6 +20,7 @@
     "@skyline/sim-actions": "workspace:*",
     "@skyline/sim-clock": "workspace:*",
     "@skyline/sim-needs": "workspace:*",
+    "@skyline/sim-transport": "workspace:*",
     "@skyline/tile-format": "workspace:*",
     "zod": "^4.6.6"
   },

@@ -1,5 +1,5 @@
 /**
- * Role: everything the server may send (welcome, input_ack, snapshot, world_clock, pong, error, action / needs / wallet updates, chat message and refusal): one encoder and one decoder, used by the gateway and the web client.
+ * Role: everything the server may send (welcome, input_ack, snapshot, world_clock, pong, error, action / needs / wallet updates, chat message and refusal, ride update): one encoder and one decoder, used by the gateway and the web client.
  * Owner: backend
  */
 
@@ -16,6 +16,7 @@ import {
 } from './messages/action-schemas.ts';
 import { type ChatMessageBody, ChatMessageSchema, type ChatRejectedMessage, ChatRejectedSchema } from './messages/chat-schemas.ts';
 import { decodeControl, encodeControl } from './messages/control-codec.ts';
+import { type RideUpdateMessage, RideUpdateSchema } from './messages/ride-schemas.ts';
 import {
   type ServerErrorMessage,
   ServerErrorSchema,
@@ -45,33 +46,15 @@ export type ServerMessage =
   | { readonly type: 'needsUpdate'; readonly body: NeedsUpdateMessage }
   | { readonly type: 'walletUpdate'; readonly body: WalletUpdateMessage }
   | { readonly type: 'chatMessage'; readonly body: ChatMessageBody }
-  | { readonly type: 'chatRejected'; readonly body: ChatRejectedMessage };
+  | { readonly type: 'chatRejected'; readonly body: ChatRejectedMessage }
+  | { readonly type: 'rideUpdate'; readonly body: RideUpdateMessage };
 
+/** Binary messages have their own codec; every other message is a validated control message under its type byte. */
 export const encodeServerMessage = (m: ServerMessage): Uint8Array => {
-  switch (m.type) {
-    case 'welcome':
-      return encodeControl(SERVER_MESSAGE.welcome, m.body);
-    case 'inputAck':
-      return encodeInputAck(m.body);
-    case 'snapshot':
-      return encodeSnapshot(m.body);
-    case 'worldClock':
-      return encodeControl(SERVER_MESSAGE.worldClock, m.body);
-    case 'pong':
-      return encodePong(m.body);
-    case 'error':
-      return encodeControl(SERVER_MESSAGE.error, m.body);
-    case 'actionUpdate':
-      return encodeControl(SERVER_MESSAGE.actionUpdate, m.body);
-    case 'needsUpdate':
-      return encodeControl(SERVER_MESSAGE.needsUpdate, m.body);
-    case 'walletUpdate':
-      return encodeControl(SERVER_MESSAGE.walletUpdate, m.body);
-    case 'chatMessage':
-      return encodeControl(SERVER_MESSAGE.chatMessage, m.body);
-    case 'chatRejected':
-      return encodeControl(SERVER_MESSAGE.chatRejected, m.body);
-  }
+  if (m.type === 'inputAck') return encodeInputAck(m.body);
+  if (m.type === 'snapshot') return encodeSnapshot(m.body);
+  if (m.type === 'pong') return encodePong(m.body);
+  return encodeControl(SERVER_MESSAGE[m.type], m.body);
 };
 
 const DECODERS: Record<number, (r: FrameReader) => ServerMessage> = {
@@ -89,6 +72,7 @@ const DECODERS: Record<number, (r: FrameReader) => ServerMessage> = {
   [SERVER_MESSAGE.walletUpdate]: (r) => ({ type: 'walletUpdate', body: decodeControl(r.rest(), WalletUpdateSchema, 'wallet_update') }),
   [SERVER_MESSAGE.chatMessage]: (r) => ({ type: 'chatMessage', body: decodeControl(r.rest(), ChatMessageSchema, 'chat_message') }),
   [SERVER_MESSAGE.chatRejected]: (r) => ({ type: 'chatRejected', body: decodeControl(r.rest(), ChatRejectedSchema, 'chat_rejected') }),
+  [SERVER_MESSAGE.rideUpdate]: (r) => ({ type: 'rideUpdate', body: decodeControl(r.rest(), RideUpdateSchema, 'ride_update') }),
 };
 
 /** Throws only ProtocolDecodeError. */

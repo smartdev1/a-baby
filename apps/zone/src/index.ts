@@ -10,3 +10,4 @@ export { setUpDailyLife, type DailyLifeSetup, type DailyLifeSources } from './ac
 export { grantStarterMoney, InMemoryEconomy } from './adapters/in-memory-economy.ts';
 export { InMemoryChatReports } from './adapters/in-memory-chat-reports.ts';
 export { loadBlockedWords } from './chat/chat-setup.ts';
+export { loadTransitNetwork, type TransitNetwork } from './transport/transit-network.ts';

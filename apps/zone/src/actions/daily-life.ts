@@ -236,6 +236,16 @@ export class DailyLife {
     this.deps.send(life.sessionId, { type: 'needsUpdate', body: { values } });
   }
 
+  characterOf(sessionId: string): string | null {
+    return this.players.get(sessionId)?.characterId ?? null;
+  }
+
+  /** Sends the confirmed balance after a payment made outside the actions (e.g. a ride fare). */
+  async refreshWallet(sessionId: string, txId: string): Promise<void> {
+    const life = this.players.get(sessionId);
+    if (life) await this.sendWallet(life, txId);
+  }
+
   private async sendWallet(life: PlayerLife, txId: string | null): Promise<void> {
     life.djai = Number(await this.deps.economy.balanceOf(characterAccount(life.characterId)));
     this.deps.send(life.sessionId, { type: 'walletUpdate', body: { djai: life.djai, txId } });

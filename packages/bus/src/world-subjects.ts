@@ -3,7 +3,7 @@
  * Owner: backend
  */
 
-import type { ActionCancelMessage, ActionRequestMessage, ChatBlockMessage, ChatReportMessage, ChatSendMessage, InputMessage, ServerMessage } from '@skyline/protocol';
+import type { ActionCancelMessage, ActionRequestMessage, RideRequestMessage, ChatBlockMessage, ChatReportMessage, ChatSendMessage, InputMessage, ServerMessage } from '@skyline/protocol';
 
 export interface CellJoin {
   readonly sessionId: string;
@@ -12,10 +12,13 @@ export interface CellInput {
   readonly sessionId: string;
   readonly input: InputMessage;
 }
-/** A daily-life request of a player, forwarded by the gateway to the player's cell. */
+/** A daily-life request (action or line ride) of a player, forwarded by the gateway to the player's cell. */
 export interface CellAction {
   readonly sessionId: string;
-  readonly message: { readonly type: 'actionRequest'; readonly body: ActionRequestMessage } | { readonly type: 'actionCancel'; readonly body: ActionCancelMessage };
+  readonly message:
+    | { readonly type: 'actionRequest'; readonly body: ActionRequestMessage }
+    | { readonly type: 'actionCancel'; readonly body: ActionCancelMessage }
+    | { readonly type: 'rideRequest'; readonly body: RideRequestMessage };
 }
 /** A proximity chat message, block or report of a player, forwarded by the gateway to the player's cell. */
 export interface CellChat {

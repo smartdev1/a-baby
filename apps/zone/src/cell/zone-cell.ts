@@ -1,5 +1,5 @@
 /**
- * Role: authoritative runtime of one cell: players join through the bus or a border handoff (20 m hysteresis), inputs are simulated with @skyline/physics at 20 Hz, acks go back on each session subject and one snapshot per cell (own players + neighbours' border ghosts) on the cell subject; daily life (actions, needs, Djai) runs at 1 Hz and the proximity chat when configured.
+ * Role: authoritative runtime of one cell: players join through the bus or a border handoff (20 m hysteresis), inputs are simulated with @skyline/physics at 20 Hz, acks go back on each session subject and one snapshot per cell (own players + neighbours' border ghosts) on the cell subject; daily life (actions, needs, Djai) runs at 1 Hz, line rides and the proximity chat when configured.
  * Owner: backend
  */
 
@@ -20,12 +20,15 @@ import {
 import type { UtmPosition } from '@skyline/geo';
 import type { Logger } from '@skyline/observability';
 import { type CharacterState, type CollisionWorld, FIXED_STEP_S, stepCharacter } from '@skyline/physics';
-import { type EntityState, MAX_SNAPSHOT_ENTITIES, PROTOCOL_VERSION, type ServerMessage } from '@skyline/protocol';
+import { type EntityState, type InputMessage, MAX_SNAPSHOT_ENTITIES, PROTOCOL_VERSION, type ServerMessage } from '@skyline/protocol';
 import type { ClockSegment } from '@skyline/sim-clock';
 import { DailyLife, type DailyLifeDeps, type PlayerPositions } from '../actions/daily-life.ts';
 import { type ChatPlayers, ProximityChat, type ProximityChatDeps } from '../chat/proximity-chat.ts';
 import { depthOutsideM, entityIdOf, HANDOFF_HYSTERESIS_M, leftCellTowards, stateFromHandoff, toHandoff } from '../handoff/cell-handoff.ts';
 import { GhostBoard, ghostTargets, nearBorder, toGhost } from '../handoff/cell-ghosts.ts';
+import { createCellRides, stateAtStop } from '../transport/cell-rides.ts';
+import type { RideService } from '../transport/ride-service.ts';
+import type { TransitNetwork } from '../transport/transit-network.ts';
 import { InputForwarding } from '../handoff/input-forwarding.ts';
 import { entityStateCode } from './entity-state-code.ts';
 import { PlayerSlot } from './player-slot.ts';
@@ -51,6 +54,8 @@ export interface ZoneCellOptions {
   readonly daily?: Omit<DailyLifeDeps, 'send'>;
   /** Proximity chat (word list, moderation queue); absent = no chat. */
   readonly chat?: Pick<ProximityChatDeps, 'blockedWords' | 'reports'>;
+  /** Transit lines of the commune: rides need daily life too (fares, game clock). */
+  readonly transit?: TransitNetwork;
 }
 
 export class ZoneCell implements PlayerPositions, ChatPlayers {
@@ -64,11 +69,15 @@ export class ZoneCell implements PlayerPositions, ChatPlayers {
   private readonly ghosts = new GhostBoard();
   private readonly daily: DailyLife | null;
   private readonly chat: ProximityChat | null;
+  private readonly rides: RideService | null;
 
   constructor(private readonly options: ZoneCellOptions) {
     this.daily = options.daily ? new DailyLife({ ...options.daily, send: (sessionId, m) => this.send(sessionId, m) }, this) : null;
     const send = (sessionId: string, m: ServerMessage): void => this.send(sessionId, m);
     this.chat = options.chat ? new ProximityChat({ ...options.chat, cellKey: options.cellKey, send, now: () => Date.now() }, this) : null;
+    const { daily, transit, frameOrigin } = options;
+    const cluster = options.clusterCells ?? new Set([options.cellKey]);
+    this.rides = this.daily && daily && transit ? createCellRides({ network: transit, daily: this.daily, dailyDeps: daily, cluster, frameOrigin, send, positionOf: (s) => this.positionOf(s) }) : null;
   }
 
   entityOf(sessionId: string): number | null {
@@ -107,9 +116,12 @@ export class ZoneCell implements PlayerPositions, ChatPlayers {
         this.forwarding.remove(m.sessionId);
         void this.daily?.removePlayer(m.sessionId, 'disconnected');
         this.chat?.remove(m.sessionId);
+        this.rides?.remove(m.sessionId);
       }),
       bus.subscribe<CellChat>(subjects.cellChat(cellKey), (m) => void this.chat?.handle(m.sessionId, m.message)),
-      bus.subscribe<CellAction>(subjects.cellAction(cellKey), (m) => void this.daily?.handle(m.sessionId, m.message)),
+      bus.subscribe<CellAction>(subjects.cellAction(cellKey), (m) =>
+        void (m.message.type === 'rideRequest' ? this.rides?.request(m.sessionId, m.message.body) : this.daily?.handle(m.sessionId, m.message)),
+      ),
       bus.subscribe<CellHandoff>(subjects.cellHandoff(cellKey), (m) => void this.adopt(m)),
       bus.subscribe<CellGhosts>(subjects.cellGhosts(cellKey), (m) => this.ghosts.accept(m, Date.now())),
     );
@@ -135,6 +147,10 @@ export class ZoneCell implements PlayerPositions, ChatPlayers {
   step(): void {
     const started = performance.now();
     this.tick++;
+    for (const { sessionId, destination } of this.rides?.arrivals() ?? []) {
+      const player = this.players.get(sessionId);
+      if (player) player.state = stateAtStop(this.options.world, this.options.frameOrigin, destination);
+    }
     for (const player of this.players.values()) this.simulate(player);
     if (this.tick % SNAPSHOT_EVERY_TICKS === 0) this.broadcastSnapshot();
     if (this.tick % TICK_RATE_HZ === 0) {
@@ -197,26 +213,13 @@ export class ZoneCell implements PlayerPositions, ChatPlayers {
   private simulate(player: PlayerSlot): void {
     const before = player.state;
     const inputs = player.takeForTick();
-    if (inputs.length === 0) {
-      player.state = stepCharacter(this.options.world, player.state, {
-        ...player.lastInput,
-        moveX: 0,
-        moveZ: 0,
-        jump: false,
-      });
+    if (this.rides?.isRiding(player.sessionId)) {
+      // In the vehicle: movement inputs are acknowledged but ignored.
+      for (const input of inputs) player.lastSeq = input.seq;
+    } else {
+      this.applyInputs(player, inputs);
+      if (this.crossBorder(player, before)) return;
     }
-    for (const input of inputs) {
-      player.lastInput = {
-        moveX: input.moveX,
-        moveZ: input.moveZ,
-        yawRad: input.yawRad,
-        run: input.flags.run,
-        jump: input.flags.jump,
-      };
-      player.state = stepCharacter(this.options.world, player.state, player.lastInput, { dt: FIXED_STEP_S });
-      player.lastSeq = input.seq;
-    }
-    if (this.crossBorder(player, before)) return;
     if (player.violations > MAX_VIOLATIONS) {
       this.options.logger.warn(
         { entityId: player.entityId, violations: player.violations },
@@ -238,6 +241,18 @@ export class ZoneCell implements PlayerPositions, ChatPlayers {
         velocity: player.state.velocity,
       },
     });
+  }
+
+  /** Physics of the tick: the queued inputs in order, or one idle step when none arrived. */
+  private applyInputs(player: PlayerSlot, inputs: readonly InputMessage[]): void {
+    if (inputs.length === 0) {
+      player.state = stepCharacter(this.options.world, player.state, { ...player.lastInput, moveX: 0, moveZ: 0, jump: false });
+    }
+    for (const input of inputs) {
+      player.lastInput = { moveX: input.moveX, moveZ: input.moveZ, yawRad: input.yawRad, run: input.flags.run, jump: input.flags.jump };
+      player.state = stepCharacter(this.options.world, player.state, player.lastInput, { dt: FIXED_STEP_S });
+      player.lastSeq = input.seq;
+    }
   }
 
   /** True when the player was handed to another cell; a move into an unowned cell is undone. */
@@ -268,7 +283,8 @@ export class ZoneCell implements PlayerPositions, ChatPlayers {
 
   private broadcastSnapshot(): void {
     if (this.players.size === 0) return;
-    const own: EntityState[] = [...this.players.values()].map((p) => ({
+    // Riders are inside a vehicle: not in the street.
+    const own: EntityState[] = [...this.players.values()].filter((p) => !this.rides?.isRiding(p.sessionId)).map((p) => ({
       id: p.entityId,
       position: p.state.position,
       yawRad: p.lastInput.yawRad,

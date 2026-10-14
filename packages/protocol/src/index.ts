@@ -49,3 +49,4 @@ export {
   type ChatReportReason,
   type ChatSendMessage,
 } from './messages/chat-schemas.ts';
+export { RIDE_REFUSALS, RIDE_STATES, type RideRefusal, type RideRequestMessage, type RideUpdateMessage } from './messages/ride-schemas.ts';

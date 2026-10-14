@@ -11,6 +11,7 @@ import { InMemoryEconomy } from '../adapters/in-memory-economy.ts';
 import { InMemoryChatReports } from '../adapters/in-memory-chat-reports.ts';
 import { ZoneCell } from '../cell/zone-cell.ts';
 import { loadBlockedWords } from '../chat/chat-setup.ts';
+import { loadTransitNetwork } from '../transport/transit-network.ts';
 import { loadCellCollision } from '../world-data/cell-collision-loader.ts';
 import { httpClockSource } from './http-clock-source.ts';
 import { startStatsServer } from './stats-server.ts';
@@ -22,6 +23,8 @@ const bus = await NatsBus.connect(config.natsUrl, (subject, error) => logger.err
 const clock = httpClockSource(config.servicesUrl);
 // One in-memory ledger per process until the PostgreSQL economy (J6): balances are not shared between zone processes.
 const economy = new InMemoryEconomy();
+const transit = await loadTransitNetwork(config.worldDir, config.contentDir);
+logger.info({ lines: transit.size }, 'transit network ready');
 const chat = { blockedWords: await loadBlockedWords(config.contentDir), reports: new InMemoryChatReports(logger.child({ module: 'chat' })) };
 
 const cells = await Promise.all(
@@ -31,7 +34,7 @@ const cells = await Promise.all(
     const spawnHere = config.spawn && cellKeyOf(config.spawn) === cellKey ? config.spawn : null;
     const spawn = spawnHere ? { x: spawnHere.eastingM - frameOrigin.eastingM, z: spawnHere.northingM - frameOrigin.northingM } : { x: CELL_SIZE_M / 2, z: CELL_SIZE_M / 2 };
     const daily = await setUpDailyLife({ contentDir: config.contentDir, worldDir: config.worldDir, cellKey, clock, economy, starterDjai: config.starterDjai });
-    const cell = new ZoneCell({ cellKey, bus, world, frameOrigin, spawn, clock, logger: logger.child({ cellKey }), clusterCells: config.clusterCells, daily: daily.deps, chat });
+    const cell = new ZoneCell({ cellKey, bus, world, frameOrigin, spawn, clock, logger: logger.child({ cellKey }), clusterCells: config.clusterCells, daily: daily.deps, chat, transit });
     cell.start();
     logger.info({ cellKey, tilesLoaded, bounds: cellBounds(cellKey) }, 'cell started');
     return { cellKey, cell };
