@@ -6,7 +6,7 @@
 import type { Action } from '@skyline/content-schema';
 import { characterAccount, type EconomyPort, legsFromTransfers } from '@skyline/economy-rules';
 import type { ActionCancelMessage, ActionRequestMessage, ActionUpdateMessage, ServerMessage } from '@skyline/protocol';
-import { type ActorView, interruptRun, type PlaceView, requestRun, reserveRun, startRun, tickRun } from '@skyline/sim-actions';
+import { type ActorView, interruptRun, inWindows, type PlaceView, requestRun, reserveRun, startRun, tickRun } from '@skyline/sim-actions';
 import { advanceNeeds, applyNeedDeltas, initialNeeds, type NeedValues } from '@skyline/sim-needs';
 import { grantStarterMoney } from '../adapters/in-memory-economy.ts';
 import type { CellPlace, CellSite } from '../world-data/cell-places-loader.ts';
@@ -123,10 +123,14 @@ export class DailyLife {
   /** The site of the action at this place (if any) and what the engine needs to know about the place. */
   private placeViewFor(life: PlayerLife, action: Action, place: CellPlace): { site: CellSite | undefined; placeView: PlaceView } {
     const site = place.sites.find((s) => s.kind === action.where.site);
+    const type = this.deps.content.placeTypes.get(place.placeType);
+    const openingHours = type?.openingHours ?? [];
     const placeView: PlaceView = {
       placeId: place.id,
       placeType: place.placeType,
-      openingHours: this.deps.content.placeTypes.get(place.placeType)?.openingHours ?? [],
+      openingHours,
+      // NPC staff are deterministic: the place type's roles work during its opening hours (the client shows the same NPCs).
+      npcRolesOnDuty: inWindows(openingHours, this.deps.gameMinute()) ? (type?.npcRoles ?? []) : [],
       distanceToSiteM: site ? distance(this.world.positionOf(life.sessionId), site) : Number.POSITIVE_INFINITY,
       freeSites: site ? this.reservations.free(place.id, site.kind, site.capacity) : 0,
     };

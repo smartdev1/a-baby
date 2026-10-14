@@ -30,6 +30,8 @@ export interface PlaceView {
   readonly distanceToSiteM: number;
   /** Free capacity of that site kind. */
   readonly freeSites: number;
+  /** NPC roles working at the place right now (vendor, waiter…); absent = not checked. */
+  readonly npcRolesOnDuty?: readonly string[];
 }
 
 /** Key of a cooldown entry. */

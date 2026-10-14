@@ -71,6 +71,13 @@ describe('conditions', () => {
     expect(evaluateConditions(garba, actor({ cooldowns: new Map([['food.eat_garba', NOON + 30]]) }), stand)).toEqual([{ code: 'cooldown', params: { gameMinutesLeft: 30 } }]);
   });
 
+  it('should require the NPC roles of the action to be on duty', () => {
+    const withVendor = ActionSchema.parse({ ...garba, participants: { mode: 'solo', npcRoles: [{ role: 'vendor', required: true }] } });
+    expect(evaluateConditions(withVendor, actor(), { ...stand, npcRolesOnDuty: ['vendor'] })).toEqual([]);
+    expect(evaluateConditions(withVendor, actor(), { ...stand, npcRolesOnDuty: [] })).toEqual([{ code: 'no_npc', params: { role: 'vendor' } }]);
+    expect(evaluateConditions(withVendor, actor(), stand)).toEqual([]);
+  });
+
   it('should handle windows across midnight and up to 24:00', () => {
     const night = [{ from: '22:00', to: '06:00' }];
     expect(inWindows(night, 23 * 60)).toBe(true);

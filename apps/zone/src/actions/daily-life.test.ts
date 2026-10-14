@@ -77,7 +77,7 @@ describe('DailyLife', () => {
     const night = setup(60 * 24 * 2 + 2 * 60);
     await night.daily.addPlayer('s1');
     await night.daily.handle('s1', garba(ID));
-    expect(night.updates().at(-1)?.refusals.map((r) => r.code)).toEqual(['place_closed', 'outside_hours']);
+    expect(night.updates().at(-1)?.refusals.map((r) => r.code)).toEqual(['place_closed', 'outside_hours', 'no_npc']);
     const day = setup();
     await day.daily.addPlayer('s1');
     await day.daily.addPlayer('s2');

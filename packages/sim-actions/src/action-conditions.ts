@@ -73,8 +73,15 @@ const nearbyCondition: Condition = (action, actor) => {
   return actor.nearbyCharacters < min ? [{ code: 'not_enough_people', params: { min } }] : [];
 };
 
+/** Required NPC roles (`participants.npcRoles`) must be on duty at the place (a garba needs the vendor). */
+const npcCondition: Condition = (action, _actor, place) => {
+  if (!place.npcRolesOnDuty) return [];
+  const onDuty = place.npcRolesOnDuty;
+  return action.participants.npcRoles.filter((r) => r.required && !onDuty.includes(r.role)).map((r) => ({ code: 'no_npc', params: { role: r.role } }));
+};
+
 /** Open registry: a new condition = one function added here. Order = order of the reasons shown. */
-export const CONDITIONS: readonly Condition[] = [placeCondition, timeCondition, stateCondition, needsCondition, moneyCondition, cooldownCondition, nearbyCondition];
+export const CONDITIONS: readonly Condition[] = [placeCondition, timeCondition, npcCondition, stateCondition, needsCondition, moneyCondition, cooldownCondition, nearbyCondition];
 
 export const evaluateConditions = (action: Action, actor: ActorView, place: PlaceView, registry: readonly Condition[] = CONDITIONS): Refusal[] =>
   registry.flatMap((condition) => condition(action, actor, place));
