@@ -71,7 +71,7 @@ model WalletTransaction {
   walletId     String
   wallet       Wallet   @relation(fields: [walletId], references: [id], onDelete: Cascade)
 
-  amount       Int      // Positive for credit, negative for debit
+  arender       Int      // Positive for credit, negative for debit
   type         String   // EARNING, SPENDING, REWARD, PURCHASE, etc.
   description  String?
 
@@ -167,7 +167,7 @@ model Activity {
   type         String
 
   // Rewards
-  rewardAmount Int      @default(0)
+  rewardArender Int      @default(0)
 
   // Repeatability
   isRepeatable Boolean  @default(true)

@@ -10,7 +10,7 @@ Everything about osmium-tool, which always runs inside the frozen Docker image `
 | File                 | Role                                                                                                                        |
 | -------------------- | --------------------------------------------------------------------------------------------------------------------------- |
 | `osmium-commands.ts` | Pure builders of `extract`, `tags-filter`, `export` argument arrays; the list of kept OSM tags; the image tag               |
-| `run-osmium.ts`      | Runs `docker run --rm` with `/in` (read-only) and `/out` bind mounts, as the current user on Linux; checks the image exists |
+| `run-osmium.ts`      | Runs `docker run --rm` with `/in` (read-only) and `/out` bind renders, as the current user on Linux; checks the image exists |
 
 ## Rules
 

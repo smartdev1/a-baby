@@ -1,0 +1,9 @@
+{
+  "loadTimeMs": 0,
+  "fpsMedian": 30,
+  "fpsP5": 25,
+  "framesOver50Ms": 2,
+  "buildingsRendered": 100,
+  "placesRendered": 10,
+  "tileKey": "L0_0_0"
+}

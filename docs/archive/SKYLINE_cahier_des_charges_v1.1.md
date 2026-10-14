@@ -524,7 +524,7 @@ Les marqueurs restent discrets, le joueur peut masquer les activités secondaire
 
 ## 10.6. Structure de données d'une activité
 
-`activity_id`, `type`, `start_location`, `discovery_mode`, `reward_amount`, `cooldown_seconds` (300 par défaut), `steps`, `is_repeatable`.
+`activity_id`, `type`, `start_location`, `discovery_mode`, `reward_arender`, `cooldown_seconds` (300 par défaut), `steps`, `is_repeatable`.
 
 La définition globale est séparée de l'état individuel du joueur.
 

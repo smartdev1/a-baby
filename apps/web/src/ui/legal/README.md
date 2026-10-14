@@ -1,18 +1,37 @@
 # `apps/web/src/ui/legal/`
 
 - **Owner:** frontend developer
-- **Status:** Planned — J1
+- **Status:** Active — J1
 
 ## Role
 
-Credits, OSM attribution, legal notices, place-name removal form.
+Legal screen family: guest home, recovery code, legal notices, settings. All texts via i18n, ARIA accessible, pas de Math.random.
 
-## How it works
+## Screen Components
 
-The OSM attribution is mandatory and non-negotiable (ADR 0006).
+| Fichier | Description |
+|---|---|
+| `guest-home.tsx` | Écran d'accueil invité — 3 options : nouvelle partie, récupérer, mentions légales |
+| `legal-notices.tsx` | Mentions légales — attribution OSM, confidentialité, conditions |
+| `recovery-code.tsx` | Code de récupération — affichage + bouton de copie |
+| `settings.tsx` | Paramètres — qualité graphique, préréglages de touches |
 
-## Rules
+## Règles communes à tous les écrans legal
 
-- Every source file starts with a `Role:` header comment.
-- Keep this README up to date when the folder content changes.
-- See `ARCHITECTURE.md` and `docs/rules/` for the full rules.
+- ✅ **Tout texte = clé i18n** — jamais de texte en dur (`legal.xxx`, `settings.xxx`, `guest.xxx`)
+- ✅ **ARIA complet** — `role` et `aria-label` sur les conteneurs principaux
+- ✅ **Pas de `Math.random`** — affichage déterministe ou issu des signaux
+- ✅ **Responsive** — les conteneurs seCentrent horizontalement, largeur max 600px
+- ✅ **Role header** sur chaque fichier source
+- ✅ **Pas de dépendances lourdes** — uniquement `@preact/signals-react` et `use-hud-store.ts`
+
+## Usage dans main.ts
+
+```ts
+import { renderLegalNotices, renderRecoveryCode, renderSettings, renderGuestHome } from './legal/';
+// Dans la UI de l'écran correspondant :
+// renderLegalNotices(target);
+// renderRecoveryCode(target);
+// renderSettings(target);
+// renderGuestHome(target)
+```
