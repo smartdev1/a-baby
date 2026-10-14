@@ -1,0 +1,52 @@
+{
+  "$schema": "../../../tools/content-cli/schemas/action.schema.json",
+  "id": "social.greet_neighbours",
+  "version": 1,
+  "category": "social",
+  "labelKey": "action.social.greet_neighbours.label",
+  "tags": [
+    "social",
+    "free",
+    "night"
+  ],
+  "where": {
+    "placeTypes": [
+      "bench",
+      "boutique",
+      "garba_stand"
+    ],
+    "site": "bench_seat",
+    "interactionRadiusM": 4
+  },
+  "when": {
+    "openingHoursFrom": "none",
+    "windows": []
+  },
+  "requires": {
+    "state": [
+      "on_foot",
+      "not_in_action"
+    ],
+    "cooldown": {
+      "gameMinutes": 30,
+      "scope": "character"
+    }
+  },
+  "duration": {
+    "gameMinutes": 5,
+    "real": {
+      "maxSeconds": 10
+    },
+    "interruptible": true,
+    "onInterrupt": "refund_none_partial_effects"
+  },
+  "effects": {
+    "onComplete": [
+      {
+        "type": "need",
+        "need": "social",
+        "delta": 6
+      }
+    ]
+  }
+}

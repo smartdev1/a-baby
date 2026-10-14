@@ -31,6 +31,23 @@ export const TilePlaceSchema = z.object({
   displayName: z.string().min(1).max(120).nullable(),
   position: LocalPointSchema,
   buildingId: OsmIdSchema.nullable(),
+  /** Game place type from content/place-types (stage 13-places-sites); absent when no type covers the category. */
+  placeType: z.string().regex(/^[a-z][a-z0-9_]*$/).optional(),
+  /** Action sites of the place (one entry per site kind, with its capacity), tile-local metres. */
+  sites: z
+    .array(
+      z
+        .object({
+          kind: z.string().regex(/^[a-z][a-z0-9_]*$/),
+          capacity: z.number().int().min(1).max(50),
+          position: LocalPointSchema,
+          /** Direction the actor faces when using the site (0 = north, + towards east). */
+          yawRad: z.number().min(-Math.PI * 2).max(Math.PI * 2),
+        })
+        .strict(),
+    )
+    .max(16)
+    .optional(),
 });
 
 export const TileMetaSchema = z

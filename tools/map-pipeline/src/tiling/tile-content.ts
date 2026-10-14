@@ -13,7 +13,8 @@ export type LocalPoint = readonly [number, number];
 export type LocalPolygon = readonly (readonly LocalPoint[])[];
 
 export interface TileBuildingPart {
-  readonly id: OsmId;
+  /** OSM building, or a block impostor of a coarse level (L2/L3). */
+  readonly id: OsmId | `block:${number}`;
   /** Ground height under the building (lowest footprint vertex). */
   readonly baseYM: number;
   readonly heightM: number;
@@ -51,6 +52,9 @@ export interface TilePlaceEntry {
   readonly buildingId: OsmId | null;
   /** From stage 09-naming only (ADR 0010). */
   readonly displayName: string | null;
+  /** From stage 13-places-sites: game place type and action sites (tile-local). */
+  readonly placeType?: string;
+  readonly sites?: readonly { readonly kind: string; readonly capacity: number; readonly position: LocalPoint; readonly yawRad: number }[];
 }
 
 /** Instanced module in tile-local metres; without `yM` its height comes from the terrain at encode time. */
@@ -77,3 +81,10 @@ export interface TileContent {
 }
 
 export const emptyTileContent = (key: string): TileContent => ({ key, buildingParts: [], buildingMeta: [], roads: [], places: [], instances: [], terrain: null });
+
+/** Key of a tiles.ndjson line without parsing it (the key is always the first property). */
+export const tileKeyOfLine = (line: string): string => {
+  const key = /^\{"key":"(L\d+_\d+_\d+)"/.exec(line)?.[1];
+  if (!key) throw new Error(`tiles.ndjson line without a leading key: ${line.slice(0, 60)}`);
+  return key;
+};

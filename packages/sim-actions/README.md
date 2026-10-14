@@ -1,7 +1,7 @@
 # `packages/sim-actions/`
 
 - **Owner:** backend developer
-- **Status:** Skeleton — J3
+- **Status:** Active — T-303
 
 ## Role
 
@@ -9,7 +9,7 @@ Data-driven action engine: conditions, effects and the action state machine (ADR
 
 ## How it works
 
-Public API is exported from `src/index.ts` only. Profile: `pure`. First implementation: J3.
+Public API is exported from `src/index.ts` only. Profile: `pure`. The zone server owns the authoritative state and calls the engine; the client may use it as a non-authoritative preview (ARCHITECTURE §15.5).
 
 ## Rules
 

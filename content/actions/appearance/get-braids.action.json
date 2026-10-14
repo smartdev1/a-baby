@@ -1,0 +1,82 @@
+{
+  "$schema": "../../../tools/content-cli/schemas/action.schema.json",
+  "id": "appearance.get_braids",
+  "version": 1,
+  "category": "appearance",
+  "labelKey": "action.appearance.get_braids.label",
+  "tags": [
+    "appearance"
+  ],
+  "where": {
+    "placeTypes": [
+      "hair_salon"
+    ],
+    "site": "salon_chair",
+    "interactionRadiusM": 2.5
+  },
+  "when": {
+    "openingHoursFrom": "place",
+    "windows": []
+  },
+  "requires": {
+    "state": [
+      "on_foot",
+      "not_in_action"
+    ],
+    "cooldown": {
+      "gameMinutes": 2880,
+      "scope": "character"
+    },
+    "money": {
+      "minDjai": 3000
+    }
+  },
+  "duration": {
+    "gameMinutes": 180,
+    "real": {
+      "maxSeconds": 240
+    },
+    "interruptible": true,
+    "onInterrupt": "refund_full_no_effects"
+  },
+  "effects": {
+    "onComplete": [
+      {
+        "type": "need",
+        "need": "fun",
+        "delta": 10
+      },
+      {
+        "type": "need",
+        "need": "social",
+        "delta": 10
+      },
+      {
+        "type": "buff",
+        "buff": "fresh_braids",
+        "gameMinutes": 2880
+      }
+    ]
+  },
+  "cost": {
+    "djai": {
+      "base": 3000,
+      "priceSource": "business_price_list_or_base"
+    },
+    "payee": "provider"
+  },
+  "provider": {
+    "kind": "place",
+    "allowPlayerBusiness": true,
+    "employeeRole": "hairdresser"
+  },
+  "participants": {
+    "mode": "solo",
+    "npcRoles": [
+      {
+        "role": "hairdresser",
+        "required": true
+      }
+    ]
+  }
+}

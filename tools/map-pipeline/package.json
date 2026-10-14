@@ -12,6 +12,7 @@
     "@gltf-transform/core": "^4.5.1",
     "@gltf-transform/extensions": "^4.5.1",
     "@gltf-transform/functions": "^4.5.1",
+    "@skyline/content-schema": "workspace:*",
     "@skyline/geo": "workspace:*",
     "@skyline/observability": "workspace:*",
     "@skyline/physics": "workspace:*",

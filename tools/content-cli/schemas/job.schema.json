@@ -1,0 +1,108 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "employerPlaceTypes": {
+      "items": {
+        "pattern": "^[a-z][a-z0-9_]*(\\.[a-z][a-z0-9_]*)*$",
+        "type": "string"
+      },
+      "minItems": 1,
+      "type": "array"
+    },
+    "id": {
+      "pattern": "^[a-z][a-z0-9_]*(\\.[a-z][a-z0-9_]*)*$",
+      "type": "string"
+    },
+    "labelKey": {
+      "pattern": "^[a-z][a-z0-9_]*(\\.[a-z0-9_]+)+$",
+      "type": "string"
+    },
+    "levels": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "level": {
+            "maximum": 9007199254740991,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "minShifts": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "wageBonusPercent": {
+            "maximum": 200,
+            "minimum": 0,
+            "type": "number"
+          }
+        },
+        "required": [
+          "level",
+          "minShifts",
+          "wageBonusPercent"
+        ],
+        "type": "object"
+      },
+      "minItems": 1,
+      "type": "array"
+    },
+    "maxPaidShiftsPerGameDay": {
+      "maximum": 3,
+      "minimum": 1,
+      "type": "integer"
+    },
+    "shifts": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "from": {
+            "pattern": "^([01]\\d|2[0-3]):[0-5]\\d$|^24:00$",
+            "type": "string"
+          },
+          "to": {
+            "pattern": "^([01]\\d|2[0-3]):[0-5]\\d$|^24:00$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "from",
+          "to"
+        ],
+        "type": "object"
+      },
+      "minItems": 1,
+      "type": "array"
+    },
+    "version": {
+      "exclusiveMinimum": 0,
+      "maximum": 9007199254740991,
+      "type": "integer"
+    },
+    "wagePerShiftDjai": {
+      "exclusiveMinimum": 0,
+      "maximum": 9007199254740991,
+      "type": "integer"
+    },
+    "workAction": {
+      "pattern": "^[a-z][a-z0-9_]*(\\.[a-z][a-z0-9_]*)*$",
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "version",
+    "labelKey",
+    "employerPlaceTypes",
+    "shifts",
+    "workAction",
+    "wagePerShiftDjai",
+    "maxPaidShiftsPerGameDay",
+    "levels"
+  ],
+  "type": "object"
+}

@@ -39,6 +39,9 @@ export const WorldManifestSchema = z
     }),
     licence: z.literal('ODbL-1.0'),
     attribution: z.string().min(1),
+    /** ODbL: the OSM-derived database of the release and the attribution file, published next to the manifest. */
+    osmDerived: z.object({ fileName: z.string().regex(/^osm-derived\.[a-z0-9-]+\.tar\.gz$/), sha256: z.string().regex(/^[0-9a-f]{64}$/), bytes: z.number().int().positive() }).strict().optional(),
+    attributionFile: z.literal('ATTRIBUTION.md').optional(),
     tiles: z.record(TileKeySchema, ManifestTileSchema),
   })
   .strict()

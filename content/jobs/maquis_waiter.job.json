@@ -1,0 +1,39 @@
+{
+  "$schema": "../../tools/content-cli/schemas/job.schema.json",
+  "id": "maquis_waiter",
+  "version": 1,
+  "labelKey": "job.maquis_waiter.label",
+  "employerPlaceTypes": [
+    "maquis"
+  ],
+  "shifts": [
+    {
+      "from": "11:00",
+      "to": "17:00"
+    },
+    {
+      "from": "18:00",
+      "to": "02:00"
+    }
+  ],
+  "workAction": "work.serve_maquis",
+  "wagePerShiftDjai": 3000,
+  "maxPaidShiftsPerGameDay": 1,
+  "levels": [
+    {
+      "level": 1,
+      "minShifts": 0,
+      "wageBonusPercent": 0
+    },
+    {
+      "level": 2,
+      "minShifts": 10,
+      "wageBonusPercent": 15
+    },
+    {
+      "level": 3,
+      "minShifts": 30,
+      "wageBonusPercent": 35
+    }
+  ]
+}

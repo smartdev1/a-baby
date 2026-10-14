@@ -1,0 +1,16 @@
+{
+  "$schema": "../../../tools/content-cli/schemas/transport-service.schema.json",
+  "id": "gbaka",
+  "version": 1,
+  "labelKey": "transport.gbaka.label",
+  "cruiseKmh": 30,
+  "dwellGameMin": 4,
+  "seats": 18,
+  "fareDjai": 200,
+  "periods": [
+    { "from": "05:00", "to": "09:00", "headwayGameMin": 10 },
+    { "from": "09:00", "to": "16:00", "headwayGameMin": 20 },
+    { "from": "16:00", "to": "20:00", "headwayGameMin": 10 },
+    { "from": "20:00", "to": "23:00", "headwayGameMin": 30 }
+  ]
+}

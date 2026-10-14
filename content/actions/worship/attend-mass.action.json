@@ -1,0 +1,58 @@
+{
+  "$schema": "../../../tools/content-cli/schemas/action.schema.json",
+  "id": "worship.attend_mass",
+  "version": 1,
+  "category": "worship",
+  "labelKey": "action.worship.attend_mass.label",
+  "tags": [
+    "worship"
+  ],
+  "where": {
+    "placeTypes": [
+      "church"
+    ],
+    "site": "pew",
+    "interactionRadiusM": 3
+  },
+  "when": {
+    "openingHoursFrom": "place",
+    "windows": [
+      {
+        "from": "07:00",
+        "to": "12:00"
+      }
+    ]
+  },
+  "requires": {
+    "state": [
+      "on_foot",
+      "not_in_action"
+    ],
+    "cooldown": {
+      "gameMinutes": 2880,
+      "scope": "character"
+    }
+  },
+  "duration": {
+    "gameMinutes": 90,
+    "real": {
+      "maxSeconds": 120
+    },
+    "interruptible": true,
+    "onInterrupt": "refund_none_partial_effects"
+  },
+  "effects": {
+    "onComplete": [
+      {
+        "type": "need",
+        "need": "social",
+        "delta": 20
+      },
+      {
+        "type": "need",
+        "need": "fun",
+        "delta": 6
+      }
+    ]
+  }
+}

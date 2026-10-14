@@ -1,0 +1,16 @@
+{
+  "$schema": "../../../tools/content-cli/schemas/transport-service.schema.json",
+  "id": "sotra_bus",
+  "version": 1,
+  "labelKey": "transport.sotra_bus.label",
+  "cruiseKmh": 26,
+  "dwellGameMin": 3,
+  "seats": 70,
+  "fareDjai": 200,
+  "periods": [
+    { "from": "05:30", "to": "09:00", "headwayGameMin": 15 },
+    { "from": "09:00", "to": "16:30", "headwayGameMin": 30 },
+    { "from": "16:30", "to": "20:00", "headwayGameMin": 15 },
+    { "from": "20:00", "to": "22:30", "headwayGameMin": 40 }
+  ]
+}

@@ -1,0 +1,79 @@
+{
+  "$schema": "../../../tools/content-cli/schemas/action.schema.json",
+  "id": "shopping.buy_medicine",
+  "version": 1,
+  "category": "shopping",
+  "labelKey": "action.shopping.buy_medicine.label",
+  "tags": [
+    "shopping",
+    "health",
+    "night"
+  ],
+  "where": {
+    "placeTypes": [
+      "pharmacy"
+    ],
+    "site": "counter",
+    "interactionRadiusM": 2.5
+  },
+  "when": {
+    "openingHoursFrom": "place",
+    "windows": []
+  },
+  "requires": {
+    "state": [
+      "on_foot",
+      "not_in_action"
+    ],
+    "cooldown": {
+      "gameMinutes": 720,
+      "scope": "character"
+    },
+    "money": {
+      "minDjai": 1500
+    }
+  },
+  "duration": {
+    "gameMinutes": 10,
+    "real": {
+      "maxSeconds": 15
+    },
+    "interruptible": true,
+    "onInterrupt": "refund_none_partial_effects"
+  },
+  "effects": {
+    "onComplete": [
+      {
+        "type": "need",
+        "need": "energy",
+        "delta": 15
+      },
+      {
+        "type": "need",
+        "need": "hygiene",
+        "delta": 5
+      }
+    ]
+  },
+  "cost": {
+    "djai": {
+      "base": 1500,
+      "priceSource": "business_price_list_or_base"
+    },
+    "payee": "provider"
+  },
+  "provider": {
+    "kind": "place",
+    "allowPlayerBusiness": true,
+    "employeeRole": "pharmacist"
+  },
+  "participants": {
+    "mode": "solo",
+    "npcRoles": [
+      {
+        "role": "pharmacist",
+        "required": true
+      }
+    ]
+  }
+}

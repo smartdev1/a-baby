@@ -1,0 +1,69 @@
+{
+  "$schema": "../../../tools/content-cli/schemas/action.schema.json",
+  "id": "party.dj_ambiance",
+  "version": 1,
+  "category": "party",
+  "labelKey": "action.party.dj_ambiance.label",
+  "tags": [
+    "party",
+    "night"
+  ],
+  "where": {
+    "placeTypes": [
+      "maquis"
+    ],
+    "site": "dance_floor",
+    "interactionRadiusM": 2.5
+  },
+  "when": {
+    "openingHoursFrom": "place",
+    "windows": [
+      {
+        "from": "20:00",
+        "to": "04:00"
+      }
+    ]
+  },
+  "requires": {
+    "state": [
+      "on_foot",
+      "not_in_action"
+    ],
+    "needs": {
+      "energy": {
+        "min": 20
+      }
+    },
+    "cooldown": {
+      "gameMinutes": 720,
+      "scope": "character"
+    }
+  },
+  "duration": {
+    "gameMinutes": 90,
+    "real": {
+      "maxSeconds": 120
+    },
+    "interruptible": true,
+    "onInterrupt": "refund_none_partial_effects"
+  },
+  "effects": {
+    "onComplete": [
+      {
+        "type": "need",
+        "need": "fun",
+        "delta": 30
+      },
+      {
+        "type": "need",
+        "need": "social",
+        "delta": 15
+      },
+      {
+        "type": "need",
+        "need": "energy",
+        "delta": -15
+      }
+    ]
+  }
+}

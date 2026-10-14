@@ -11,6 +11,7 @@ Encoding a cut tile into its files, through `@skyline/tile-format`.
 | ----------------- | -------------------------------------------------------------------------------------------------------------------------- |
 | `tile-encoder.ts` | `geom` + `collision` + `meta` of a tile, 16-hex content hashes, triangle and draw-call counts                              |
 | `tile-glb.ts`     | glTF binary: one mesh per material (ground, road, path, walls, roofs), `KHR_mesh_quantization` + `EXT_meshopt_compression` |
+| `tile-writer.ts` | Writes the encoded files of a tile (`tiles/L{n}/{i}_{j}/<kind>.<hash>.<ext>`) and returns the summary the stage indexes need (hashes, bytes, triangles, draw calls, budget violations); runs inside the encoding workers |
 | `tile-budgets.ts` | ARCHITECTURE §10.4 maxima (1.5 MB, 400 k triangles, 40 draw calls); violations name the tile                               |
 
 ## Notes for the client (frontend)

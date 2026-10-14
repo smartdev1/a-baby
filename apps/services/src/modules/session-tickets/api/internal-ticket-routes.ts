@@ -16,6 +16,7 @@ export const registerInternalTicketRoutes = (server: FastifyInstance, tickets: T
     if (!LOOPBACK.has(request.ip)) return reply.code(403).send({ error: 'forbidden' });
     const body = Body.safeParse(request.body);
     if (!body.success) return reply.code(400).send({ error: 'invalid_body' });
-    return reply.header('cache-control', 'no-store').send({ valid: tickets.consume(body.data.ticket) });
+    const check = tickets.consume(body.data.ticket);
+    return reply.header('cache-control', 'no-store').send(check ? { valid: true, accountId: check.accountId } : { valid: false });
   });
 };

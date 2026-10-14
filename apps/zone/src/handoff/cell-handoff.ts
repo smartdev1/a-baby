@@ -1,5 +1,5 @@
 /**
- * Role: cell border crossing: detects when a player leaves the 1 km cell, builds the handoff message (absolute UTM state) and rebuilds the state in the receiving cell's frame.
+ * Role: cell border crossing: detects when a player leaves the 1 km cell and how deep past the border it is (handoff hysteresis, ARCHITECTURE §13.4), builds the handoff message (absolute UTM state) and rebuilds the state in the receiving cell's frame.
  * Owner: backend
  */
 
@@ -13,6 +13,15 @@ export const leftCellTowards = (state: CharacterState, frameOrigin: UtmPosition)
   if (x >= 0 && x < CELL_SIZE_M && z >= 0 && z < CELL_SIZE_M) return null;
   const utm = { eastingM: frameOrigin.eastingM + x, northingM: frameOrigin.northingM + z };
   return isInsideGrid(utm) ? cellKeyOf(utm) : null;
+};
+
+/** A player is handed over only this far past the border, so walking along it does not bounce between cells. */
+export const HANDOFF_HYSTERESIS_M = 20;
+
+/** Metres past the nearest border of the cell (0 inside). */
+export const depthOutsideM = (state: CharacterState): number => {
+  const { x, z } = state.position;
+  return Math.max(0, -x, x - CELL_SIZE_M, -z, z - CELL_SIZE_M);
 };
 
 export const toHandoff = (

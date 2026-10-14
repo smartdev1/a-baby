@@ -6,6 +6,7 @@
 import type { BuildingRecord, ClassifiedRecord, UtmGeometry, UtmPoint } from '../records/map-records.ts';
 import { moduleIndex } from '@skyline/tile-format';
 import type { PitchedRoof } from '../facades/roof-choice.ts';
+import type { PlaceSites } from '../places/site-placement.ts';
 import type { PlacedInstance } from '../props/placed-instance.ts';
 import { TerrainSampler } from '../terrain/terrain-sampler.ts';
 import type { TileTerrain } from '../terrain/tile-terrain.ts';
@@ -56,6 +57,7 @@ export class TileCutter {
   constructor(
     private readonly displayNames: ReadonlyMap<string, string | null> = new Map(),
     terrain: ReadonlyMap<string, TileTerrain> = new Map(),
+    private readonly sites: ReadonlyMap<string, PlaceSites> = new Map(),
   ) {
     this.ground = new TerrainSampler(terrain);
     for (const [key, t] of terrain) this.tile(key).terrain = t;
@@ -107,12 +109,17 @@ export class TileCutter {
       const point = representativePoint(r.geometry);
       const key = tileOfPoint(point);
       if (key) {
+        const origin = tileOrigin(key);
+        const typed = this.sites.get(r.id);
         this.tile(key).places.push({
           id: r.id,
           category: r.placeCategory,
-          position: toLocal(point, tileOrigin(key)),
+          position: toLocal(point, origin),
           buildingId: r.isBuilding ? r.id : null,
           displayName: this.displayNames.get(r.id) ?? null,
+          ...(typed
+            ? { placeType: typed.placeType, sites: typed.sites.map((s) => ({ kind: s.kind, capacity: s.capacity, position: toLocal([s.e, s.n], origin), yawRad: s.yawRad })) }
+            : {}),
         });
       }
     }

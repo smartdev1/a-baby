@@ -1,0 +1,10 @@
+{
+  "$schema": "../../../tools/content-cli/schemas/taxi-fare.schema.json",
+  "id": "taxi",
+  "version": 1,
+  "labelKey": "transport.taxi.label",
+  "pickupDjai": 300,
+  "perKmDjai": 250,
+  "cruiseKmh": 35,
+  "etaGameMin": { "min": 2, "max": 6 }
+}

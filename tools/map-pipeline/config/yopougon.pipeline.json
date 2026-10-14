@@ -11,5 +11,6 @@
     "provisionalBboxLonLat": null
   },
   "marginM": 300,
-  "outputDir": "data/build/yopougon"
+  "outputDir": "data/build/yopougon",
+  "neighbourhoodProfiles": "tools/map-pipeline/config/yopougon.neighbourhoods.json"
 }

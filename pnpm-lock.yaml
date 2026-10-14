@@ -328,6 +328,12 @@ importers:
       '@skyline/bus':
         specifier: workspace:*
         version: link:../../packages/bus
+      '@skyline/content-schema':
+        specifier: workspace:*
+        version: link:../../packages/content-schema
+      '@skyline/economy-rules':
+        specifier: workspace:*
+        version: link:../../packages/economy-rules
       '@skyline/geo':
         specifier: workspace:*
         version: link:../../packages/geo
@@ -340,9 +346,18 @@ importers:
       '@skyline/protocol':
         specifier: workspace:*
         version: link:../../packages/protocol
+      '@skyline/sim-actions':
+        specifier: workspace:*
+        version: link:../../packages/sim-actions
       '@skyline/sim-clock':
         specifier: workspace:*
         version: link:../../packages/sim-clock
+      '@skyline/sim-needs':
+        specifier: workspace:*
+        version: link:../../packages/sim-needs
+      '@skyline/sim-transport':
+        specifier: workspace:*
+        version: link:../../packages/sim-transport
       '@skyline/tile-format':
         specifier: workspace:*
         version: link:../../packages/tile-format
@@ -409,6 +424,15 @@ importers:
 
   packages/sim-actions:
     dependencies:
+      '@skyline/content-schema':
+        specifier: workspace:*
+        version: link:../content-schema
+      '@skyline/sim-clock':
+        specifier: workspace:*
+        version: link:../sim-clock
+      '@skyline/sim-needs':
+        specifier: workspace:*
+        version: link:../sim-needs
       zod:
         specifier: ^4.6.6
         version: 4.6.6
@@ -419,7 +443,11 @@ importers:
         specifier: ^4.6.6
         version: 4.6.6
 
-  packages/sim-needs: {}
+  packages/sim-needs:
+    dependencies:
+      '@skyline/content-schema':
+        specifier: workspace:*
+        version: link:../content-schema
 
   packages/sim-transport: {}
 
@@ -468,6 +496,9 @@ importers:
       '@skyline/content-schema':
         specifier: workspace:*
         version: link:../../packages/content-schema
+      '@skyline/sim-actions':
+        specifier: workspace:*
+        version: link:../../packages/sim-actions
       zod:
         specifier: ^4.6.6
         version: 4.6.6
@@ -489,6 +520,9 @@ importers:
       '@gltf-transform/functions':
         specifier: ^4.5.1
         version: 4.5.1(@types/node@26.6.5)
+      '@skyline/content-schema':
+        specifier: workspace:*
+        version: link:../../packages/content-schema
       '@skyline/geo':
         specifier: workspace:*
         version: link:../../packages/geo

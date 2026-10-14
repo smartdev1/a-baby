@@ -1,0 +1,98 @@
+{
+  "$schema": "../../../tools/content-cli/schemas/action.schema.json",
+  "id": "work.keep_kiosk",
+  "version": 1,
+  "category": "work",
+  "labelKey": "action.work.keep_kiosk.label",
+  "icon": "ui_icon_work",
+  "tags": [
+    "work",
+    "job",
+    "night"
+  ],
+  "where": {
+    "placeTypes": [
+      "boutique"
+    ],
+    "site": "staff_post",
+    "interactionRadiusM": 3
+  },
+  "when": {
+    "openingHoursFrom": "none",
+    "windows": [
+      {
+        "from": "06:00",
+        "to": "14:00"
+      },
+      {
+        "from": "14:00",
+        "to": "22:00"
+      },
+      {
+        "from": "22:00",
+        "to": "06:00"
+      }
+    ]
+  },
+  "requires": {
+    "needs": {
+      "energy": {
+        "min": 20
+      },
+      "hunger": {
+        "min": 10
+      }
+    },
+    "state": [
+      "on_foot",
+      "not_in_action"
+    ],
+    "cooldown": {
+      "gameMinutes": 1440,
+      "scope": "character"
+    }
+  },
+  "duration": {
+    "gameMinutes": 480,
+    "real": {
+      "maxSeconds": 600
+    },
+    "interruptible": true,
+    "onInterrupt": "refund_none_no_effects"
+  },
+  "phases": [
+    {
+      "id": "work",
+      "animation": "anm_counter_wait",
+      "loop": true
+    }
+  ],
+  "effects": {
+    "onComplete": [
+      {
+        "type": "money",
+        "djai": 2500,
+        "direction": "actor_earns",
+        "counterparty": "system:wages"
+      },
+      {
+        "type": "need",
+        "need": "energy",
+        "delta": -20
+      },
+      {
+        "type": "need",
+        "need": "social",
+        "delta": 10
+      },
+      {
+        "type": "skill_xp",
+        "skill": "job.kiosk_keeper",
+        "xp": 10
+      }
+    ]
+  },
+  "provider": {
+    "kind": "job"
+  }
+}

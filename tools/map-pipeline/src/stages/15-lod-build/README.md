@@ -1,12 +1,12 @@
 # `tools/map-pipeline/src/stages/15-lod-build/`
 
 - **Owner:** backend developer
-- **Status:** Active — T-105
+- **Status:** Active — T-105, T-202
 
 ## Role
 
-`tiles.ndjson` → `tiles/L1/{i}_{j}/geom.<hash>.glb` + `lod-index.json`. The L0 tiles are streamed two rows at a time (an L1 row is complete once L0 rows 2J and 2J+1 are read), so memory stays bounded. Budgets of §10.4 enforced.
+`tiles.ndjson` → render-only tiles L1 (500 m), L2 (1 km) and L3 (2 km) `tiles/L{n}/{i}_{j}/geom.<hash>.glb` + `lod-index.json`. Each level streams the L0 lines by bands of rows (2ⁿ rows) and encodes on the worker pool (`src/parallel/`). Logic in `src/lod/`.
 
-Yopougon: 1 213 L1 tiles, 40 MB, 34 KB average, 137 KB max, ≤ 15 713 triangles; 15 s.
+Yopougon: 1 213 L1 (44.7 MB), 344 L2 (16.3 MB), 102 L3 (4.8 MB) tiles, max 236 KB and 25.1 k triangles; 14 s on the worker pool.
 
-A release = `16-encode/tiles` (L0) + `15-lod-build/tiles` (L1) + `17-manifest/world-manifest.<release>.json` (lists both).
+A release = `16-encode/tiles` (L0) + `15-lod-build/tiles` (L1–L3) + `17-manifest/world-manifest.<release>.json` (lists every level).

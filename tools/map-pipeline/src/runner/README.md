@@ -13,7 +13,8 @@ Generic incremental stage runner, independent of any map logic.
 2. Before running a stage, `stage-cache.ts` hashes `id + version + params + content of every input file` (key-sorted JSON, sha256).
 3. If `<outputDir>/stages/<id>/.stage-cache.json` has the same input hash **and** every output still has its recorded sha256, the stage is skipped (`cached`).
 4. Otherwise the stage runs, then the cache record is written. A stage that does not write a declared output fails the build.
-5. Stages chain through files: a stage declares the outputs of earlier stages as its inputs (`ctx.outputOf(stageId, file)`), so any upstream change re-runs everything downstream.
+5. `--force` re-runs every stage; `--force-from <stage id>` re-runs that stage and the later ones (earlier ones keep their cache).
+6. Stages chain through files: a stage declares the outputs of earlier stages as its inputs (`ctx.outputOf(stageId, file)`), so any upstream change re-runs everything downstream.
 
 ## Rules
 

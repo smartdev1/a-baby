@@ -1,11 +1,11 @@
 # `content/transport/fares/`
 
 - **Owner:** backend developer
-- **Status:** Planned — J4
+- **Status:** Active — T-322 (values to review by the owner)
 
 ## Role
 
-One file per mode `<mode>.fare.json`.
+`taxi.fare.json` (schema `taxi-fare`): metered taxi — pickup + price per km of the road route, visible speed, ETA of the virtual fleet in game minutes. Line fares are flat per mode, in `../services/`.
 
 ## Rules
 

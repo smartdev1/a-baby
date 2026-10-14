@@ -1,0 +1,39 @@
+{
+  "$schema": "../../tools/content-cli/schemas/job.schema.json",
+  "id": "attieke_seller",
+  "version": 1,
+  "labelKey": "job.attieke_seller.label",
+  "employerPlaceTypes": [
+    "garba_stand"
+  ],
+  "shifts": [
+    {
+      "from": "06:00",
+      "to": "12:00"
+    },
+    {
+      "from": "12:00",
+      "to": "18:00"
+    }
+  ],
+  "workAction": "work.sell_attieke",
+  "wagePerShiftDjai": 2500,
+  "maxPaidShiftsPerGameDay": 1,
+  "levels": [
+    {
+      "level": 1,
+      "minShifts": 0,
+      "wageBonusPercent": 0
+    },
+    {
+      "level": 2,
+      "minShifts": 10,
+      "wageBonusPercent": 15
+    },
+    {
+      "level": 3,
+      "minShifts": 30,
+      "wageBonusPercent": 35
+    }
+  ]
+}

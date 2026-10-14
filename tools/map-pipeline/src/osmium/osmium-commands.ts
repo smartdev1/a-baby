@@ -117,3 +117,15 @@ export const busRoutesFilterArgs = (input: string, output: string): string[] => 
   input,
   'r/route=bus,share_taxi,minibus',
 ];
+
+/** Public transport route relations WITH their referenced objects (ways, stop nodes with coordinates), as OPL. */
+export const transitRelationsArgs = (input: string, output: string): string[] => [
+  'tags-filter',
+  '--output-format',
+  'opl,add_metadata=false',
+  '--overwrite',
+  '--output',
+  output,
+  input,
+  'r/route=bus,share_taxi,minibus',
+];

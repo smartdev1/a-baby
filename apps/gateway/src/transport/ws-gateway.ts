@@ -1,5 +1,5 @@
 /**
- * Role: WebSocket transport of the gateway (`ws`): binary frames only, bounded size, one ClientSession per connection.
+ * Role: WebSocket transport of the gateway (`ws`): binary frames only, bounded size, one ClientSession per connection; one resume registry per gateway (a resume must reach the same gateway until a shared store, J5-02).
  * Owner: backend
  */
 
@@ -7,6 +7,7 @@ import type { Server as HttpServer } from 'node:http';
 import { WebSocketServer } from 'ws';
 import { CellFanout } from '../routing/cell-fanout.ts';
 import { ClientSession, type ClientSessionDeps } from '../session/client-session.ts';
+import { ResumeRegistry } from '../session/resume-registry.ts';
 
 /** Largest client frame (hello with a 512-char ticket fits). */
 const MAX_FRAME_BYTES = 1024;
@@ -26,7 +27,7 @@ export interface Gateway {
 
 export const startGateway = (options: GatewayOptions): Gateway => {
   const wss = new WebSocketServer({ ...(options.server ? { server: options.server } : { port: options.port ?? 2567 }), maxPayload: MAX_FRAME_BYTES, path: '/ws' });
-  const context = { ...options, fanout: new CellFanout(options.bus) };
+  const context = { ...options, fanout: new CellFanout(options.bus), resumes: new ResumeRegistry() };
   wss.on('connection', (socket) => {
     const session = new ClientSession({ send: (frame) => socket.send(frame), close: () => socket.close() }, context);
     socket.on('message', (data, isBinary) => {

@@ -1,7 +1,7 @@
 # `packages/sim-needs/`
 
 - **Owner:** backend developer
-- **Status:** Skeleton — J3
+- **Status:** Active — T-302
 
 ## Role
 
@@ -9,7 +9,7 @@ Needs simulation rules (hunger, energy, hygiene, social, fun): decay over game t
 
 ## How it works
 
-Public API is exported from `src/index.ts` only. Profile: `pure`. First implementation: J3.
+Public API is exported from `src/index.ts` only. Profile: `pure`. Needs are satisfaction values (100 = satisfied, 0 = empty with penalties), decayed per **game** hour from `content/needs/needs.config.json`, frozen while offline (`resumeNeeds`), rounded to 1/100 so every machine agrees.
 
 ## Rules
 

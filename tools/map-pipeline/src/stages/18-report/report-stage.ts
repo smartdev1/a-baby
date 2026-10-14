@@ -1,5 +1,5 @@
 /**
- * Role: stage 18-report: measures the OSM coverage of the commune (buildings, heights, roads, POIs, bus routes, density per tile) and writes JSON, Markdown and an SVG map.
+ * Role: stage 18-report: measures the OSM coverage of the commune (buildings, heights, roads, POIs, bus routes, density per tile) and the generated world (tiles per level, budgets, content), and writes JSON, Markdown and an SVG map.
  * Owner: backend
  */
 
@@ -22,9 +22,38 @@ import { boundaryUtmBounds, renderDensitySvg, utmToLonLatFactory } from './densi
 import { readFeatures } from './feature-stream.ts';
 import { renderReportMarkdown } from './report-markdown.ts';
 import type { RoadGraphStats } from '../../roads/road-graph-types.ts';
+import { renderWorldReport } from '../../world-stats/world-report-markdown.ts';
+import { type ContentReports, type IndexEntry, worldStats } from '../../world-stats/world-stats.ts';
+import { NAMING_STAGE_ID } from '../09-naming/naming-stage.ts';
+import { FACADES_STAGE_ID } from '../11-facades-roofs/facades-roofs-stage.ts';
+import { PROPS_STAGE_ID } from '../12-props/props-stage.ts';
+import { LOD_INDEX_FILE, LOD_STAGE_ID } from '../15-lod-build/lod-build-stage.ts';
+import { ENCODE_INDEX_FILE, ENCODE_STAGE_ID } from '../16-encode/encode-stage.ts';
 
 export const REPORT_STAGE_ID = '18-report';
-const OUTPUTS = ['coverage-report.json', 'coverage-report.md', 'building-density.svg'] as const;
+const OUTPUTS = ['coverage-report.json', 'coverage-report.md', 'building-density.svg', 'world-report.json', 'world-report.md'] as const;
+
+/** Generated-world inputs: tile indexes and the content reports of the stages. */
+const WORLD_INPUTS = {
+  encode: [ENCODE_STAGE_ID, ENCODE_INDEX_FILE],
+  lod: [LOD_STAGE_ID, LOD_INDEX_FILE],
+  props: [PROPS_STAGE_ID, 'props-report.json'],
+  facades: [FACADES_STAGE_ID, 'facades-report.json'],
+  naming: [NAMING_STAGE_ID, 'naming-report.json'],
+} as const;
+
+const readJson = async <T>(path: string): Promise<T> => JSON.parse(await readFile(path, 'utf8')) as T;
+
+const writeWorldReport = async (ctx: StageContext, outDir: string): Promise<void> => {
+  const at = (k: keyof typeof WORLD_INPUTS): string => ctx.outputOf(WORLD_INPUTS[k][0], WORLD_INPUTS[k][1]);
+  const facades = await readJson<ContentReports['facades'] & { byModule: Record<string, number> }>(at('facades'));
+  const stats = worldStats(
+    { ...(await readJson<Record<string, IndexEntry>>(at('encode'))), ...(await readJson<Record<string, IndexEntry>>(at('lod'))) },
+    { props: await readJson<ContentReports['props']>(at('props')), facades, naming: await readJson<ContentReports['naming']>(at('naming')), facadeModules: facades?.byModule ?? {} },
+  );
+  await writeFile(join(outDir, 'world-report.json'), `${JSON.stringify(stats, null, 2)}\n`);
+  await writeFile(join(outDir, 'world-report.md'), renderWorldReport(ctx.config.displayName, stats));
+};
 
 const isSnapshot = (ctx: StageContext): boolean => ctx.config.source.kind === 'osm-snapshot';
 
@@ -55,11 +84,13 @@ const snapshotLabel = (ctx: StageContext): string =>
 
 export const createReportStage = (osmium: RunOsmium = runOsmium, checkImage = ensureOsmiumImage): PipelineStage => ({
   id: REPORT_STAGE_ID,
-  version: 4,
+  // v5: generated-world report (T-204).
+  version: 5,
   outputs: OUTPUTS,
   inputFiles: (ctx) => [
     ctx.outputOf(EXPORT_STAGE_ID, FEATURES_FILE),
     ctx.outputOf(ROADS_STAGE_ID, ROAD_STATS_FILE),
+    ...Object.values(WORLD_INPUTS).map(([stage, file]) => ctx.outputOf(stage, file)),
     ...(isSnapshot(ctx)
       ? [ctx.outputOf(EXTRACT_STAGE_ID, BOUNDARY_FILE), ctx.outputOf(EXTRACT_STAGE_ID, COMMUNE_PBF_FILE)]
       : []),
@@ -97,5 +128,6 @@ export const createReportStage = (osmium: RunOsmium = runOsmium, checkImage = en
     await writeFile(join(outDir, 'coverage-report.json'), `${JSON.stringify(facts, null, 2)}\n`);
     await writeFile(join(outDir, 'coverage-report.md'), renderReportMarkdown(facts));
     await writeFile(join(outDir, 'building-density.svg'), svg);
+    await writeWorldReport(ctx, outDir);
   },
 });
