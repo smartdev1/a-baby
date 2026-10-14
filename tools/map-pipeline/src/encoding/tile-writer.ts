@@ -12,7 +12,7 @@ import type { EncodedFile, EncodedLodTile, EncodedTile } from './tile-encoder.ts
 
 /** What the index needs from an L0 tile once its files are written. */
 export interface L0TileSummary {
-  readonly level: 0;
+  readonly kind: 'l0';
   readonly key: string;
   readonly geom: string;
   readonly collision: string;
@@ -25,7 +25,9 @@ export interface L0TileSummary {
 }
 
 export interface LodTileSummary {
-  readonly level: 1;
+  readonly kind: 'lod';
+  /** Render-only level (1, 2 or 3), read from the key. */
+  readonly level: number;
   readonly key: string;
   readonly geom: string;
   readonly bytes: number;
@@ -44,7 +46,7 @@ export const writeL0Tile = async (outDir: string, t: EncodedTile): Promise<L0Til
   await writeOne(outDir, t.key, 'meta', t.meta);
   if (t.instances) await writeOne(outDir, t.key, 'instances', t.instances);
   return {
-    level: 0,
+    kind: 'l0',
     key: t.key,
     geom: t.geom.hash,
     collision: t.collision.hash,
@@ -59,5 +61,5 @@ export const writeL0Tile = async (outDir: string, t: EncodedTile): Promise<L0Til
 
 export const writeLodTile = async (outDir: string, t: EncodedLodTile): Promise<LodTileSummary> => {
   await writeOne(outDir, t.key, 'geom', t.geom);
-  return { level: 1, key: t.key, geom: t.geom.hash, bytes: t.geom.bytes.length, triangles: t.triangles };
+  return { kind: 'lod', level: Number(t.key.slice(1, t.key.indexOf('_'))), key: t.key, geom: t.geom.hash, bytes: t.geom.bytes.length, triangles: t.triangles };
 };

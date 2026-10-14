@@ -57,7 +57,7 @@ export const encodeStage: PipelineStage = {
     const violations: string[] = [];
     const pool = createTileEncoderPool({ existing: [...existing], options: { stripFacadeWalls: ctx.config.facades.stripBayWalls }, outDir });
     const consume = (t: EncodeJobResult): void => {
-      if (t.level !== 0) return;
+      if (t.kind !== 'l0') return;
       violations.push(...t.violations);
       index[t.key] = { geom: t.geom, collision: t.collision, meta: t.meta, ...(t.instances ? { instances: t.instances } : {}), bytes: t.bytes, triangles: t.triangles };
     };

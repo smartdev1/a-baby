@@ -13,7 +13,8 @@ export type LocalPoint = readonly [number, number];
 export type LocalPolygon = readonly (readonly LocalPoint[])[];
 
 export interface TileBuildingPart {
-  readonly id: OsmId;
+  /** OSM building, or a block impostor of a coarse level (L2/L3). */
+  readonly id: OsmId | `block:${number}`;
   /** Ground height under the building (lowest footprint vertex). */
   readonly baseYM: number;
   readonly heightM: number;
