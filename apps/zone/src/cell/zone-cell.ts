@@ -1,5 +1,5 @@
 /**
- * Role: authoritative runtime of one cell: players join through the bus or a border handoff (20 m hysteresis), inputs are simulated with @skyline/physics at 20 Hz, acks go back on each session subject and one snapshot per cell (own players + neighbours' border ghosts) on the cell subject; daily life (actions, needs, Djai) runs at 1 Hz, transport (line rides, taxis) and the proximity chat when configured.
+ * Role: authoritative runtime of one cell: players join through the bus or a border handoff (20 m hysteresis), inputs are simulated with @skyline/physics at 20 Hz, acks go back on each session subject and one snapshot per cell (own players + neighbours' border ghosts) on the cell subject; characters are saved every 60 s and restored on join when a store is given; daily life (actions, needs, Djai) runs at 1 Hz, transport (line rides, taxis) and the proximity chat when configured.
  * Owner: backend
  */
 
@@ -32,7 +32,9 @@ import { type CellTransport, createCellTransport, stateAtStop } from '../transpo
 import type { TransitNetwork } from '../transport/transit-network.ts';
 import { InputForwarding } from '../handoff/input-forwarding.ts';
 import { entityStateCode } from './entity-state-code.ts';
+import { CharacterCheckpoints, CHECKPOINT_EVERY_MS, type CheckpointSubject } from './character-checkpoints.ts';
 import { PlayerSlot } from './player-slot.ts';
+import type { CharacterStorePort } from '../ports/character-store-port.ts';
 import { TickStats, type TickStatsSnapshot } from './tick-stats.ts';
 
 export const TICK_RATE_HZ = 20;
@@ -57,6 +59,8 @@ export interface ZoneCellOptions {
   readonly chat?: Pick<ProximityChatDeps, 'blockedWords' | 'reports'>;
   /** Transit lines and city map of the commune: transport needs daily life too (fares, game clock). */
   readonly transport?: { readonly transit: TransitNetwork; readonly city?: CityMap; readonly taxiFare?: TaxiFare };
+  /** Saved characters (position, needs); absent = nothing persisted. */
+  readonly characters?: CharacterStorePort;
 }
 
 export class ZoneCell implements PlayerPositions, ChatPlayers {
@@ -71,6 +75,9 @@ export class ZoneCell implements PlayerPositions, ChatPlayers {
   private readonly daily: DailyLife | null;
   private readonly chat: ProximityChat | null;
   private readonly transport: CellTransport | null;
+  private readonly checkpoints: CharacterCheckpoints | null;
+  /** Session → character for guest accounts (anonymous dev sessions are not saved). */
+  private readonly characterIds = new Map<string, string>();
 
   constructor(private readonly options: ZoneCellOptions) {
     this.daily = options.daily ? new DailyLife({ ...options.daily, send: (sessionId, m) => this.send(sessionId, m) }, this) : null;
@@ -79,6 +86,7 @@ export class ZoneCell implements PlayerPositions, ChatPlayers {
     const { daily, transport, frameOrigin } = options;
     const cluster = options.clusterCells ?? new Set([options.cellKey]);
     const sources = transport ? { network: transport.transit, ...(transport.city ? { city: transport.city } : {}), ...(transport.taxiFare ? { taxiFare: transport.taxiFare } : {}) } : null;
+    this.checkpoints = options.characters ? new CharacterCheckpoints(options.characters, frameOrigin, cluster, options.logger) : null;
     this.transport = this.daily && daily && sources ? createCellTransport({ ...sources, daily: this.daily, dailyDeps: daily, cluster, frameOrigin, send, positionOf: (s) => this.positionOf(s) }) : null;
   }
 
@@ -118,6 +126,8 @@ export class ZoneCell implements PlayerPositions, ChatPlayers {
       bus.subscribe<CellJoin>(subjects.cellJoin(cellKey), (m) => void this.join(m.sessionId, m.characterId)),
       bus.subscribe<CellInput>(subjects.cellInput(cellKey), (m) => this.input(m)),
       bus.subscribe<SessionClosed>(subjects.sessionClosed(), (m) => {
+        void this.checkpoint([m.sessionId]);
+        this.characterIds.delete(m.sessionId);
         this.players.delete(m.sessionId);
         this.forwarding.remove(m.sessionId);
         void this.daily?.removePlayer(m.sessionId, 'disconnected');
@@ -163,6 +173,7 @@ export class ZoneCell implements PlayerPositions, ChatPlayers {
       this.forwarding.prune(this.tick);
       void this.daily?.tick(Date.now());
     }
+    if (this.tick % ((CHECKPOINT_EVERY_MS / 1000) * TICK_RATE_HZ) === 0) void this.checkpoint([...this.characterIds.keys()]);
     this.stats.record(performance.now() - started);
   }
 
@@ -179,21 +190,37 @@ export class ZoneCell implements PlayerPositions, ChatPlayers {
   /** `characterId`: the guest account; an anonymous dev session plays a throw-away character named after the session. */
   private async join(sessionId: string, characterId = sessionId): Promise<void> {
     const present = this.players.get(sessionId);
-    if (present) {
-      // A resumed session (its connection dropped less than 60 s ago): same player, same state, welcomed again.
-      await this.welcome(present);
-      await this.daily?.resync(sessionId);
-      return;
+    if (present) return this.rejoin(present);
+    const guest = characterId !== sessionId;
+    const saved = guest ? await this.checkpoints?.restore(characterId) : null;
+    if (guest) this.characterIds.set(sessionId, characterId);
+    const player = new PlayerSlot(sessionId, entityIdOf(sessionId), saved?.state ?? this.spawnState());
+    if (saved) player.lastInput = { ...player.lastInput, yawRad: saved.yawRad };
+    await this.welcome(player);
+    await this.daily?.addPlayer(sessionId, saved?.needs ?? undefined, characterId);
+  }
+
+  /** A resumed session (its connection dropped less than 60 s ago): same player, same state, welcomed again. */
+  private async rejoin(player: PlayerSlot): Promise<void> {
+    await this.welcome(player);
+    await this.daily?.resync(player.sessionId);
+  }
+
+  private spawnState(): CharacterState {
+    const { spawn, world } = this.options;
+    return { position: { x: spawn.x, y: world.groundHeightAt(spawn.x, spawn.z), z: spawn.z }, velocity: { x: 0, y: 0, z: 0 }, grounded: true };
+  }
+
+  /** Saves the given players' characters (guest accounts only). */
+  private async checkpoint(sessionIds: readonly string[]): Promise<void> {
+    if (!this.checkpoints) return;
+    const subjects: CheckpointSubject[] = [];
+    for (const sessionId of sessionIds) {
+      const characterId = this.characterIds.get(sessionId);
+      const player = this.players.get(sessionId);
+      if (characterId && player) subjects.push({ characterId, state: player.state, yawRad: player.lastInput.yawRad, needs: this.daily?.needsOf(sessionId)?.values ?? null });
     }
-    const { spawn } = this.options;
-    const y = this.options.world.groundHeightAt(spawn.x, spawn.z);
-    const state: CharacterState = {
-      position: { x: spawn.x, y, z: spawn.z },
-      velocity: { x: 0, y: 0, z: 0 },
-      grounded: true,
-    };
-    await this.welcome(new PlayerSlot(sessionId, entityIdOf(sessionId), state));
-    await this.daily?.addPlayer(sessionId, undefined, characterId);
+    await this.checkpoints.save(subjects, Date.now());
   }
 
   /** A player handed over by a neighbour cell keeps its state, sequence and entity id. */
@@ -206,6 +233,7 @@ export class ZoneCell implements PlayerPositions, ChatPlayers {
     await this.welcome(player);
     await this.daily?.addPlayer(h.sessionId, h.needs, h.characterId ?? h.sessionId);
     this.chat?.restoreBlocks(h.sessionId, h.chatBlocked ?? []);
+    if (h.characterId) this.characterIds.set(h.sessionId, h.characterId);
   }
 
   private async welcome(player: PlayerSlot): Promise<void> {
@@ -282,6 +310,7 @@ export class ZoneCell implements PlayerPositions, ChatPlayers {
     this.options.bus.publish(subjects.cellHandoff(target), this.handoffOf(player));
     void this.daily?.removePlayer(player.sessionId, 'left_cell');
     this.chat?.remove(player.sessionId);
+    this.characterIds.delete(player.sessionId);
     this.players.delete(player.sessionId);
     this.forwarding.add(player.sessionId, target, this.tick);
     return true;

@@ -10,6 +10,7 @@ In-memory and NATS implementations of the ports.
 | File | Role |
 |---|---|
 | `in-memory-economy.ts` | `EconomyPort` in memory (J3, until the PostgreSQL ledger of J6): all-or-nothing double-entry commits, player balances ≥ 0, idempotency by key (successful results only), starter grant `grant:starter:{characterId}` |
+| `file-character-store.ts` | `CharacterStorePort` in memory (tests) and as one JSON file per character in `data/runtime/characters` until the characters service |
 | `in-memory-chat-reports.ts` | `ChatReportPort` in memory until the moderation service (J7-04): last 1 000 reports; logs ids and reason, never the text |
 
 ## Rules

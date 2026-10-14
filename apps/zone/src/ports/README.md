@@ -9,6 +9,7 @@ Interfaces to the outside world (EconomyPort, CharacterStorePort, ClockPort…).
 
 | File | Role |
 |---|---|
+| `character-store-port.ts` | `CharacterStorePort`: saved position and needs of the characters (checkpoints) |
 | `chat-report-port.ts` | `ChatReportPort`: chat reports with their excerpt to the moderation queue |
 
 ## Rules

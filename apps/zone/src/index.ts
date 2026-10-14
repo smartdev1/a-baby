@@ -9,6 +9,7 @@ export { loadCellCollision, type CellWorld } from './world-data/cell-collision-l
 export { setUpDailyLife, type DailyLifeSetup, type DailyLifeSources } from './actions/daily-life-setup.ts';
 export { grantStarterMoney, InMemoryEconomy } from './adapters/in-memory-economy.ts';
 export { InMemoryChatReports } from './adapters/in-memory-chat-reports.ts';
+export { FileCharacterStore, InMemoryCharacterStore } from './adapters/file-character-store.ts';
 export { loadBlockedWords } from './chat/chat-setup.ts';
 export { loadTransitNetwork, type TransitNetwork } from './transport/transit-network.ts';
 export { loadTransport, type TransportSetup } from './transport/transport-setup.ts';

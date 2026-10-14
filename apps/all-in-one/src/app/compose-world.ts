@@ -3,12 +3,13 @@
  * Owner: backend
  */
 
+import { join } from 'node:path';
 import { InMemoryBus } from '@skyline/bus';
 import { startGateway, type Gateway } from '@skyline/gateway';
 import { cellKeyOf, toUtm30n } from '@skyline/geo';
 import type { Logger } from '@skyline/observability';
 import { buildServices, type Services, type ServicesConfig } from '@skyline/services';
-import { InMemoryChatReports, InMemoryEconomy, loadBlockedWords, loadCellCollision, loadTransport, setUpDailyLife, ZoneCell } from '@skyline/zone';
+import { FileCharacterStore, InMemoryChatReports, InMemoryEconomy, loadBlockedWords, loadCellCollision, loadTransport, setUpDailyLife, ZoneCell } from '@skyline/zone';
 import type { AllInOneConfig } from './all-in-one-config.ts';
 
 export interface World {
@@ -59,6 +60,7 @@ export const composeWorld = async (
     logger: logger.child({ module: 'zone', cellKey }),
     daily: daily.deps,
     transport,
+    characters: new FileCharacterStore(join(servicesConfig.runtimeDir, 'characters')),
     chat: { blockedWords: await loadBlockedWords(servicesConfig.contentDir), reports: new InMemoryChatReports(logger.child({ module: 'chat' })) },
   });
   cell.start();
