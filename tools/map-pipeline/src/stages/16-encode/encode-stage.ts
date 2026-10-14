@@ -25,6 +25,8 @@ export interface EncodeIndexEntry {
   readonly instances?: string;
   readonly bytes: number;
   readonly triangles: number;
+  readonly drawCalls: number;
+  readonly instanceCount: number;
 }
 export type EncodeIndex = Record<string, EncodeIndexEntry>;
 
@@ -38,8 +40,8 @@ const indexPaths = (index: EncodeIndex): string[] =>
 
 export const encodeStage: PipelineStage = {
   id: ENCODE_STAGE_ID,
-  // v9: facade instances (absolute height, stretch; instances.bin v2), sheet-metal roofs, instance draw calls in the budget (T-102).
-  version: 9,
+  // v9: facade instances (absolute height, stretch; instances.bin v2), sheet-metal roofs, instance draw calls in the budget (T-102). v10: draw calls and instance count per tile in the index (T-204).
+  version: 10,
   outputs: [ENCODE_INDEX_FILE],
   inputFiles: (ctx) => [ctx.outputOf(TILE_CUT_STAGE_ID, TILES_FILE)],
   params: (ctx) => ({ formatVersion: TILE_FORMAT_VERSION, stripFacadeWalls: ctx.config.facades.stripBayWalls }),
@@ -59,7 +61,16 @@ export const encodeStage: PipelineStage = {
     const consume = (t: EncodeJobResult): void => {
       if (t.kind !== 'l0') return;
       violations.push(...t.violations);
-      index[t.key] = { geom: t.geom, collision: t.collision, meta: t.meta, ...(t.instances ? { instances: t.instances } : {}), bytes: t.bytes, triangles: t.triangles };
+      index[t.key] = {
+        geom: t.geom,
+        collision: t.collision,
+        meta: t.meta,
+        ...(t.instances ? { instances: t.instances } : {}),
+        bytes: t.bytes,
+        triangles: t.triangles,
+        drawCalls: t.drawCalls,
+        instanceCount: t.instanceCount,
+      };
     };
     try {
       const jobs = async function* (): AsyncGenerator<{ kind: 'l0'; tileJson: string }> {

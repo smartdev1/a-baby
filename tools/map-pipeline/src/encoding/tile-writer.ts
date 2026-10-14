@@ -21,6 +21,7 @@ export interface L0TileSummary {
   readonly bytes: number;
   readonly triangles: number;
   readonly drawCalls: number;
+  readonly instanceCount: number;
   readonly violations: readonly string[];
 }
 
@@ -55,6 +56,7 @@ export const writeL0Tile = async (outDir: string, t: EncodedTile): Promise<L0Til
     bytes: tileBytes(t),
     triangles: t.triangles,
     drawCalls: t.drawCalls,
+    instanceCount: t.instanceCount,
     violations: budgetViolations(t),
   };
 };
