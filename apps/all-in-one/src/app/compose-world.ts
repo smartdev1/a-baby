@@ -83,6 +83,7 @@ export const composeWorld = async (
     cellKey,
     tilesLoaded,
     close: async () => {
+      await activeCell.flush();
       activeCell.stop();
       daily.stop();
       await gateway.close();

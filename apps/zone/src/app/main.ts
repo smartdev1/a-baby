@@ -48,6 +48,7 @@ const stats = config.statsPort > 0 ? startStatsServer(config.statsPort, { '/stat
 
 const shutdown = async (signal: string): Promise<void> => {
   logger.info({ signal }, 'shutting down');
+  await Promise.all(cells.map(({ cell }) => cell.flush()));
   cells.forEach(({ cell }) => cell.stop());
   stats?.close();
   await bus.close();

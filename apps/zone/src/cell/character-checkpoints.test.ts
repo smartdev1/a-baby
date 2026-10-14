@@ -72,4 +72,17 @@ describe('character checkpoints', () => {
     const store = new FileCharacterStore('/nonexistent-dir-for-test');
     expect(await store.load('../etc/passwd')).toBeNull();
   });
+
+  it('should save every guest character when the cell is flushed (shutdown)', async () => {
+    const bus = new InMemoryBus();
+    const store = new InMemoryCharacterStore();
+    const cell = cellWith(bus, store);
+    cell.start({ ticking: false });
+    bus.publish(subjects.cellJoin(CELL), { sessionId: 's4', characterId: 'acc_4' });
+    await settle();
+    walk(bus, cell, 's4');
+    await cell.flush();
+    cell.stop();
+    expect(store.saved.get('acc_4')?.northingM).toBeCloseTo(origin.northingM + (cell.positionOf('s4')?.z ?? 0));
+  });
 });

@@ -144,6 +144,11 @@ export class ZoneCell implements PlayerPositions, ChatPlayers {
     if (ticking) this.timer = setInterval(() => this.step(), 1000 / TICK_RATE_HZ);
   }
 
+  /** Saves every guest character now (graceful shutdown: a restart loses nothing). */
+  flush(): Promise<void> {
+    return this.checkpoint([...this.characterIds.keys()]);
+  }
+
   stop(): void {
     if (this.timer) clearInterval(this.timer);
     this.unsubscribes.splice(0).forEach((u) => u());

@@ -37,6 +37,8 @@ Règles : `docs/rules/BACKEND.md`, ARCHITECTURE.md.
 
 - `apps/zone/src/ports/character-store-port.ts`, `adapters/file-character-store.ts`, `cell/character-checkpoints.ts` (+ tests); `ZoneCell` option `characters`, `characterIds` per session (carried by handoffs), checkpoint every 60 s and on `session.closed`.
 - Zone config `SKYLINE_RUNTIME_DIR`; wired in the zone process and the all-in-one.
+- `ZoneCell.flush()` saves every guest character at graceful shutdown (a dropped socket waits 60 s for a resume before `session.closed`, so a restart inside that window lost the last position).
+- End-to-end check on a real all-in-one (T-324 + T-325 + T-326): guest account → ticket → walk 9 m → restart → same account comes back at the same position with the same 5 000 Djai, starter grant paid once.
 
 ## Review
 
