@@ -1,5 +1,5 @@
 /**
- * Role: tests daily life in a cell with the real content files: eating a garba end to end (Djai to the stand, hunger restored), replayed request settled once, walking away, closed place at night, busy player, full site.
+ * Role: tests daily life in a cell with the real content files: eating a garba end to end (Djai to the stand, hunger restored), replayed request settled once, walking away, closed place at night, busy player, full site, a paid maquis shift with its anti-farm cooldown.
  * Owner: backend
  */
 
@@ -86,5 +86,28 @@ describe('DailyLife', () => {
     expect(day.updates().at(-1)?.refusals).toEqual([{ code: 'busy' }]);
     await day.daily.handle('s2', garba('aaaaaaaa-0000-4000-8000-000000000003'));
     expect(day.updates('s2').at(-1)?.refusals.map((r) => r.code)).toContain('no_free_site');
+  });
+
+  it('should pay a night shift at the maquis from system wages, cost energy and refuse a second shift that day', async () => {
+    const maquis: CellPlace = { id: 'osm:node/77', placeType: 'maquis', displayName: null, sites: [{ kind: 'staff_post', capacity: 2, x: 10, z: 10, yawRad: 0 }] };
+    const economy = new InMemoryEconomy();
+    const sent: ServerMessage[] = [];
+    const clock = { minute: 60 * 24 * 2 + 19 * 60, realMs: 1_000 };
+    const daily = new DailyLife(
+      { content, places: new Map([[maquis.id, maquis]]), economy, gameMinute: () => clock.minute, clockRatio: () => 12, send: (_s, m) => sent.push(m), starterDjai: 0, realNow: () => clock.realMs },
+      { positionOf: () => ({ x: 10, z: 11 }), nearby: () => 0 },
+    );
+    await daily.addPlayer('w1');
+    const energyBefore = daily.needsOf('w1')?.values.energy ?? 0;
+    await daily.handle('w1', { type: 'actionRequest', body: { requestId: 'cccccccc-0000-4000-8000-000000000001', actionId: 'work.serve_maquis', placeId: maquis.id } });
+    clock.realMs += 601_000;
+    await daily.tick(clock.realMs);
+    expect(await economy.balanceOf('character:w1')).toBe(3000n);
+    expect(await economy.balanceOf('system:wages')).toBe(-3000n);
+    expect(daily.needsOf('w1')?.values.energy).toBeLessThan(energyBefore - 20);
+    clock.minute += 60;
+    await daily.handle('w1', { type: 'actionRequest', body: { requestId: 'cccccccc-0000-4000-8000-000000000002', actionId: 'work.serve_maquis', placeId: maquis.id } });
+    const last = sent.filter((m) => m.type === 'actionUpdate').at(-1);
+    expect(last?.type === 'actionUpdate' && last.body.refusals.map((r) => r.code)).toContain('cooldown');
   });
 });

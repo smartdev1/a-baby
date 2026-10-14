@@ -1,0 +1,39 @@
+{
+  "$schema": "../../tools/content-cli/schemas/job.schema.json",
+  "id": "hairdresser",
+  "version": 1,
+  "labelKey": "job.hairdresser.label",
+  "employerPlaceTypes": [
+    "hair_salon"
+  ],
+  "shifts": [
+    {
+      "from": "08:00",
+      "to": "14:00"
+    },
+    {
+      "from": "14:00",
+      "to": "20:00"
+    }
+  ],
+  "workAction": "work.braid_hair",
+  "wagePerShiftDjai": 3500,
+  "maxPaidShiftsPerGameDay": 1,
+  "levels": [
+    {
+      "level": 1,
+      "minShifts": 0,
+      "wageBonusPercent": 0
+    },
+    {
+      "level": 2,
+      "minShifts": 10,
+      "wageBonusPercent": 15
+    },
+    {
+      "level": 3,
+      "minShifts": 30,
+      "wageBonusPercent": 35
+    }
+  ]
+}

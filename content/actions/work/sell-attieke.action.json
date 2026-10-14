@@ -1,0 +1,93 @@
+{
+  "$schema": "../../../tools/content-cli/schemas/action.schema.json",
+  "id": "work.sell_attieke",
+  "version": 1,
+  "category": "work",
+  "labelKey": "action.work.sell_attieke.label",
+  "icon": "ui_icon_work",
+  "tags": [
+    "work",
+    "job"
+  ],
+  "where": {
+    "placeTypes": [
+      "garba_stand"
+    ],
+    "site": "staff_post",
+    "interactionRadiusM": 3
+  },
+  "when": {
+    "openingHoursFrom": "none",
+    "windows": [
+      {
+        "from": "06:00",
+        "to": "12:00"
+      },
+      {
+        "from": "12:00",
+        "to": "18:00"
+      }
+    ]
+  },
+  "requires": {
+    "needs": {
+      "energy": {
+        "min": 20
+      },
+      "hunger": {
+        "min": 10
+      }
+    },
+    "state": [
+      "on_foot",
+      "not_in_action"
+    ],
+    "cooldown": {
+      "gameMinutes": 1440,
+      "scope": "character"
+    }
+  },
+  "duration": {
+    "gameMinutes": 360,
+    "real": {
+      "maxSeconds": 600
+    },
+    "interruptible": true,
+    "onInterrupt": "refund_none_no_effects"
+  },
+  "phases": [
+    {
+      "id": "work",
+      "animation": "anm_serve_counter",
+      "loop": true
+    }
+  ],
+  "effects": {
+    "onComplete": [
+      {
+        "type": "money",
+        "djai": 2500,
+        "direction": "actor_earns",
+        "counterparty": "system:wages"
+      },
+      {
+        "type": "need",
+        "need": "energy",
+        "delta": -20
+      },
+      {
+        "type": "need",
+        "need": "social",
+        "delta": 10
+      },
+      {
+        "type": "skill_xp",
+        "skill": "job.attieke_seller",
+        "xp": 10
+      }
+    ]
+  },
+  "provider": {
+    "kind": "job"
+  }
+}

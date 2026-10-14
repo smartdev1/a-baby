@@ -1,0 +1,43 @@
+{
+  "$schema": "../../tools/content-cli/schemas/job.schema.json",
+  "id": "kiosk_keeper",
+  "version": 1,
+  "labelKey": "job.kiosk_keeper.label",
+  "employerPlaceTypes": [
+    "boutique"
+  ],
+  "shifts": [
+    {
+      "from": "06:00",
+      "to": "14:00"
+    },
+    {
+      "from": "14:00",
+      "to": "22:00"
+    },
+    {
+      "from": "22:00",
+      "to": "06:00"
+    }
+  ],
+  "workAction": "work.keep_kiosk",
+  "wagePerShiftDjai": 2500,
+  "maxPaidShiftsPerGameDay": 1,
+  "levels": [
+    {
+      "level": 1,
+      "minShifts": 0,
+      "wageBonusPercent": 0
+    },
+    {
+      "level": 2,
+      "minShifts": 10,
+      "wageBonusPercent": 15
+    },
+    {
+      "level": 3,
+      "minShifts": 30,
+      "wageBonusPercent": 35
+    }
+  ]
+}
