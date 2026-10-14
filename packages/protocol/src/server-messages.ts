@@ -1,11 +1,19 @@
 /**
- * Role: everything the server may send (welcome, input_ack, snapshot, world_clock, pong, error): one encoder and one decoder, used by the gateway and the web client.
+ * Role: everything the server may send (welcome, input_ack, snapshot, world_clock, pong, error, action / needs / wallet updates): one encoder and one decoder, used by the gateway and the web client.
  * Owner: backend
  */
 
 import { FrameReader } from './binary/frame-reader.ts';
 import { SERVER_MESSAGE } from './message-types.ts';
 import { decodePong, encodePong, type PongMessage } from './messages/clock-messages.ts';
+import {
+  type ActionUpdateMessage,
+  ActionUpdateSchema,
+  type NeedsUpdateMessage,
+  NeedsUpdateSchema,
+  type WalletUpdateMessage,
+  WalletUpdateSchema,
+} from './messages/action-schemas.ts';
 import { decodeControl, encodeControl } from './messages/control-codec.ts';
 import {
   type ServerErrorMessage,
@@ -31,7 +39,10 @@ export type ServerMessage =
   | { readonly type: 'snapshot'; readonly body: SnapshotMessage }
   | { readonly type: 'worldClock'; readonly body: WorldClockMessage }
   | { readonly type: 'pong'; readonly body: PongMessage }
-  | { readonly type: 'error'; readonly body: ServerErrorMessage };
+  | { readonly type: 'error'; readonly body: ServerErrorMessage }
+  | { readonly type: 'actionUpdate'; readonly body: ActionUpdateMessage }
+  | { readonly type: 'needsUpdate'; readonly body: NeedsUpdateMessage }
+  | { readonly type: 'walletUpdate'; readonly body: WalletUpdateMessage };
 
 export const encodeServerMessage = (m: ServerMessage): Uint8Array => {
   switch (m.type) {
@@ -47,6 +58,12 @@ export const encodeServerMessage = (m: ServerMessage): Uint8Array => {
       return encodePong(m.body);
     case 'error':
       return encodeControl(SERVER_MESSAGE.error, m.body);
+    case 'actionUpdate':
+      return encodeControl(SERVER_MESSAGE.actionUpdate, m.body);
+    case 'needsUpdate':
+      return encodeControl(SERVER_MESSAGE.needsUpdate, m.body);
+    case 'walletUpdate':
+      return encodeControl(SERVER_MESSAGE.walletUpdate, m.body);
   }
 };
 
@@ -60,6 +77,9 @@ const DECODERS: Record<number, (r: FrameReader) => ServerMessage> = {
   }),
   [SERVER_MESSAGE.pong]: (r) => ({ type: 'pong', body: decodePong(r) }),
   [SERVER_MESSAGE.error]: (r) => ({ type: 'error', body: decodeControl(r.rest(), ServerErrorSchema, 'error') }),
+  [SERVER_MESSAGE.actionUpdate]: (r) => ({ type: 'actionUpdate', body: decodeControl(r.rest(), ActionUpdateSchema, 'action_update') }),
+  [SERVER_MESSAGE.needsUpdate]: (r) => ({ type: 'needsUpdate', body: decodeControl(r.rest(), NeedsUpdateSchema, 'needs_update') }),
+  [SERVER_MESSAGE.walletUpdate]: (r) => ({ type: 'walletUpdate', body: decodeControl(r.rest(), WalletUpdateSchema, 'wallet_update') }),
 };
 
 /** Throws only ProtocolDecodeError. */

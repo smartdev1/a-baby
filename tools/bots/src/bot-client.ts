@@ -3,7 +3,7 @@
  * Owner: backend
  */
 
-import { decodeServerMessage, encodeClientMessage, type InputMessage, type ServerMessage } from '@skyline/protocol';
+import { decodeServerMessage, encodeClientMessage, type InputMessage, PROTOCOL_VERSION, type ServerMessage } from '@skyline/protocol';
 import WebSocket from 'ws';
 import { HandoffTracker, type HandoffSample } from './handoff-tracker.ts';
 
@@ -67,7 +67,7 @@ export const runBot = async ({ httpUrl, wsUrl, seconds, seed, walk = 'random' }:
     onMessage(decodeServerMessage(new Uint8Array(data)));
   });
   await new Promise((resolve, reject) => socket.once('open', resolve).once('error', reject));
-  socket.send(encodeClientMessage({ type: 'hello', body: { protocolVersion: 1, ticket, clientBuild: 'bot' } }));
+  socket.send(encodeClientMessage({ type: 'hello', body: { protocolVersion: PROTOCOL_VERSION, ticket, clientBuild: 'bot' } }));
 
   const random = lcg(seed);
   let heading = random() * Math.PI * 2;

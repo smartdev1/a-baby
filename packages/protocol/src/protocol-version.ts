@@ -3,4 +3,5 @@
  * Owner: backend
  */
 
-export const PROTOCOL_VERSION = 1;
+/** v2: action request / cancel, action / needs / wallet updates (T-307). */
+export const PROTOCOL_VERSION = 2;

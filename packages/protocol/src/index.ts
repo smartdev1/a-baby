@@ -24,6 +24,14 @@ export {
   type Vec3M,
 } from './messages/movement-messages.ts';
 export type { PingMessage, PongMessage } from './messages/clock-messages.ts';
+export {
+  ACTION_UPDATE_STATES,
+  type ActionCancelMessage,
+  type ActionRequestMessage,
+  type ActionUpdateMessage,
+  type NeedsUpdateMessage,
+  type WalletUpdateMessage,
+} from './messages/action-schemas.ts';
 export type {
   HelloMessage,
   ServerErrorMessage,

@@ -8,7 +8,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createLogger } from '@skyline/observability';
-import { decodeServerMessage, encodeClientMessage, type ServerMessage } from '@skyline/protocol';
+import { decodeServerMessage, encodeClientMessage, type ServerMessage, PROTOCOL_VERSION } from '@skyline/protocol';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import WebSocket from 'ws';
 import { composeWorld, type World } from './compose-world.ts';
@@ -39,7 +39,7 @@ describe('all-in-one', () => {
     const received: ServerMessage[] = [];
     socket.on('message', (data: Buffer) => received.push(decodeServerMessage(new Uint8Array(data))));
     await new Promise((resolve) => socket.once('open', resolve));
-    socket.send(encodeClientMessage({ type: 'hello', body: { protocolVersion: 1, ticket, clientBuild: 'e2e' } }));
+    socket.send(encodeClientMessage({ type: 'hello', body: { protocolVersion: PROTOCOL_VERSION, ticket, clientBuild: 'e2e' } }));
     for (let seq = 1; seq <= 10; seq++) {
       socket.send(
         encodeClientMessage({

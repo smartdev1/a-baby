@@ -5,13 +5,13 @@
 
 import { InMemoryBus, subjects } from '@skyline/bus';
 import { createLogger } from '@skyline/observability';
-import { decodeServerMessage, encodeClientMessage, type ServerMessage } from '@skyline/protocol';
+import { decodeServerMessage, encodeClientMessage, PROTOCOL_VERSION, type ServerMessage } from '@skyline/protocol';
 import { describe, expect, it } from 'vitest';
 import { CellFanout } from '../routing/cell-fanout.ts';
 import { ClientSession } from './client-session.ts';
 
 const logger = createLogger({ service: 'test', level: 'silent' });
-const hello = (ticket: string, protocolVersion = 1) => encodeClientMessage({ type: 'hello', body: { protocolVersion, ticket, clientBuild: 't' } });
+const hello = (ticket: string, protocolVersion = PROTOCOL_VERSION) => encodeClientMessage({ type: 'hello', body: { protocolVersion, ticket, clientBuild: 't' } });
 const input = (seq: number) => encodeClientMessage({ type: 'input', body: { seq, moveX: 0, moveZ: 1, yawRad: 0, flags: { run: false, jump: false, interact: false } } });
 
 const settle = (): Promise<void> => new Promise((r) => setTimeout(r, 0));
