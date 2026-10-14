@@ -12,6 +12,7 @@ import { grantStarterMoney } from '../adapters/in-memory-economy.ts';
 import type { CellPlace, CellSite } from '../world-data/cell-places-loader.ts';
 import type { DailyLifeContent } from './daily-life-content.ts';
 import { PlayerLife, type RunningAction } from './player-life.ts';
+import { GroupLobbies } from './group-lobby.ts';
 import { SiteReservations } from './site-reservations.ts';
 
 export interface DailyLifeDeps {
@@ -43,6 +44,7 @@ const distance = (a: { x: number; z: number } | null, b: { x: number; z: number 
 export class DailyLife {
   private readonly players = new Map<string, PlayerLife>();
   private readonly reservations = new SiteReservations();
+  private readonly lobbies = new GroupLobbies();
 
   constructor(
     private readonly deps: DailyLifeDeps,
@@ -64,7 +66,8 @@ export class DailyLife {
     const life = this.players.get(sessionId);
     if (!life) return;
     await life.serial(async () => {
-      if (life.running && life.running.run.state === 'running') await this.finish(life, life.running, interruptRun(life.running.run, reason));
+      if (life.running?.run.state === 'reserved') this.leaveWaiting(life, reason);
+      else if (life.running?.run.state === 'running') await this.finish(life, life.running, interruptRun(life.running.run, reason));
     });
     this.players.delete(sessionId);
   }
@@ -78,8 +81,9 @@ export class DailyLife {
     });
   }
 
-  /** 1 Hz: needs decay, actions progress, walk-away interruptions and settlements. */
+  /** 1 Hz: group lobbies, needs decay, actions progress, walk-away interruptions and settlements. */
   async tick(nowRealMs: number): Promise<void> {
+    this.settleLobbies(nowRealMs);
     await Promise.all([...this.players.values()].map((life) => life.serial(() => this.tickPlayer(life, nowRealMs))));
   }
 
@@ -116,7 +120,14 @@ export class DailyLife {
     }
     run = reserveRun(run, this.reservations.reserve(life.scoped(run.requestId), place.id, site.kind, site.capacity));
     if (run.state === 'rejected') return reject('no_free_site');
-    life.running = { run: startRun(run, (this.deps.realNow ?? Date.now)()), action, place, site };
+    const now = (this.deps.realNow ?? Date.now)();
+    if (action.participants.mode === 'group') {
+      // Group action: wait in the place's lobby until enough players joined (tick starts or refuses it).
+      life.running = { run, action, place, site };
+      this.lobbies.join({ actionId: action.id, placeId: place.id, min: action.participants.min ?? 2, max: action.participants.max ?? 10, member: { sessionId: life.sessionId, requestId: run.requestId }, nowMs: now });
+      return this.sendUpdate(life, { requestId: run.requestId, actionId: action.id, state: 'accepted', progress: 0, refusals: [] });
+    }
+    life.running = { run: startRun(run, now), action, place, site };
     this.sendUpdate(life, { requestId: run.requestId, actionId: action.id, state: 'running', progress: 0, refusals: [] });
   }
 
@@ -137,7 +148,33 @@ export class DailyLife {
     return { site, placeView };
   }
 
+  /** Starts full or due lobbies for all their members; refuses lobbies that stayed too small. */
+  private settleLobbies(nowMs: number): void {
+    for (const { kind, lobby } of this.lobbies.due(nowMs)) {
+      for (const member of lobby.members) {
+        const life = this.players.get(member.sessionId);
+        const running = life?.running;
+        if (!life || !running || running.run.requestId !== member.requestId || running.run.state !== 'reserved') continue;
+        if (kind === 'start') {
+          running.run = startRun(running.run, nowMs);
+          this.sendUpdate(life, { requestId: member.requestId, actionId: lobby.actionId, state: 'running', progress: 0, refusals: [] });
+        } else this.leaveWaiting(life, 'not_enough_players');
+      }
+    }
+  }
+
+  /** A player waiting in a lobby gives up (cancel, walk-away, leave, too few players): no settlement, nothing charged. */
+  private leaveWaiting(life: PlayerLife, code: string): void {
+    const running = life.running;
+    if (!running) return;
+    this.lobbies.leave(life.sessionId);
+    this.reservations.release(life.scoped(running.run.requestId));
+    life.running = null;
+    this.sendUpdate(life, { requestId: running.run.requestId, actionId: running.action.id, state: code === 'not_enough_players' ? 'rejected' : 'interrupted', progress: 0, refusals: [{ code }] });
+  }
+
   private async cancel(life: PlayerLife, requestId: string): Promise<void> {
+    if (life.running?.run.requestId === requestId && life.running.run.state === 'reserved') return this.leaveWaiting(life, 'cancelled');
     const running = life.running;
     if (!running || running.run.requestId !== requestId || running.run.state !== 'running' || !running.action.duration.interruptible) return;
     await this.finish(life, running, interruptRun(running.run, 'cancelled'));
@@ -146,6 +183,7 @@ export class DailyLife {
   private async tickPlayer(life: PlayerLife, nowRealMs: number): Promise<void> {
     life.needs = advanceNeeds(life.needs, this.deps.gameMinute(), this.deps.content.needs);
     const running = life.running;
+    if (running?.run.state === 'reserved' && distance(this.world.positionOf(life.sessionId), running.site) > running.action.where.interactionRadiusM + WALK_AWAY_MARGIN_M) this.leaveWaiting(life, 'walked_away');
     if (running && running.run.state === 'running') {
       if (distance(this.world.positionOf(life.sessionId), running.site) > running.action.where.interactionRadiusM + WALK_AWAY_MARGIN_M) {
         await this.finish(life, running, interruptRun(running.run, 'walked_away'));

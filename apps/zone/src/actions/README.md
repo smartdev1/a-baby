@@ -14,6 +14,7 @@ Daily life of a cell: the pure engines (`@skyline/sim-actions`, `@skyline/sim-ne
 | `daily-life.ts` | Orchestrator: request → conditions (needs, Djai, hours, place, site distance and capacity, cooldown) → site reserved → run at 1 Hz with the ellipse → settlement once (`action:{characterId}:{requestId}`) through the EconomyPort → needs, cooldowns, buffs, `action_update` / `needs_update` / `wallet_update`; walk-away, cancel, disconnection and handoff interrupt |
 | `player-life.ts` | Per player: needs snapshot, confirmed Djai, cooldowns, buffs, running action, last update per request (replays), serial queue |
 | `site-reservations.ts` | Site capacity per place and kind |
+| `group-lobby.ts` | Lobbies of group actions (`participants.mode: group`): wait at the place, start when full or when the 60 s joining window ends with enough players, else refuse (`not_enough_players`) |
 
 ## How it works
 

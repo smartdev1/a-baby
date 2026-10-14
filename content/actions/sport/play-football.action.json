@@ -12,7 +12,7 @@
       "football_ground"
     ],
     "site": "pitch_slot",
-    "interactionRadiusM": 2.5
+    "interactionRadiusM": 40
   },
   "when": {
     "openingHoursFrom": "place",
@@ -60,5 +60,11 @@
         "delta": -20
       }
     ]
+  },
+  "participants": {
+    "mode": "group",
+    "min": 2,
+    "max": 10,
+    "npcRoles": []
   }
 }
