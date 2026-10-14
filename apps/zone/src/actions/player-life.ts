@@ -5,7 +5,7 @@
 
 import type { Action } from '@skyline/content-schema';
 import type { ActionUpdateMessage } from '@skyline/protocol';
-import type { ActionRun } from '@skyline/sim-actions';
+import { type ActionRun, SettlementStore } from '@skyline/sim-actions';
 import type { NeedsSnapshot } from '@skyline/sim-needs';
 import type { CellPlace, CellSite } from '../world-data/cell-places-loader.ts';
 
@@ -22,6 +22,8 @@ export class PlayerLife {
   readonly cooldowns = new Map<string, number>();
   readonly buffs = new Map<string, number>();
   running: RunningAction | null = null;
+  /** Settlements of this character only: request ids are scoped per character (another player reusing an id gets nothing). */
+  readonly settlements = new SettlementStore();
   /** Last update sent per request id: a replayed request gets it again (idempotency at the zone). */
   readonly updates = new Map<string, ActionUpdateMessage>();
   lastNeedsSent = '';
@@ -33,6 +35,11 @@ export class PlayerLife {
     needs: NeedsSnapshot,
   ) {
     this.needs = needs;
+  }
+
+  /** Idempotency key of a request in the ledger and the site reservations, scoped to the character. */
+  scoped(requestId: string): string {
+    return `${this.characterId}:${requestId}`;
   }
 
   /** Runs `task` after the player's previous tasks (requests never interleave). */

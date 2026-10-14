@@ -3,12 +3,13 @@
  * Owner: backend
  */
 
+import type { Action } from '@skyline/content-schema';
 import { characterAccount, type EconomyPort, legsFromTransfers } from '@skyline/economy-rules';
 import type { ActionCancelMessage, ActionRequestMessage, ActionUpdateMessage, ServerMessage } from '@skyline/protocol';
-import { type ActorView, interruptRun, requestRun, reserveRun, SettlementStore, startRun, tickRun } from '@skyline/sim-actions';
+import { type ActorView, interruptRun, type PlaceView, requestRun, reserveRun, startRun, tickRun } from '@skyline/sim-actions';
 import { advanceNeeds, applyNeedDeltas, initialNeeds, type NeedValues } from '@skyline/sim-needs';
 import { grantStarterMoney } from '../adapters/in-memory-economy.ts';
-import type { CellPlace } from '../world-data/cell-places-loader.ts';
+import type { CellPlace, CellSite } from '../world-data/cell-places-loader.ts';
 import type { DailyLifeContent } from './daily-life-content.ts';
 import { PlayerLife, type RunningAction } from './player-life.ts';
 import { SiteReservations } from './site-reservations.ts';
@@ -22,6 +23,8 @@ export interface DailyLifeDeps {
   readonly clockRatio: () => number;
   readonly send: (sessionId: string, message: ServerMessage) => void;
   readonly starterDjai: number;
+  /** Real clock in ms (injected by tests); default Date.now. */
+  readonly realNow?: () => number;
 }
 
 export interface PlayerPositions {
@@ -40,7 +43,6 @@ const distance = (a: { x: number; z: number } | null, b: { x: number; z: number 
 export class DailyLife {
   private readonly players = new Map<string, PlayerLife>();
   private readonly reservations = new SiteReservations();
-  private readonly settlements = new SettlementStore();
 
   constructor(
     private readonly deps: DailyLifeDeps,
@@ -107,23 +109,28 @@ export class DailyLife {
     if (!action) return reject('unknown_action');
     if (!place) return reject('unknown_place');
     if (life.running) return reject('busy');
-    const site = place.sites.find((s) => s.kind === action.where.site);
-    const placeType = this.deps.content.placeTypes.get(place.placeType);
-    const placeView = {
-      placeId: place.id,
-      placeType: place.placeType,
-      openingHours: placeType?.openingHours ?? [],
-      distanceToSiteM: site ? distance(this.world.positionOf(life.sessionId), site) : Number.POSITIVE_INFINITY,
-      freeSites: site ? this.reservations.free(place.id, site.kind, site.capacity) : 0,
-    };
+    const { site, placeView } = this.placeViewFor(life, action, place);
     let run = requestRun({ requestId: body.requestId, action, actor: this.actorView(life), place: placeView });
     if (run.state === 'rejected' || !site) {
       return this.sendUpdate(life, { requestId: run.requestId, actionId: action.id, state: 'rejected', progress: 0, refusals: run.refusals.map((r) => ({ code: r.code, ...(r.params ? { params: r.params } : {}) })) });
     }
-    run = reserveRun(run, this.reservations.reserve(run.requestId, place.id, site.kind, site.capacity));
+    run = reserveRun(run, this.reservations.reserve(life.scoped(run.requestId), place.id, site.kind, site.capacity));
     if (run.state === 'rejected') return reject('no_free_site');
-    life.running = { run: startRun(run, Date.now()), action, place, site };
+    life.running = { run: startRun(run, (this.deps.realNow ?? Date.now)()), action, place, site };
     this.sendUpdate(life, { requestId: run.requestId, actionId: action.id, state: 'running', progress: 0, refusals: [] });
+  }
+
+  /** The site of the action at this place (if any) and what the engine needs to know about the place. */
+  private placeViewFor(life: PlayerLife, action: Action, place: CellPlace): { site: CellSite | undefined; placeView: PlaceView } {
+    const site = place.sites.find((s) => s.kind === action.where.site);
+    const placeView: PlaceView = {
+      placeId: place.id,
+      placeType: place.placeType,
+      openingHours: this.deps.content.placeTypes.get(place.placeType)?.openingHours ?? [],
+      distanceToSiteM: site ? distance(this.world.positionOf(life.sessionId), site) : Number.POSITIVE_INFINITY,
+      freeSites: site ? this.reservations.free(place.id, site.kind, site.capacity) : 0,
+    };
+    return { site, placeView };
   }
 
   private async cancel(life: PlayerLife, requestId: string): Promise<void> {
@@ -152,13 +159,13 @@ export class DailyLife {
   /** Settles an ended run once, commits its legs, applies its effects and frees the site. */
   private async finish(life: PlayerLife, running: RunningAction, ended: RunningAction['run']): Promise<void> {
     life.running = null;
-    this.reservations.release(ended.requestId);
+    this.reservations.release(life.scoped(ended.requestId));
     const ctx = { actorAccount: characterAccount(life.characterId), providerAccount: `place:${running.place.id}`, actionId: running.action.id, nearbyCharacters: this.world.nearby(life.sessionId, SOCIAL_RADIUS_M) };
-    const settlement = this.settlements.settleOnce({ run: ended, action: running.action, ctx, gameMinute: this.deps.gameMinute() });
+    const settlement = life.settlements.settleOnce({ run: ended, action: running.action, ctx, gameMinute: this.deps.gameMinute() });
     const legs = legsFromTransfers(settlement.batch.legs);
     let txId: string | null = null;
     if (legs.length > 0) {
-      const result = await this.deps.economy.commit({ idempotencyKey: settlement.key, kind: legs.some((l) => l.account === 'system:wages') ? 'wage' : 'purchase', legs, reason: { actionId: running.action.id, placeId: running.place.id, requestId: ended.requestId } });
+      const result = await this.deps.economy.commit({ idempotencyKey: `action:${life.scoped(ended.requestId)}`, kind: legs.some((l) => l.account === 'system:wages') ? 'wage' : 'purchase', legs, reason: { actionId: running.action.id, placeId: running.place.id, requestId: ended.requestId } });
       if (!result.ok) {
         return this.sendUpdate(life, { requestId: ended.requestId, actionId: running.action.id, state: 'failed', progress: ended.progress, refusals: [{ code: result.code.toLowerCase() }] });
       }
