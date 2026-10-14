@@ -1,0 +1,15 @@
+{
+  "$schema": "../../../tools/content-cli/schemas/action.schema.json",
+  "id": "worship.pray_church",
+  "version": 1,
+  "category": "worship",
+  "labelKey": "action.worship.pray_church.label",
+  "icon": "ui_icon_pray",
+  "tags": ["worship", "free", "night"],
+  "where": { "placeTypes": ["church"], "site": "pew", "interactionRadiusM": 2 },
+  "when": { "openingHoursFrom": "place", "windows": [] },
+  "requires": { "state": ["on_foot", "not_in_action"], "cooldown": { "gameMinutes": 360, "scope": "character" } },
+  "duration": { "gameMinutes": 45, "real": { "maxSeconds": 60 }, "interruptible": true, "onInterrupt": "refund_none_no_effects" },
+  "phases": [{ "id": "pray", "animation": "anm_pray_seated", "loop": true }],
+  "effects": { "onComplete": [{ "type": "need", "need": "social", "delta": 15 }, { "type": "need", "need": "fun", "delta": 5 }] }
+}

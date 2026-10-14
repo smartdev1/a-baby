@@ -1,0 +1,11 @@
+{
+  "$schema": "../../tools/content-cli/schemas/needs.schema.json",
+  "version": 1,
+  "needs": {
+    "hunger": { "start": 80, "decayPerGameHour": 4.5, "warnBelow": 25, "penaltiesAtZero": ["slow_walk", "no_work_actions"] },
+    "energy": { "start": 90, "decayPerGameHour": 5, "warnBelow": 20, "penaltiesAtZero": ["slow_walk", "no_work_actions", "no_sport_actions"] },
+    "hygiene": { "start": 85, "decayPerGameHour": 2.5, "warnBelow": 25, "penaltiesAtZero": ["social_refusals"] },
+    "social": { "start": 70, "decayPerGameHour": 2.5, "warnBelow": 20, "penaltiesAtZero": [] },
+    "fun": { "start": 70, "decayPerGameHour": 2.5, "warnBelow": 20, "penaltiesAtZero": [] }
+  }
+}

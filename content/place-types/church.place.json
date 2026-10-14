@@ -1,0 +1,1 @@
+{ "$schema": "../../tools/content-cli/schemas/place-type.schema.json", "id": "church", "version": 1, "labelKey": "place.church.label", "osmCategories": ["worship.church"], "sites": [{ "kind": "pew", "capacity": 40, "placement": "inside" }], "openingHours": [{ "from": "05:00", "to": "22:00" }], "sanctuary": true }

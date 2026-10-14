@@ -1,0 +1,1 @@
+{ "$schema": "../../tools/content-cli/schemas/place-type.schema.json", "id": "mosque", "version": 1, "labelKey": "place.mosque.label", "osmCategories": ["worship.mosque"], "sites": [{ "kind": "prayer_mat", "capacity": 40, "placement": "inside" }], "openingHours": [], "sanctuary": true }

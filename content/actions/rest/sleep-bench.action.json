@@ -1,0 +1,18 @@
+{
+  "$schema": "../../../tools/content-cli/schemas/action.schema.json",
+  "id": "rest.sleep_bench",
+  "version": 1,
+  "category": "rest",
+  "labelKey": "action.rest.sleep_bench.label",
+  "icon": "ui_icon_sleep",
+  "tags": ["rest", "free", "night"],
+  "where": { "placeTypes": ["bench"], "site": "bench_seat", "interactionRadiusM": 1.5 },
+  "when": { "openingHoursFrom": "none", "windows": [] },
+  "requires": { "needs": { "energy": { "max": 70 } }, "state": ["on_foot", "not_in_action"] },
+  "duration": { "gameMinutes": 360, "real": { "maxSeconds": 150 }, "interruptible": true, "onInterrupt": "refund_none_partial_effects" },
+  "phases": [{ "id": "lie_down", "animation": "anm_lie_bench", "realSeconds": 3 }, { "id": "sleep", "animation": "anm_sleep_bench", "loop": true }],
+  "effects": {
+    "onComplete": [{ "type": "need", "need": "hygiene", "delta": -10 }],
+    "continuous": [{ "type": "need", "need": "energy", "deltaPerGameHour": 11 }]
+  }
+}
