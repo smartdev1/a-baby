@@ -12,5 +12,7 @@
   "14-tile-cut/tiles.ndjson": "bd8813d06e99ef8bc777b49d2ac44e5095b14d7d15f3c1e469438b3433886e56",
   "15-lod-build/lod-index.json": "867432b55b832cc3d9a47432677fac77187560539c6c303ed7c2ea6fd5796f80",
   "16-encode/encode-index.json": "49545b140e29338510a0977b9cecd653c3d26d45b164c6080d982bf5e63098cf",
-  "17-manifest/world-manifest.pigeons-fixture-2026-10-13.json": "bd05dfaa04e661dfc0cefd5c8fa40a26dc7e6bcf087eddec860d36683276163d"
+  "17-manifest/world-manifest.pigeons-fixture-2026-10-13.json": "577a6e695cbf8fb12e3932c1eda6086c5e5cf233ab860dc8455362deddc2a917",
+  "17-manifest/ATTRIBUTION.md": "00a21cca6556f439430f68842ed8d7cc52154af92d496f982eef7d03a2878628",
+  "17-manifest/osm-derived.pigeons-fixture-2026-10-13.tar.gz": "0c688b96306a7fc2b63979608c58f9aadb743bf3a618d37e9c637490c5393e72"
 }

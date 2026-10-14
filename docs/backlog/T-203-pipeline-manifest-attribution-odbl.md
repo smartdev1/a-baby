@@ -1,9 +1,9 @@
 ---
 id: T-203
 title: Pipeline stage `manifest-attribution`: ATTRIBUTION file and ODbL archive of the `osm-derived` layer
-status: todo
+status: review
 owner: backend
-author_of_code:
+author_of_code: backend-dev (Claude, for Ky-Wilson)
 priority: P1
 size: S
 ---
@@ -19,9 +19,9 @@ Jalon : **J2** (`docs/roadmap.md`, J2-13).
 As the owner, I want every world release to ship its attribution and the ODbL-derived data so that SkyLine complies with the OpenStreetMap licence.
 
 ## Acceptance criteria
-- [ ] Given a release, When `17-manifest` runs, Then it writes `ATTRIBUTION.md` (OSM, Copernicus DEM, generation date, snapshot) and `osm-derived.<release>.tar.gz` containing the OSM-derived records (normalized, classified, buildings, roads, place names) with a README stating the ODbL.
-- [ ] Given the archive, Then its sha256 is listed in the manifest and the build is deterministic (fixed mtime, sorted entries).
-- [ ] Given the fixture, Then the golden test covers the archive hash.
+- [x] Given a release, When `17-manifest` runs, Then it writes `ATTRIBUTION.md` (OSM, Copernicus DEM, generation date, snapshot) and `osm-derived.<release>.tar.gz` containing the OSM-derived records (normalized, classified, buildings, roads, place names) with a README stating the ODbL.
+- [x] Given the archive, Then its sha256 is listed in the manifest and the build is deterministic (fixed mtime, sorted entries).
+- [x] Given the fixture, Then the golden test covers the archive hash.
 
 ## Out of scope
 
@@ -35,7 +35,10 @@ Règles : `docs/rules/BACKEND.md`, ARCHITECTURE.md §9 et §11. Toute nouvelle d
 
 ## Implementation log
 
-(filled by the implementer)
+- 2026-10-14 — `writers/deterministic-tar-gz.ts` (ustar + gzip streamed, fixed mtime = snapshot day, uid/gid 0, mode 0644, gzip OS byte set to 255 so Linux and Windows builds match); `stages/17-manifest/release-attribution.ts` (texts, list of OSM-derived files); `17-manifest` v3 writes `ATTRIBUTION.md` and `osm-derived.<release>.tar.gz` and lists the archive in the manifest (`osmDerived`, `attributionFile`, optional fields of `WorldManifestSchema`).
+- Golden test covers both files (two builds, identical bytes).
+- Yopougon: archive 20.5 MB (128 MB uncompressed), 8.5 s.
+- Owner: publish the archive next to the game at release time; Copernicus licence review still pending (Q8).
 
 ## Review
 

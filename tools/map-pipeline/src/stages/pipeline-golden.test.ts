@@ -33,6 +33,8 @@ const CHECKED_OUTPUTS = [
   '15-lod-build/lod-index.json',
   '16-encode/encode-index.json',
   '17-manifest/world-manifest.pigeons-fixture-2026-10-13.json',
+  '17-manifest/ATTRIBUTION.md',
+  '17-manifest/osm-derived.pigeons-fixture-2026-10-13.tar.gz',
 ];
 const logger = createLogger({ service: 'golden', level: 'silent' });
 // Two workers: the parallel path is exercised (its output must match the golden hashes) without starting one worker per core.
