@@ -11,11 +11,15 @@
   },
   "dependencies": {
     "@skyline/bus": "workspace:*",
+    "@skyline/content-schema": "workspace:*",
+    "@skyline/economy-rules": "workspace:*",
     "@skyline/geo": "workspace:*",
     "@skyline/observability": "workspace:*",
     "@skyline/physics": "workspace:*",
     "@skyline/protocol": "workspace:*",
+    "@skyline/sim-actions": "workspace:*",
     "@skyline/sim-clock": "workspace:*",
+    "@skyline/sim-needs": "workspace:*",
     "@skyline/tile-format": "workspace:*",
     "zod": "^4.6.6"
   },

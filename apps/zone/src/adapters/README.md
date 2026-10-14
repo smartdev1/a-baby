@@ -1,11 +1,15 @@
 # `apps/zone/src/adapters/`
 
 - **Owner:** backend developer
-- **Status:** Planned — J1
+- **Status:** Active — T-306
 
 ## Role
 
 In-memory and NATS implementations of the ports.
+
+| File | Role |
+|---|---|
+| `in-memory-economy.ts` | `EconomyPort` in memory (J3, until the PostgreSQL ledger of J6): all-or-nothing double-entry commits, player balances ≥ 0, idempotency by key (successful results only), starter grant `grant:starter:{characterId}` |
 
 ## Rules
 

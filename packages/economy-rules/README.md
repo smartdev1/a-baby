@@ -1,7 +1,7 @@
 # `packages/economy-rules/`
 
 - **Owner:** backend developer
-- **Status:** Skeleton — J6
+- **Status:** Active — T-306 (EconomyPort contract, leg rules)
 
 ## Role
 
@@ -9,7 +9,7 @@ Pure Djai economy rules: price computation, price bounds, caps. Never writes bal
 
 ## How it works
 
-Public API is exported from `src/index.ts` only. Profile: `pure`. First implementation: J6.
+Public API is exported from `src/index.ts` only. Profile: `pure`. Contract and pure leg rules (J3); price bounds and caps come with businesses (J5/J6).
 
 ## Rules
 

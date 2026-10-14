@@ -5,7 +5,10 @@
 
 ## Role
 
-Source code of @skyline/economy-rules.
+| File | Role |
+|---|---|
+| `economy-port.ts` | `EconomyPort` contract of ARCHITECTURE §18 (commit request / result, account refs, bigint amounts) |
+| `ledger-legs.ts` | Account kinds, accounts that must stay ≥ 0, leg validation, transfers → balanced legs |
 
 ## How it works
 

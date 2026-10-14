@@ -328,6 +328,12 @@ importers:
       '@skyline/bus':
         specifier: workspace:*
         version: link:../../packages/bus
+      '@skyline/content-schema':
+        specifier: workspace:*
+        version: link:../../packages/content-schema
+      '@skyline/economy-rules':
+        specifier: workspace:*
+        version: link:../../packages/economy-rules
       '@skyline/geo':
         specifier: workspace:*
         version: link:../../packages/geo
@@ -340,9 +346,15 @@ importers:
       '@skyline/protocol':
         specifier: workspace:*
         version: link:../../packages/protocol
+      '@skyline/sim-actions':
+        specifier: workspace:*
+        version: link:../../packages/sim-actions
       '@skyline/sim-clock':
         specifier: workspace:*
         version: link:../../packages/sim-clock
+      '@skyline/sim-needs':
+        specifier: workspace:*
+        version: link:../../packages/sim-needs
       '@skyline/tile-format':
         specifier: workspace:*
         version: link:../../packages/tile-format
