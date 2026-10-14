@@ -38,3 +38,14 @@ export type {
   WelcomeMessage,
   WorldClockMessage,
 } from './messages/control-schemas.ts';
+export {
+  CHAT_MAX_CHARS,
+  CHAT_REJECTIONS,
+  CHAT_REPORT_REASONS,
+  type ChatBlockMessage,
+  type ChatMessageBody,
+  type ChatRejectedMessage,
+  type ChatReportMessage,
+  type ChatReportReason,
+  type ChatSendMessage,
+} from './messages/chat-schemas.ts';

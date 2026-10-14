@@ -1,10 +1,11 @@
 /**
- * Role: authoritative runtime of one cell: players join through the bus or a border handoff, inputs are simulated with @skyline/physics at 20 Hz, acks go back on each session subject and one snapshot per cell on the cell subject; daily life (actions, needs, Djai) runs at 1 Hz when configured.
+ * Role: authoritative runtime of one cell: players join through the bus or a border handoff, inputs are simulated with @skyline/physics at 20 Hz, acks go back on each session subject and one snapshot per cell on the cell subject; daily life (actions, needs, Djai) runs at 1 Hz and the proximity chat when configured.
  * Owner: backend
  */
 
 import {
   type CellAction,
+  type CellChat,
   type CellHandoff,
   type CellSnapshot,
   type CellInput,
@@ -20,6 +21,7 @@ import { type CharacterState, type CollisionWorld, FIXED_STEP_S, stepCharacter }
 import { type EntityState, MAX_SNAPSHOT_ENTITIES, PROTOCOL_VERSION, type ServerMessage } from '@skyline/protocol';
 import type { ClockSegment } from '@skyline/sim-clock';
 import { DailyLife, type DailyLifeDeps, type PlayerPositions } from '../actions/daily-life.ts';
+import { type ChatPlayers, ProximityChat, type ProximityChatDeps } from '../chat/proximity-chat.ts';
 import { entityIdOf, leftCellTowards, stateFromHandoff, toHandoff } from '../handoff/cell-handoff.ts';
 import { InputForwarding } from '../handoff/input-forwarding.ts';
 import { entityStateCode } from './entity-state-code.ts';
@@ -44,9 +46,11 @@ export interface ZoneCellOptions {
   readonly clusterCells?: ReadonlySet<string>;
   /** Daily life (actions, needs, Djai); absent = movement only. */
   readonly daily?: Omit<DailyLifeDeps, 'send'>;
+  /** Proximity chat (word list, moderation queue); absent = no chat. */
+  readonly chat?: Pick<ProximityChatDeps, 'blockedWords' | 'reports'>;
 }
 
-export class ZoneCell implements PlayerPositions {
+export class ZoneCell implements PlayerPositions, ChatPlayers {
   private readonly players = new Map<string, PlayerSlot>();
   private readonly stats = new TickStats();
   private readonly unsubscribes: Unsubscribe[] = [];
@@ -55,9 +59,24 @@ export class ZoneCell implements PlayerPositions {
   private readonly handoffMs: number[] = [];
   private readonly forwarding = new InputForwarding();
   private readonly daily: DailyLife | null;
+  private readonly chat: ProximityChat | null;
 
   constructor(private readonly options: ZoneCellOptions) {
     this.daily = options.daily ? new DailyLife({ ...options.daily, send: (sessionId, m) => this.send(sessionId, m) }, this) : null;
+    const send = (sessionId: string, m: ServerMessage): void => this.send(sessionId, m);
+    this.chat = options.chat ? new ProximityChat({ ...options.chat, cellKey: options.cellKey, send, now: () => Date.now() }, this) : null;
+  }
+
+  entityOf(sessionId: string): number | null {
+    return this.players.get(sessionId)?.entityId ?? null;
+  }
+
+  sessionsWithin(sessionId: string, radiusM: number): string[] {
+    const me = this.positionOf(sessionId);
+    if (!me) return [];
+    const out: string[] = [];
+    for (const [id, other] of this.players) if (Math.hypot(other.state.position.x - me.x, other.state.position.z - me.z) <= radiusM) out.push(id);
+    return out;
   }
 
   positionOf(sessionId: string): { x: number; z: number } | null {
@@ -83,7 +102,9 @@ export class ZoneCell implements PlayerPositions {
         this.players.delete(m.sessionId);
         this.forwarding.remove(m.sessionId);
         void this.daily?.removePlayer(m.sessionId, 'disconnected');
+        this.chat?.remove(m.sessionId);
       }),
+      bus.subscribe<CellChat>(subjects.cellChat(cellKey), (m) => void this.chat?.handle(m.sessionId, m.message)),
       bus.subscribe<CellAction>(subjects.cellAction(cellKey), (m) => void this.daily?.handle(m.sessionId, m.message)),
       bus.subscribe<CellHandoff>(subjects.cellHandoff(cellKey), (m) => void this.adopt(m)),
     );
@@ -149,6 +170,7 @@ export class ZoneCell implements PlayerPositions {
     if (this.handoffMs.length > 10_000) this.handoffMs.shift();
     await this.welcome(player);
     await this.daily?.addPlayer(h.sessionId, h.needs);
+    this.chat?.restoreBlocks(h.sessionId, h.chatBlocked ?? []);
   }
 
   private async welcome(player: PlayerSlot): Promise<void> {
@@ -222,13 +244,20 @@ export class ZoneCell implements PlayerPositions {
       player.state = { ...before, velocity: { x: 0, y: before.velocity.y, z: 0 } };
       return false;
     }
-    const needs = this.daily?.needsOf(player.sessionId)?.values;
-    const handoff = toHandoff({ ...player, yawRad: player.lastInput.yawRad }, this.options.frameOrigin, Date.now());
-    this.options.bus.publish(subjects.cellHandoff(target), needs ? { ...handoff, needs } : handoff);
+    this.options.bus.publish(subjects.cellHandoff(target), this.handoffOf(player));
     void this.daily?.removePlayer(player.sessionId, 'left_cell');
+    this.chat?.remove(player.sessionId);
     this.players.delete(player.sessionId);
     this.forwarding.add(player.sessionId, target, this.tick);
     return true;
+  }
+
+  /** Authoritative state plus what daily life and the chat carry to the next cell. */
+  private handoffOf(player: PlayerSlot): CellHandoff {
+    const handoff = toHandoff({ ...player, yawRad: player.lastInput.yawRad }, this.options.frameOrigin, Date.now());
+    const needs = this.daily?.needsOf(player.sessionId)?.values;
+    const chatBlocked = this.chat?.blocksOf(player.sessionId) ?? [];
+    return { ...handoff, ...(needs ? { needs } : {}), ...(chatBlocked.length > 0 ? { chatBlocked } : {}) };
   }
 
   private broadcastSnapshot(): void {

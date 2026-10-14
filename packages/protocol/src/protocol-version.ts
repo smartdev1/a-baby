@@ -4,4 +4,5 @@
  */
 
 /** v2: action request / cancel, action / needs / wallet updates (T-307). */
-export const PROTOCOL_VERSION = 2;
+/** v3: proximity chat (send, block, report; filtered message, refusal) (T-318). */
+export const PROTOCOL_VERSION = 3;

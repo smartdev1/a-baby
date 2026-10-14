@@ -10,7 +10,7 @@ const requestId = '7f9c2a10-1b2c-4d5e-8f90-123456789abc';
 
 describe('protocol v2 action messages', () => {
   it('should be protocol version 2', () => {
-    expect(PROTOCOL_VERSION).toBe(2);
+    expect(PROTOCOL_VERSION).toBe(3);
   });
 
   it('should round-trip action request and cancel', () => {

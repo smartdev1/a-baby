@@ -8,7 +8,7 @@ import { startGateway, type Gateway } from '@skyline/gateway';
 import { cellKeyOf, toUtm30n } from '@skyline/geo';
 import type { Logger } from '@skyline/observability';
 import { buildServices, type Services, type ServicesConfig } from '@skyline/services';
-import { InMemoryEconomy, loadCellCollision, setUpDailyLife, ZoneCell } from '@skyline/zone';
+import { InMemoryChatReports, InMemoryEconomy, loadBlockedWords, loadCellCollision, setUpDailyLife, ZoneCell } from '@skyline/zone';
 import type { AllInOneConfig } from './all-in-one-config.ts';
 
 export interface World {
@@ -57,6 +57,7 @@ export const composeWorld = async (
     clock: () => services.worldClock.current(),
     logger: logger.child({ module: 'zone', cellKey }),
     daily: daily.deps,
+    chat: { blockedWords: await loadBlockedWords(servicesConfig.contentDir), reports: new InMemoryChatReports(logger.child({ module: 'chat' })) },
   });
   cell.start();
   const gateway = startGateway({

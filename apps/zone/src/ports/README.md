@@ -1,11 +1,15 @@
 # `apps/zone/src/ports/`
 
 - **Owner:** backend developer
-- **Status:** Planned — J1
+- **Status:** Active
 
 ## Role
 
-Interfaces to the outside world (EconomyPort, CharacterStorePort, ClockPort…).
+Interfaces to the outside world (EconomyPort, CharacterStorePort, ClockPort…). `EconomyPort` lives in `@skyline/economy-rules`.
+
+| File | Role |
+|---|---|
+| `chat-report-port.ts` | `ChatReportPort`: chat reports with their excerpt to the moderation queue |
 
 ## Rules
 
