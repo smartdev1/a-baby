@@ -34,6 +34,7 @@ export {
 } from './messages/action-schemas.ts';
 export type {
   HelloMessage,
+  ResumeInfoMessage,
   ServerErrorMessage,
   WelcomeMessage,
   WorldClockMessage,

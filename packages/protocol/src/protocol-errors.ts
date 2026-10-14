@@ -20,6 +20,7 @@ export class ProtocolDecodeError extends Error {
 export const SERVER_ERROR_CODES = [
   'version_mismatch',
   'invalid_ticket',
+  'session_replaced',
   'malformed_message',
   'rate_limited',
   'server_full',

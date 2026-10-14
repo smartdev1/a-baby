@@ -6,4 +6,5 @@
 /** v2: action request / cancel, action / needs / wallet updates (T-307). */
 /** v3: proximity chat (send, block, report; filtered message, refusal) (T-318). */
 /** v4: line rides (ride request, ride update) (T-320). */
-export const PROTOCOL_VERSION = 4;
+/** v5: session resume (hello with resumeToken, resume info, session_replaced) (T-321). */
+export const PROTOCOL_VERSION = 5;

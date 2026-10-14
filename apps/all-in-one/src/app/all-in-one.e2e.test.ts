@@ -1,5 +1,5 @@
 /**
- * Role: end-to-end test of the all-in-one mode over a real WebSocket: ticket → hello → welcome + world clock → inputs → authoritative acks; daily life: starter Djai, needs, refused action request.
+ * Role: end-to-end test of the all-in-one mode over a real WebSocket: ticket → hello → resume info + welcome + world clock → inputs → authoritative acks; daily life: starter Djai, needs, refused action request.
  * Owner: backend
  */
 
@@ -54,7 +54,8 @@ describe('all-in-one', () => {
     await new Promise((r) => setTimeout(r, 300));
     socket.close();
 
-    expect(received[0]).toMatchObject({ type: 'welcome', body: { cellKey: world.cellKey, tickRateHz: 20 } });
+    expect(received[0]).toMatchObject({ type: 'resumeInfo', body: { windowS: 60 } });
+    expect(received[1]).toMatchObject({ type: 'welcome', body: { cellKey: world.cellKey, tickRateHz: 20 } });
     expect(received.some((m) => m.type === 'worldClock')).toBe(true);
     const lastAck = received.filter((m) => m.type === 'inputAck').at(-1);
     expect(lastAck?.type === 'inputAck' && lastAck.body.lastSeq).toBe(10);

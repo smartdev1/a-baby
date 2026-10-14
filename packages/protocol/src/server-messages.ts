@@ -1,5 +1,5 @@
 /**
- * Role: everything the server may send (welcome, input_ack, snapshot, world_clock, pong, error, action / needs / wallet updates, chat message and refusal, ride update): one encoder and one decoder, used by the gateway and the web client.
+ * Role: everything the server may send (welcome, input_ack, snapshot, world_clock, pong, error, action / needs / wallet updates, chat message and refusal, ride update, resume info): one encoder and one decoder, used by the gateway and the web client.
  * Owner: backend
  */
 
@@ -18,6 +18,8 @@ import { type ChatMessageBody, ChatMessageSchema, type ChatRejectedMessage, Chat
 import { decodeControl, encodeControl } from './messages/control-codec.ts';
 import { type RideUpdateMessage, RideUpdateSchema } from './messages/ride-schemas.ts';
 import {
+  type ResumeInfoMessage,
+  ResumeInfoSchema,
   type ServerErrorMessage,
   ServerErrorSchema,
   type WelcomeMessage,
@@ -47,7 +49,8 @@ export type ServerMessage =
   | { readonly type: 'walletUpdate'; readonly body: WalletUpdateMessage }
   | { readonly type: 'chatMessage'; readonly body: ChatMessageBody }
   | { readonly type: 'chatRejected'; readonly body: ChatRejectedMessage }
-  | { readonly type: 'rideUpdate'; readonly body: RideUpdateMessage };
+  | { readonly type: 'rideUpdate'; readonly body: RideUpdateMessage }
+  | { readonly type: 'resumeInfo'; readonly body: ResumeInfoMessage };
 
 /** Binary messages have their own codec; every other message is a validated control message under its type byte. */
 export const encodeServerMessage = (m: ServerMessage): Uint8Array => {
@@ -73,6 +76,7 @@ const DECODERS: Record<number, (r: FrameReader) => ServerMessage> = {
   [SERVER_MESSAGE.chatMessage]: (r) => ({ type: 'chatMessage', body: decodeControl(r.rest(), ChatMessageSchema, 'chat_message') }),
   [SERVER_MESSAGE.chatRejected]: (r) => ({ type: 'chatRejected', body: decodeControl(r.rest(), ChatRejectedSchema, 'chat_rejected') }),
   [SERVER_MESSAGE.rideUpdate]: (r) => ({ type: 'rideUpdate', body: decodeControl(r.rest(), RideUpdateSchema, 'ride_update') }),
+  [SERVER_MESSAGE.resumeInfo]: (r) => ({ type: 'resumeInfo', body: decodeControl(r.rest(), ResumeInfoSchema, 'resume_info') }),
 };
 
 /** Throws only ProtocolDecodeError. */

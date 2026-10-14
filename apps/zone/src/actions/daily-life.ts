@@ -236,6 +236,14 @@ export class DailyLife {
     this.deps.send(life.sessionId, { type: 'needsUpdate', body: { values } });
   }
 
+  /** Sends the current needs and balance again (resumed connection). */
+  async resync(sessionId: string): Promise<void> {
+    const life = this.players.get(sessionId);
+    if (!life) return;
+    this.sendNeeds(life, true);
+    await this.sendWallet(life, null);
+  }
+
   characterOf(sessionId: string): string | null {
     return this.players.get(sessionId)?.characterId ?? null;
   }

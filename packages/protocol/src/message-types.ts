@@ -17,6 +17,7 @@ export const SERVER_MESSAGE = {
   chatMessage: 110,
   chatRejected: 111,
   rideUpdate: 112,
+  resumeInfo: 113,
 } as const;
 
 export type ClientMessageType = keyof typeof CLIENT_MESSAGE;

@@ -1,5 +1,5 @@
 /**
- * Role: one client connection: handshake (protocol version + single-use ticket), then inputs forwarded to the player's current cell (updated on each cell welcome after a handoff), session messages and the cell snapshots forwarded back filtered by the player's interest set; malformed or flooding clients are disconnected.
+ * Role: one client connection: handshake (protocol version + single-use ticket, or resume token of a dropped session), then inputs forwarded to the player's current cell (updated on each cell welcome after a handoff), session messages and the cell snapshots forwarded back filtered by the player's interest set; a dropped connection leaves the session alive 60 s for a resume; malformed or flooding clients are disconnected for good.
  * Owner: backend
  */
 
@@ -18,6 +18,7 @@ import {
 import type { TicketVerifier } from '../auth/ticket-verifier.ts';
 import type { CellFanout } from '../routing/cell-fanout.ts';
 import { RateLimiter } from './rate-limiter.ts';
+import { RESUME_WINDOW_S, type ResumeRegistry, type SessionHandle } from './resume-registry.ts';
 
 /** What the session needs from the socket. */
 export interface ClientLink {
@@ -37,14 +38,15 @@ export interface ClientSessionDeps {
 /** Shared by every session of one gateway. */
 export interface SessionContext extends ClientSessionDeps {
   readonly fanout: CellFanout;
+  readonly resumes: ResumeRegistry;
 }
 
 const RATE_PER_S = 60;
 const BURST = 120;
 const MAX_VIOLATIONS = 20;
 
-export class ClientSession {
-  readonly sessionId = randomUUID();
+export class ClientSession implements SessionHandle {
+  private id: string = randomUUID();
   private phase: 'awaiting-hello' | 'checking-ticket' | 'playing' | 'closed' = 'awaiting-hello';
   private cellKey: string | null = null;
   private unsubscribe: Unsubscribe | null = null;
@@ -60,6 +62,10 @@ export class ClientSession {
     this.limiter = new RateLimiter(RATE_PER_S, BURST, deps.now ?? (() => Date.now()));
   }
 
+  get sessionId(): string {
+    return this.id;
+  }
+
   receive(frame: Uint8Array): void {
     if (this.phase === 'closed') return;
     if (!this.limiter.allow()) return this.violation('rate_limited', 'too many messages');
@@ -73,13 +79,35 @@ export class ClientSession {
     this.handle(message);
   }
 
-  /** Socket closed by the client or the network. */
+  /** Socket closed by the client or the network: the session waits 60 s for a resume, then every cell forgets it. */
   close(): void {
     if (this.phase === 'closed') return;
+    const playing = this.phase === 'playing';
+    this.detach();
+    if (playing) this.deps.resumes.suspend(this.id, this, () => this.deps.bus.publish(subjects.sessionClosed(), { sessionId: this.id }));
+  }
+
+  /** A newer connection resumed this session: this one stops without ending the session. */
+  replaced(): void {
+    if (this.phase === 'closed') return;
+    this.send({ type: 'error', body: { code: 'session_replaced', message: 'this session continues on another connection' } });
+    this.detach();
+    this.link.close();
+  }
+
+  /** Kicked: the session ends now, with no resume. */
+  private terminate(): void {
+    const playing = this.phase === 'playing';
+    this.detach();
+    if (!playing) return;
+    this.deps.resumes.revoke(this.id);
+    this.deps.bus.publish(subjects.sessionClosed(), { sessionId: this.id });
+  }
+
+  private detach(): void {
     this.phase = 'closed';
     this.unsubscribe?.();
     this.leaveSnapshots?.();
-    if (this.cellKey) this.deps.bus.publish(subjects.sessionClosed(), { sessionId: this.sessionId });
   }
 
   private handle(message: ClientMessage): void {
@@ -100,15 +128,30 @@ export class ClientSession {
   private async handshake(hello: Extract<ClientMessage, { type: 'hello' }>['body']): Promise<void> {
     const versionError = checkHello(hello);
     if (versionError) return this.reject(versionError.code, versionError.message);
+    if (hello.resumeToken !== undefined) return this.resume(hello.resumeToken);
     this.phase = 'checking-ticket';
-    const valid = await Promise.resolve(this.deps.tickets.consume(hello.ticket)).catch(() => false);
+    const valid = await Promise.resolve(this.deps.tickets.consume(hello.ticket ?? '')).catch(() => false);
     if (this.phase !== 'checking-ticket') return; // closed while the ticket was checked
     if (!valid) return this.reject('invalid_ticket', 'invalid or expired session ticket');
+    this.play(this.deps.spawnCell);
+  }
+
+  private resume(token: string): void {
+    const session = this.deps.resumes.take(token);
+    if (!session) return this.reject('invalid_ticket', 'invalid or expired resume token');
+    this.id = session.sessionId;
+    this.play(session.cellKey);
+  }
+
+  /** Joins the cell (a resumed player is still there: the cell only welcomes it again) and hands out the next resume token. */
+  private play(cellKey: string): void {
     this.phase = 'playing';
-    this.cellKey = this.deps.spawnCell;
-    this.unsubscribe = this.deps.bus.subscribe<ServerMessage>(subjects.sessionOut(this.sessionId), (m) => this.fromCell(m));
-    this.followCell(this.cellKey);
-    this.deps.bus.publish(subjects.cellJoin(this.cellKey), { sessionId: this.sessionId });
+    this.cellKey = cellKey;
+    this.unsubscribe = this.deps.bus.subscribe<ServerMessage>(subjects.sessionOut(this.id), (m) => this.fromCell(m));
+    this.followCell(cellKey);
+    const resumeToken = this.deps.resumes.attach(this.id, cellKey, this);
+    this.send({ type: 'resumeInfo', body: { resumeToken, windowS: RESUME_WINDOW_S } });
+    this.deps.bus.publish(subjects.cellJoin(cellKey), { sessionId: this.id });
   }
 
   /** A welcome from another cell means the player was handed over: later inputs and snapshots come from that cell. */
@@ -116,6 +159,7 @@ export class ClientSession {
     if (message.type === 'welcome') this.entityId = message.body.playerEntityId;
     if (message.type === 'welcome' && message.body.cellKey !== this.cellKey) {
       this.cellKey = message.body.cellKey;
+      this.deps.resumes.moved(this.id, this.cellKey);
       this.followCell(this.cellKey);
     }
     this.send(message);
@@ -139,7 +183,7 @@ export class ClientSession {
   private reject(code: ServerErrorCode, message: string): void {
     this.deps.logger.info({ sessionId: this.sessionId, code }, 'client rejected');
     this.send({ type: 'error', body: { code, message } });
-    this.close();
+    this.terminate();
     this.link.close();
   }
 

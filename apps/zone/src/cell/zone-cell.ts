@@ -171,6 +171,13 @@ export class ZoneCell implements PlayerPositions, ChatPlayers {
   }
 
   private async join(sessionId: string): Promise<void> {
+    const present = this.players.get(sessionId);
+    if (present) {
+      // A resumed session (its connection dropped less than 60 s ago): same player, same state, welcomed again.
+      await this.welcome(present);
+      await this.daily?.resync(sessionId);
+      return;
+    }
     const { spawn } = this.options;
     const y = this.options.world.groundHeightAt(spawn.x, spawn.z);
     const state: CharacterState = {
