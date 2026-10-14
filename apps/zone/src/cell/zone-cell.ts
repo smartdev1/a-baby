@@ -1,9 +1,10 @@
 /**
- * Role: authoritative runtime of one cell: players join through the bus or a border handoff, inputs are simulated with @skyline/physics at 20 Hz, acks go back on each session subject and one snapshot per cell on the cell subject.
+ * Role: authoritative runtime of one cell: players join through the bus or a border handoff, inputs are simulated with @skyline/physics at 20 Hz, acks go back on each session subject and one snapshot per cell on the cell subject; daily life (actions, needs, Djai) runs at 1 Hz when configured.
  * Owner: backend
  */
 
 import {
+  type CellAction,
   type CellHandoff,
   type CellSnapshot,
   type CellInput,
@@ -18,6 +19,7 @@ import type { Logger } from '@skyline/observability';
 import { type CharacterState, type CollisionWorld, FIXED_STEP_S, stepCharacter } from '@skyline/physics';
 import { type EntityState, MAX_SNAPSHOT_ENTITIES, PROTOCOL_VERSION, type ServerMessage } from '@skyline/protocol';
 import type { ClockSegment } from '@skyline/sim-clock';
+import { DailyLife, type DailyLifeDeps, type PlayerPositions } from '../actions/daily-life.ts';
 import { entityIdOf, leftCellTowards, stateFromHandoff, toHandoff } from '../handoff/cell-handoff.ts';
 import { InputForwarding } from '../handoff/input-forwarding.ts';
 import { entityStateCode } from './entity-state-code.ts';
@@ -40,9 +42,11 @@ export interface ZoneCellOptions {
   readonly logger: Logger;
   /** Cells owned by a running zone (this one included): players may only cross into them. Default: this cell only. */
   readonly clusterCells?: ReadonlySet<string>;
+  /** Daily life (actions, needs, Djai); absent = movement only. */
+  readonly daily?: Omit<DailyLifeDeps, 'send'>;
 }
 
-export class ZoneCell {
+export class ZoneCell implements PlayerPositions {
   private readonly players = new Map<string, PlayerSlot>();
   private readonly stats = new TickStats();
   private readonly unsubscribes: Unsubscribe[] = [];
@@ -50,8 +54,24 @@ export class ZoneCell {
   private tick = 0;
   private readonly handoffMs: number[] = [];
   private readonly forwarding = new InputForwarding();
+  private readonly daily: DailyLife | null;
 
-  constructor(private readonly options: ZoneCellOptions) {}
+  constructor(private readonly options: ZoneCellOptions) {
+    this.daily = options.daily ? new DailyLife({ ...options.daily, send: (sessionId, m) => this.send(sessionId, m) }, this) : null;
+  }
+
+  positionOf(sessionId: string): { x: number; z: number } | null {
+    const p = this.players.get(sessionId)?.state.position;
+    return p ? { x: p.x, z: p.z } : null;
+  }
+
+  nearby(sessionId: string, radiusM: number): number {
+    const me = this.positionOf(sessionId);
+    if (!me) return 0;
+    let n = 0;
+    for (const [id, other] of this.players) if (id !== sessionId && Math.hypot(other.state.position.x - me.x, other.state.position.z - me.z) <= radiusM) n++;
+    return n;
+  }
 
   /** Subscribes to the cell subjects; `ticking: false` lets tests drive `step()` themselves. */
   start({ ticking = true }: { ticking?: boolean } = {}): void {
@@ -62,7 +82,9 @@ export class ZoneCell {
       bus.subscribe<SessionClosed>(subjects.sessionClosed(), (m) => {
         this.players.delete(m.sessionId);
         this.forwarding.remove(m.sessionId);
+        void this.daily?.removePlayer(m.sessionId, 'disconnected');
       }),
+      bus.subscribe<CellAction>(subjects.cellAction(cellKey), (m) => void this.daily?.handle(m.sessionId, m.message)),
       bus.subscribe<CellHandoff>(subjects.cellHandoff(cellKey), (m) => void this.adopt(m)),
     );
     if (ticking) this.timer = setInterval(() => this.step(), 1000 / TICK_RATE_HZ);
@@ -89,7 +111,10 @@ export class ZoneCell {
     this.tick++;
     for (const player of this.players.values()) this.simulate(player);
     if (this.tick % SNAPSHOT_EVERY_TICKS === 0) this.broadcastSnapshot();
-    if (this.tick % TICK_RATE_HZ === 0) this.forwarding.prune(this.tick);
+    if (this.tick % TICK_RATE_HZ === 0) {
+      this.forwarding.prune(this.tick);
+      void this.daily?.tick(Date.now());
+    }
     this.stats.record(performance.now() - started);
   }
 
@@ -112,6 +137,7 @@ export class ZoneCell {
       grounded: true,
     };
     await this.welcome(new PlayerSlot(sessionId, entityIdOf(sessionId), state));
+    await this.daily?.addPlayer(sessionId);
   }
 
   /** A player handed over by a neighbour cell keeps its state, sequence and entity id. */
@@ -122,6 +148,7 @@ export class ZoneCell {
     this.handoffMs.push(Date.now() - h.sentAtMs);
     if (this.handoffMs.length > 10_000) this.handoffMs.shift();
     await this.welcome(player);
+    await this.daily?.addPlayer(h.sessionId, h.needs);
   }
 
   private async welcome(player: PlayerSlot): Promise<void> {
@@ -195,10 +222,10 @@ export class ZoneCell {
       player.state = { ...before, velocity: { x: 0, y: before.velocity.y, z: 0 } };
       return false;
     }
-    this.options.bus.publish(
-      subjects.cellHandoff(target),
-      toHandoff({ ...player, yawRad: player.lastInput.yawRad }, this.options.frameOrigin, Date.now()),
-    );
+    const needs = this.daily?.needsOf(player.sessionId)?.values;
+    const handoff = toHandoff({ ...player, yawRad: player.lastInput.yawRad }, this.options.frameOrigin, Date.now());
+    this.options.bus.publish(subjects.cellHandoff(target), needs ? { ...handoff, needs } : handoff);
+    void this.daily?.removePlayer(player.sessionId, 'left_cell');
     this.players.delete(player.sessionId);
     this.forwarding.add(player.sessionId, target, this.tick);
     return true;

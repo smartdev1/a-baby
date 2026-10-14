@@ -88,8 +88,10 @@ export class ClientSession {
       if (message.type !== 'hello') return this.violation('malformed_message', 'hello expected first');
       return void this.handshake(message.body);
     }
-    if (message.type === 'input' && this.cellKey)
-      this.deps.bus.publish(subjects.cellInput(this.cellKey), { sessionId: this.sessionId, input: message.body });
+    if (!this.cellKey) return;
+    if (message.type === 'input') this.deps.bus.publish(subjects.cellInput(this.cellKey), { sessionId: this.sessionId, input: message.body });
+    else if (message.type === 'actionRequest' || message.type === 'actionCancel')
+      this.deps.bus.publish(subjects.cellAction(this.cellKey), { sessionId: this.sessionId, message });
   }
 
   private async handshake(hello: Extract<ClientMessage, { type: 'hello' }>['body']): Promise<void> {

@@ -1,5 +1,5 @@
 /**
- * Role: end-to-end test of the all-in-one mode over a real WebSocket: ticket → hello → welcome + world clock → inputs → authoritative acks.
+ * Role: end-to-end test of the all-in-one mode over a real WebSocket: ticket → hello → welcome + world clock → inputs → authoritative acks; daily life: starter Djai, needs, refused action request.
  * Owner: backend
  */
 
@@ -20,7 +20,7 @@ let runtimeDir = '';
 beforeAll(async () => {
   runtimeDir = await mkdtemp(join(tmpdir(), 'aio-'));
   world = await composeWorld(
-    { gatewayPort: 0, worldDir: join(runtimeDir, 'no-world'), spawn: { lonDeg: -4.0681, latDeg: 5.329 } },
+    { gatewayPort: 0, worldDir: join(runtimeDir, 'no-world'), spawn: { lonDeg: -4.0681, latDeg: 5.329 }, starterDjai: 5000 },
     { host: '127.0.0.1', port: 0, corsOrigin: '*', contentDir: content, runtimeDir, ticketsPerMin: 10, internalRoutes: false },
     createLogger({ service: 'e2e', level: 'silent' }),
   );
@@ -49,6 +49,8 @@ describe('all-in-one', () => {
       );
       await new Promise((r) => setTimeout(r, 50));
     }
+    const requestId = '0b9d6a2e-0000-4000-8000-000000000001';
+    socket.send(encodeClientMessage({ type: 'actionRequest', body: { requestId, actionId: 'food.eat_garba', placeId: 'osm:node/1' } }));
     await new Promise((r) => setTimeout(r, 300));
     socket.close();
 
@@ -57,5 +59,8 @@ describe('all-in-one', () => {
     const lastAck = received.filter((m) => m.type === 'inputAck').at(-1);
     expect(lastAck?.type === 'inputAck' && lastAck.body.lastSeq).toBe(10);
     expect(received.some((m) => m.type === 'snapshot')).toBe(true);
+    expect(received.find((m) => m.type === 'walletUpdate')).toMatchObject({ body: { djai: 5000 } });
+    expect(received.find((m) => m.type === 'needsUpdate')).toMatchObject({ body: { values: { hunger: 80 } } });
+    expect(received.find((m) => m.type === 'actionUpdate')).toMatchObject({ body: { requestId, state: 'rejected', refusals: [{ code: 'unknown_place' }] } });
   });
 });

@@ -31,6 +31,9 @@ const Schema = z.object({
       return { eastingM, northingM };
     })
     .optional(),
+  /** Game content (actions, place types, needs); empty = movement only. */
+  SKYLINE_CONTENT_DIR: z.string().default(repoPath('content')),
+  SKYLINE_STARTER_DJAI: z.coerce.number().int().min(0).max(1_000_000).default(5000),
   /** Port of the GET /stats endpoint (127.0.0.1 only); 0 disables it. */
   ZONE_STATS_PORT: z.coerce.number().int().min(0).max(65_535).default(0),
 });
@@ -43,6 +46,8 @@ export interface ZoneConfig {
   readonly servicesUrl: string;
   readonly spawn: UtmPosition | null;
   readonly statsPort: number;
+  readonly contentDir: string;
+  readonly starterDjai: number;
 }
 
 export const readZoneConfig = (env: Record<string, string | undefined>): ZoneConfig => {
@@ -55,5 +60,7 @@ export const readZoneConfig = (env: Record<string, string | undefined>): ZoneCon
     servicesUrl: p.SERVICES_URL.replace(/\/$/, ''),
     spawn: p.SPAWN_UTM ?? null,
     statsPort: p.ZONE_STATS_PORT,
+    contentDir: p.SKYLINE_CONTENT_DIR,
+    starterDjai: p.SKYLINE_STARTER_DJAI,
   };
 };
