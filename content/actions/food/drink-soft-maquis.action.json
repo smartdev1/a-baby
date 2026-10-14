@@ -1,0 +1,79 @@
+{
+  "$schema": "../../../tools/content-cli/schemas/action.schema.json",
+  "id": "food.drink_soft_maquis",
+  "version": 1,
+  "category": "food",
+  "labelKey": "action.food.drink_soft_maquis.label",
+  "tags": [
+    "food",
+    "drink",
+    "night"
+  ],
+  "where": {
+    "placeTypes": [
+      "maquis"
+    ],
+    "site": "seat_or_counter",
+    "interactionRadiusM": 2.5
+  },
+  "when": {
+    "openingHoursFrom": "place",
+    "windows": []
+  },
+  "requires": {
+    "state": [
+      "on_foot",
+      "not_in_action"
+    ],
+    "cooldown": {
+      "gameMinutes": 60,
+      "scope": "character"
+    },
+    "money": {
+      "minDjai": 500
+    }
+  },
+  "duration": {
+    "gameMinutes": 20,
+    "real": {
+      "maxSeconds": 30
+    },
+    "interruptible": true,
+    "onInterrupt": "refund_none_partial_effects"
+  },
+  "effects": {
+    "onComplete": [
+      {
+        "type": "need",
+        "need": "social",
+        "delta": 8
+      },
+      {
+        "type": "need",
+        "need": "fun",
+        "delta": 6
+      }
+    ]
+  },
+  "cost": {
+    "djai": {
+      "base": 500,
+      "priceSource": "business_price_list_or_base"
+    },
+    "payee": "provider"
+  },
+  "provider": {
+    "kind": "place",
+    "allowPlayerBusiness": true,
+    "employeeRole": "waiter"
+  },
+  "participants": {
+    "mode": "solo",
+    "npcRoles": [
+      {
+        "role": "waiter",
+        "required": true
+      }
+    ]
+  }
+}

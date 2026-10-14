@@ -9,11 +9,11 @@
   "11-facades-roofs/facades.ndjson": "26cf8d0f5ccc7243973c196e3ffa62fe20ff2db96c02ccc596c4660d110d7349",
   "11-facades-roofs/roofs.ndjson": "f88defad06f25df8c0c0aee35838b9c3d00e9a170562540da08b2ed6be67cad1",
   "12-props/props.ndjson": "82b0dbdcd19d524a9e3aadb4a9c0f26585e825f0923a71e3d6616c323b3ce376",
-  "13-places-sites/places-sites.ndjson": "578595f7a16671ca43e127fc118c76af5ef770d1bfb08db699ac97af1ce7f7dd",
-  "14-tile-cut/tiles.ndjson": "bd3fe6ff5aa57275b86db8e52d8f44c49c0b1fb0dcdcd1f7596211371bc9785c",
+  "13-places-sites/places-sites.ndjson": "a2f94025d7b0e5f65f796c7f3f08d3d9a5fb1ddfdca5bb903a89898c57b94335",
+  "14-tile-cut/tiles.ndjson": "ab5e8dd0efd4bbe395b0babdb4e2ef1f499250e9ddfe9495842789ebdea073ba",
   "15-lod-build/lod-index.json": "867432b55b832cc3d9a47432677fac77187560539c6c303ed7c2ea6fd5796f80",
-  "16-encode/encode-index.json": "048cc45e54107f5e1012af105b9644c96ef310e63b8ff30b641d40beb2bd0f6b",
-  "17-manifest/world-manifest.pigeons-fixture-2026-10-13.json": "8da91bdc186da97ea31187fdef555e08e17d64677c31cf95f2a36633129d184c",
+  "16-encode/encode-index.json": "5beb0410b63665cd64f7af6609c985e74990fd7b878790d9f1649b6d61eb4196",
+  "17-manifest/world-manifest.pigeons-fixture-2026-10-13.json": "93d3b5dadd70b814b3ae2e9c8408d3c57e9bea7fbd9dc7762e0a822b7738d00d",
   "17-manifest/ATTRIBUTION.md": "00a21cca6556f439430f68842ed8d7cc52154af92d496f982eef7d03a2878628",
   "17-manifest/osm-derived.pigeons-fixture-2026-10-13.tar.gz": "0c688b96306a7fc2b63979608c58f9aadb743bf3a618d37e9c637490c5393e72"
 }

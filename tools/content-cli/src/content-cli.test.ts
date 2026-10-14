@@ -9,7 +9,7 @@ import { dirname, join } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { readContentFiles, readI18nKeys } from './content-files.ts';
 import { stableJson, writePacks } from './content-packs.ts';
-import { validateContent } from './content-validation.ts';
+import { categoriesWithoutNight, validateContent } from './content-validation.ts';
 
 let dir = '';
 const put = async (path: string, value: unknown): Promise<void> => {
@@ -67,6 +67,15 @@ describe('validateContent', () => {
     const report = await run();
     expect(report.errors.map((e) => e.message)).toEqual(expect.arrayContaining([expect.stringContaining('duplicate action id'), expect.stringContaining('no place type of this action has a "bed" site')]));
     expect(report.warnings.map((w) => w.message)).toEqual(expect.arrayContaining([expect.stringContaining('does not match id')]));
+  });
+});
+
+describe('night coverage', () => {
+  it('should list the categories without any action available at night', async () => {
+    await put('actions/food/eat-garba.action.json', action({ when: { windows: [{ from: '06:00', to: '20:00' }] } }));
+    expect(categoriesWithoutNight((await run()).content)).toEqual(['food']);
+    await put('actions/food/eat-garba.action.json', action({ when: { openingHoursFrom: 'none', windows: [] } }));
+    expect(categoriesWithoutNight((await run()).content)).toEqual([]);
   });
 });
 

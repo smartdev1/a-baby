@@ -1,0 +1,10 @@
+{
+  "$schema": "../../../tools/content-cli/schemas/item.schema.json",
+  "id": "shop.soap",
+  "version": 1,
+  "labelKey": "item.shop.soap.label",
+  "category": "shop",
+  "stackable": true,
+  "maxStack": 5,
+  "basePriceDjai": 250
+}

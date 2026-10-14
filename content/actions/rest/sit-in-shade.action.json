@@ -1,0 +1,59 @@
+{
+  "$schema": "../../../tools/content-cli/schemas/action.schema.json",
+  "id": "rest.sit_in_shade",
+  "version": 1,
+  "category": "rest",
+  "labelKey": "action.rest.sit_in_shade.label",
+  "tags": [
+    "rest",
+    "free"
+  ],
+  "where": {
+    "placeTypes": [
+      "bench"
+    ],
+    "site": "bench_seat",
+    "interactionRadiusM": 1.5
+  },
+  "when": {
+    "openingHoursFrom": "none",
+    "windows": [
+      {
+        "from": "10:00",
+        "to": "17:00"
+      }
+    ]
+  },
+  "requires": {
+    "state": [
+      "on_foot",
+      "not_in_action"
+    ],
+    "cooldown": {
+      "gameMinutes": 60,
+      "scope": "character"
+    }
+  },
+  "duration": {
+    "gameMinutes": 30,
+    "real": {
+      "maxSeconds": 30
+    },
+    "interruptible": true,
+    "onInterrupt": "refund_none_partial_effects"
+  },
+  "effects": {
+    "onComplete": [
+      {
+        "type": "need",
+        "need": "fun",
+        "delta": 4
+      },
+      {
+        "type": "need",
+        "need": "energy",
+        "delta": 3
+      }
+    ]
+  }
+}

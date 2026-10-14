@@ -1,0 +1,52 @@
+{
+  "$schema": "../../../tools/content-cli/schemas/action.schema.json",
+  "id": "rest.nap_bench",
+  "version": 1,
+  "category": "rest",
+  "labelKey": "action.rest.nap_bench.label",
+  "tags": [
+    "rest",
+    "free",
+    "night"
+  ],
+  "where": {
+    "placeTypes": [
+      "bench"
+    ],
+    "site": "bench_seat",
+    "interactionRadiusM": 1.5
+  },
+  "when": {
+    "openingHoursFrom": "none",
+    "windows": []
+  },
+  "requires": {
+    "state": [
+      "on_foot",
+      "not_in_action"
+    ],
+    "needs": {
+      "energy": {
+        "max": 85
+      }
+    }
+  },
+  "duration": {
+    "gameMinutes": 60,
+    "real": {
+      "maxSeconds": 40
+    },
+    "interruptible": true,
+    "onInterrupt": "refund_none_partial_effects"
+  },
+  "effects": {
+    "onComplete": [],
+    "continuous": [
+      {
+        "type": "need",
+        "need": "energy",
+        "deltaPerGameHour": 12
+      }
+    ]
+  }
+}

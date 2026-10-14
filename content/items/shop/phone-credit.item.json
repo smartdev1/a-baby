@@ -1,0 +1,10 @@
+{
+  "$schema": "../../../tools/content-cli/schemas/item.schema.json",
+  "id": "shop.phone_credit",
+  "version": 1,
+  "labelKey": "item.shop.phone_credit.label",
+  "category": "shop",
+  "stackable": true,
+  "maxStack": 20,
+  "basePriceDjai": 500
+}

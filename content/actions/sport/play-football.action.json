@@ -1,0 +1,64 @@
+{
+  "$schema": "../../../tools/content-cli/schemas/action.schema.json",
+  "id": "sport.play_football",
+  "version": 1,
+  "category": "sport",
+  "labelKey": "action.sport.play_football.label",
+  "tags": [
+    "sport"
+  ],
+  "where": {
+    "placeTypes": [
+      "football_ground"
+    ],
+    "site": "pitch_slot",
+    "interactionRadiusM": 2.5
+  },
+  "when": {
+    "openingHoursFrom": "place",
+    "windows": []
+  },
+  "requires": {
+    "state": [
+      "on_foot",
+      "not_in_action"
+    ],
+    "needs": {
+      "energy": {
+        "min": 25
+      }
+    }
+  },
+  "duration": {
+    "gameMinutes": 90,
+    "real": {
+      "maxSeconds": 120
+    },
+    "interruptible": true,
+    "onInterrupt": "refund_none_partial_effects"
+  },
+  "effects": {
+    "onComplete": [
+      {
+        "type": "need",
+        "need": "fun",
+        "delta": 25
+      },
+      {
+        "type": "need",
+        "need": "social",
+        "delta": 10
+      },
+      {
+        "type": "need",
+        "need": "energy",
+        "delta": -25
+      },
+      {
+        "type": "need",
+        "need": "hygiene",
+        "delta": -20
+      }
+    ]
+  }
+}

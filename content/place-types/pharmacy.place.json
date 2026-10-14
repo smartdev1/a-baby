@@ -1,0 +1,1 @@
+{"$schema": "../../tools/content-cli/schemas/place-type.schema.json", "id": "pharmacy", "version": 1, "labelKey": "place.pharmacy.label", "osmCategories": ["health.pharmacy"], "sites": [{"kind": "counter", "capacity": 3, "placement": "front"}], "openingHours": [], "npcRoles": ["pharmacist"]}

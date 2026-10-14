@@ -1,0 +1,69 @@
+{
+  "$schema": "../../../tools/content-cli/schemas/action.schema.json",
+  "id": "shopping.buy_phone_credit",
+  "version": 1,
+  "category": "shopping",
+  "labelKey": "action.shopping.buy_phone_credit.label",
+  "tags": [
+    "shopping",
+    "night"
+  ],
+  "where": {
+    "placeTypes": [
+      "boutique"
+    ],
+    "site": "counter",
+    "interactionRadiusM": 2.5
+  },
+  "when": {
+    "openingHoursFrom": "place",
+    "windows": []
+  },
+  "requires": {
+    "state": [
+      "on_foot",
+      "not_in_action"
+    ],
+    "money": {
+      "minDjai": 500
+    }
+  },
+  "duration": {
+    "gameMinutes": 5,
+    "real": {
+      "maxSeconds": 10
+    },
+    "interruptible": true,
+    "onInterrupt": "refund_none_partial_effects"
+  },
+  "effects": {
+    "onComplete": [
+      {
+        "type": "item_add",
+        "item": "shop.phone_credit",
+        "quantity": 1
+      }
+    ]
+  },
+  "cost": {
+    "djai": {
+      "base": 500,
+      "priceSource": "business_price_list_or_base"
+    },
+    "payee": "provider"
+  },
+  "provider": {
+    "kind": "place",
+    "allowPlayerBusiness": true,
+    "employeeRole": "vendor"
+  },
+  "participants": {
+    "mode": "solo",
+    "npcRoles": [
+      {
+        "role": "vendor",
+        "required": true
+      }
+    ]
+  }
+}

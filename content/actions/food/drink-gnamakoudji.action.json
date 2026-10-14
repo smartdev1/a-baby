@@ -1,0 +1,78 @@
+{
+  "$schema": "../../../tools/content-cli/schemas/action.schema.json",
+  "id": "food.drink_gnamakoudji",
+  "version": 1,
+  "category": "food",
+  "labelKey": "action.food.drink_gnamakoudji.label",
+  "tags": [
+    "food",
+    "drink"
+  ],
+  "where": {
+    "placeTypes": [
+      "boutique"
+    ],
+    "site": "counter",
+    "interactionRadiusM": 2.5
+  },
+  "when": {
+    "openingHoursFrom": "place",
+    "windows": []
+  },
+  "requires": {
+    "state": [
+      "on_foot",
+      "not_in_action"
+    ],
+    "cooldown": {
+      "gameMinutes": 60,
+      "scope": "character"
+    },
+    "money": {
+      "minDjai": 150
+    }
+  },
+  "duration": {
+    "gameMinutes": 5,
+    "real": {
+      "maxSeconds": 10
+    },
+    "interruptible": true,
+    "onInterrupt": "refund_none_partial_effects"
+  },
+  "effects": {
+    "onComplete": [
+      {
+        "type": "need",
+        "need": "hunger",
+        "delta": 5
+      },
+      {
+        "type": "need",
+        "need": "energy",
+        "delta": 4
+      }
+    ]
+  },
+  "cost": {
+    "djai": {
+      "base": 150,
+      "priceSource": "business_price_list_or_base"
+    },
+    "payee": "provider"
+  },
+  "provider": {
+    "kind": "place",
+    "allowPlayerBusiness": true,
+    "employeeRole": "vendor"
+  },
+  "participants": {
+    "mode": "solo",
+    "npcRoles": [
+      {
+        "role": "vendor",
+        "required": true
+      }
+    ]
+  }
+}

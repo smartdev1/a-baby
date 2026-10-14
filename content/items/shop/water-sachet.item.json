@@ -1,0 +1,10 @@
+{
+  "$schema": "../../../tools/content-cli/schemas/item.schema.json",
+  "id": "shop.water_sachet",
+  "version": 1,
+  "labelKey": "item.shop.water_sachet.label",
+  "category": "shop",
+  "stackable": true,
+  "maxStack": 10,
+  "basePriceDjai": 25
+}

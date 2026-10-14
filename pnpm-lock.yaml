@@ -493,6 +493,9 @@ importers:
       '@skyline/content-schema':
         specifier: workspace:*
         version: link:../../packages/content-schema
+      '@skyline/sim-actions':
+        specifier: workspace:*
+        version: link:../../packages/sim-actions
       zod:
         specifier: ^4.6.6
         version: 4.6.6

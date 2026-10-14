@@ -4,6 +4,7 @@
  */
 
 import { type Action, CONTENT_SCHEMAS, type ContentKind, type Item, type Job, type PlaceType } from '@skyline/content-schema';
+import { inWindows } from '@skyline/sim-actions';
 import type { ContentFile } from './content-files.ts';
 
 export interface Problem {
@@ -94,10 +95,26 @@ const checkI18n = (report: ValidationReport, i18n: ReadonlyMap<string, ReadonlyS
   }
 };
 
+/** Game minutes checked for the night rule (J3: every category has a night variant, 19:00–06:00). */
+const NIGHT_MINUTES = [22 * 60, 3 * 60];
+
+const availableAt = (a: Action, placeTypes: readonly PlaceType[], minute: number): boolean => {
+  if (!inWindows(a.when.windows, minute)) return false;
+  if (a.when.openingHoursFrom === 'none') return true;
+  return placeTypes.some((p) => a.where.placeTypes.includes(p.id) && inWindows(p.openingHours, minute));
+};
+
+/** Categories with no action available at night (warning: content to add, or a deliberate exception). */
+export const categoriesWithoutNight = (content: ValidContent): string[] => {
+  const categories = [...new Set(content.actions.map((a) => a.category))].sort();
+  return categories.filter((c) => !content.actions.some((a) => a.category === c && NIGHT_MINUTES.some((m) => availableAt(a, content.placeTypes, m))));
+};
+
 export const validateContent = (files: readonly ContentFile[], i18n: ReadonlyMap<string, ReadonlySet<string>>, options: { strict: boolean; locale?: string }): ValidationReport => {
   const report: ValidationReport = { errors: [], warnings: [], content: { actions: [], placeTypes: [], jobs: [], items: [], needs: null }, fileOf: new Map() };
   parseAll(files, report);
   checkReferences(report);
   checkI18n(report, i18n, options.locale ?? 'fr-CI', options.strict);
+  for (const c of categoriesWithoutNight(report.content)) report.warnings.push({ file: `actions/${c}/`, path: '', message: `no "${c}" action is available at night (22:00 or 03:00)` });
   return report;
 };
