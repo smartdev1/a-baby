@@ -17,6 +17,7 @@ import { namingStage } from './09-naming/naming-stage.ts';
 import { terrainStage } from './10-terrain/terrain-stage.ts';
 import { facadesRoofsStage } from './11-facades-roofs/facades-roofs-stage.ts';
 import { propsStage } from './12-props/props-stage.ts';
+import { placesSitesStage } from './13-places-sites/places-sites-stage.ts';
 import { tileCutStage } from './14-tile-cut/tile-cut-stage.ts';
 import { lodStage } from './15-lod-build/lod-build-stage.ts';
 import { encodeStage } from './16-encode/encode-stage.ts';
@@ -33,6 +34,7 @@ const COMMON_STAGES: PipelineStage[] = [
   terrainStage,
   facadesRoofsStage,
   propsStage,
+  placesSitesStage,
   tileCutStage,
   lodStage,
   encodeStage,

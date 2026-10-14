@@ -502,6 +502,9 @@ importers:
       '@gltf-transform/functions':
         specifier: ^4.5.1
         version: 4.5.1(@types/node@26.6.5)
+      '@skyline/content-schema':
+        specifier: workspace:*
+        version: link:../../packages/content-schema
       '@skyline/geo':
         specifier: workspace:*
         version: link:../../packages/geo

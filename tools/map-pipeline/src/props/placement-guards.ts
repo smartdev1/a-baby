@@ -45,7 +45,13 @@ export class PlacementGuards {
   }
 
   insideBuilding(e: number, n: number): boolean {
-    return this.buildingIndex?.search(e, n, e, n).some((i) => inRing(this.footprints[i] ?? [], e, n)) ?? false;
+    return this.footprintAt(e, n) !== null;
+  }
+
+  /** Outer ring of the building containing the point, if any. */
+  footprintAt(e: number, n: number): UtmRing | null {
+    const i = this.buildingIndex?.search(e, n, e, n).find((k) => inRing(this.footprints[k] ?? [], e, n));
+    return i === undefined ? null : (this.footprints[i] ?? null);
   }
 
   onCarriageway(e: number, n: number, marginM = 0.5): boolean {

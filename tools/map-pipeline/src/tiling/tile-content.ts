@@ -52,6 +52,9 @@ export interface TilePlaceEntry {
   readonly buildingId: OsmId | null;
   /** From stage 09-naming only (ADR 0010). */
   readonly displayName: string | null;
+  /** From stage 13-places-sites: game place type and action sites (tile-local). */
+  readonly placeType?: string;
+  readonly sites?: readonly { readonly kind: string; readonly capacity: number; readonly position: LocalPoint; readonly yawRad: number }[];
 }
 
 /** Instanced module in tile-local metres; without `yM` its height comes from the terrain at encode time. */

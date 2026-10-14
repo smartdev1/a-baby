@@ -29,6 +29,7 @@ const CHECKED_OUTPUTS = [
   '11-facades-roofs/facades.ndjson',
   '11-facades-roofs/roofs.ndjson',
   '12-props/props.ndjson',
+  '13-places-sites/places-sites.ndjson',
   '14-tile-cut/tiles.ndjson',
   '15-lod-build/lod-index.json',
   '16-encode/encode-index.json',
@@ -48,6 +49,7 @@ const buildFixtureIn = async (): Promise<Record<string, string>> => {
   await mkdir(join(root, dirname(FIXTURE)), { recursive: true });
   await copyFile(join(packageDir, 'test/fixtures/pigeons-sample.geojson'), join(root, FIXTURE));
   await cp(join(packageDir, '../../content/place-names'), join(root, 'content/place-names'), { recursive: true });
+  await cp(join(packageDir, '../../content/place-types'), join(root, 'content/place-types'), { recursive: true });
   const config = await loadPipelineConfig(join(packageDir, 'config/fixture.pipeline.json'));
   await runPipeline({ repoRoot: root, config, stages: stagesFor(config), logger });
   const hashes: Record<string, string> = {};
