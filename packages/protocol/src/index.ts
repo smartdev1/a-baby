@@ -51,3 +51,4 @@ export {
   type ChatSendMessage,
 } from './messages/chat-schemas.ts';
 export { RIDE_REFUSALS, RIDE_STATES, type RideRefusal, type RideRequestMessage, type RideUpdateMessage } from './messages/ride-schemas.ts';
+export { TAXI_REFUSALS, TAXI_STATES, type TaxiRefusal, type TaxiRequestMessage, type TaxiUpdateMessage } from './messages/taxi-schemas.ts';

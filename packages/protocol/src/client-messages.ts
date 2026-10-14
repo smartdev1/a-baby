@@ -1,5 +1,5 @@
 /**
- * Role: everything a client may send (hello, input, ping, action request and cancel, chat send / block / report, ride request): one encoder and one decoder for untrusted frames, used by the gateway.
+ * Role: everything a client may send (hello, input, ping, action request and cancel, chat send / block / report, ride and taxi requests): one encoder and one decoder for untrusted frames, used by the gateway.
  * Owner: backend
  */
 
@@ -11,6 +11,7 @@ import { type ActionCancelMessage, ActionCancelSchema, type ActionRequestMessage
 import { type ChatBlockMessage, ChatBlockSchema, type ChatReportMessage, ChatReportSchema, type ChatSendMessage, ChatSendSchema } from './messages/chat-schemas.ts';
 import { type HelloMessage, HelloSchema } from './messages/control-schemas.ts';
 import { type RideRequestMessage, RideRequestSchema } from './messages/ride-schemas.ts';
+import { type TaxiRequestMessage, TaxiRequestSchema } from './messages/taxi-schemas.ts';
 import { decodeInput, encodeInput, type InputMessage } from './messages/movement-messages.ts';
 import { ProtocolDecodeError } from './protocol-errors.ts';
 
@@ -23,29 +24,14 @@ export type ClientMessage =
   | { readonly type: 'chatSend'; readonly body: ChatSendMessage }
   | { readonly type: 'chatBlock'; readonly body: ChatBlockMessage }
   | { readonly type: 'chatReport'; readonly body: ChatReportMessage }
-  | { readonly type: 'rideRequest'; readonly body: RideRequestMessage };
+  | { readonly type: 'rideRequest'; readonly body: RideRequestMessage }
+  | { readonly type: 'taxiRequest'; readonly body: TaxiRequestMessage };
 
+/** Binary messages have their own codec; every other message is a validated control message under its type byte. */
 export const encodeClientMessage = (m: ClientMessage): Uint8Array => {
-  switch (m.type) {
-    case 'hello':
-      return encodeControl(CLIENT_MESSAGE.hello, m.body);
-    case 'input':
-      return encodeInput(m.body);
-    case 'ping':
-      return encodePing(m.body);
-    case 'actionRequest':
-      return encodeControl(CLIENT_MESSAGE.actionRequest, m.body);
-    case 'actionCancel':
-      return encodeControl(CLIENT_MESSAGE.actionCancel, m.body);
-    case 'chatSend':
-      return encodeControl(CLIENT_MESSAGE.chatSend, m.body);
-    case 'chatBlock':
-      return encodeControl(CLIENT_MESSAGE.chatBlock, m.body);
-    case 'chatReport':
-      return encodeControl(CLIENT_MESSAGE.chatReport, m.body);
-    case 'rideRequest':
-      return encodeControl(CLIENT_MESSAGE.rideRequest, m.body);
-  }
+  if (m.type === 'input') return encodeInput(m.body);
+  if (m.type === 'ping') return encodePing(m.body);
+  return encodeControl(CLIENT_MESSAGE[m.type], m.body);
 };
 
 const CLIENT_DECODERS: Record<number, (r: FrameReader) => ClientMessage> = {
@@ -58,6 +44,7 @@ const CLIENT_DECODERS: Record<number, (r: FrameReader) => ClientMessage> = {
   [CLIENT_MESSAGE.chatBlock]: (r) => ({ type: 'chatBlock', body: decodeControl(r.rest(), ChatBlockSchema, 'chat_block') }),
   [CLIENT_MESSAGE.chatReport]: (r) => ({ type: 'chatReport', body: decodeControl(r.rest(), ChatReportSchema, 'chat_report') }),
   [CLIENT_MESSAGE.rideRequest]: (r) => ({ type: 'rideRequest', body: decodeControl(r.rest(), RideRequestSchema, 'ride_request') }),
+  [CLIENT_MESSAGE.taxiRequest]: (r) => ({ type: 'taxiRequest', body: decodeControl(r.rest(), TaxiRequestSchema, 'taxi_request') }),
 };
 
 /** Throws only ProtocolDecodeError. */

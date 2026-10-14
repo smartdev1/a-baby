@@ -41,6 +41,17 @@ export interface SessionContext extends ClientSessionDeps {
   readonly resumes: ResumeRegistry;
 }
 
+/** Cell subject of each client request forwarded as is (daily life and transport, chat). */
+const CELL_SUBJECTS: Partial<Record<ClientMessage['type'], (cellKey: string) => string>> = {
+  actionRequest: subjects.cellAction,
+  actionCancel: subjects.cellAction,
+  rideRequest: subjects.cellAction,
+  taxiRequest: subjects.cellAction,
+  chatSend: subjects.cellChat,
+  chatBlock: subjects.cellChat,
+  chatReport: subjects.cellChat,
+};
+
 const RATE_PER_S = 60;
 const BURST = 120;
 const MAX_VIOLATIONS = 20;
@@ -118,11 +129,9 @@ export class ClientSession implements SessionHandle {
       return void this.handshake(message.body);
     }
     if (!this.cellKey) return;
-    if (message.type === 'input') this.deps.bus.publish(subjects.cellInput(this.cellKey), { sessionId: this.sessionId, input: message.body });
-    else if (message.type === 'actionRequest' || message.type === 'actionCancel' || message.type === 'rideRequest')
-      this.deps.bus.publish(subjects.cellAction(this.cellKey), { sessionId: this.sessionId, message });
-    else if (message.type === 'chatSend' || message.type === 'chatBlock' || message.type === 'chatReport')
-      this.deps.bus.publish(subjects.cellChat(this.cellKey), { sessionId: this.sessionId, message });
+    if (message.type === 'input') return this.deps.bus.publish(subjects.cellInput(this.cellKey), { sessionId: this.sessionId, input: message.body });
+    const subject = CELL_SUBJECTS[message.type];
+    if (subject) this.deps.bus.publish(subject(this.cellKey), { sessionId: this.sessionId, message });
   }
 
   private async handshake(hello: Extract<ClientMessage, { type: 'hello' }>['body']): Promise<void> {

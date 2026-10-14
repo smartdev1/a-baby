@@ -26,6 +26,8 @@ export interface RideDeps {
   readonly reachable: (utm: UtmPosition) => boolean;
   readonly send: (sessionId: string, message: ServerMessage) => void;
   readonly refreshWallet: (sessionId: string, txId: string) => Promise<void>;
+  /** True when the player is already busy with another transport (a taxi). */
+  readonly busyElsewhere?: (sessionId: string) => boolean;
 }
 
 export interface RidePlayers {
@@ -72,7 +74,7 @@ export class RideService {
   async request(sessionId: string, body: RideRequestMessage): Promise<void> {
     const replay = this.done.get(`${sessionId}:${body.requestId}`);
     if (replay) return this.deps.send(sessionId, { type: 'rideUpdate', body: replay });
-    if (this.rides.has(sessionId) || this.pending.has(sessionId)) return this.reject(sessionId, body, { refusal: 'already_riding' });
+    if (this.rides.has(sessionId) || this.pending.has(sessionId) || this.deps.busyElsewhere?.(sessionId)) return this.reject(sessionId, body, { refusal: 'already_riding' });
     const checked = this.check(sessionId, body);
     if (!('plan' in checked)) return this.reject(sessionId, body, checked);
     this.pending.add(sessionId);

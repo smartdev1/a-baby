@@ -1,5 +1,5 @@
 /**
- * Role: authoritative runtime of one cell: players join through the bus or a border handoff (20 m hysteresis), inputs are simulated with @skyline/physics at 20 Hz, acks go back on each session subject and one snapshot per cell (own players + neighbours' border ghosts) on the cell subject; daily life (actions, needs, Djai) runs at 1 Hz, line rides and the proximity chat when configured.
+ * Role: authoritative runtime of one cell: players join through the bus or a border handoff (20 m hysteresis), inputs are simulated with @skyline/physics at 20 Hz, acks go back on each session subject and one snapshot per cell (own players + neighbours' border ghosts) on the cell subject; daily life (actions, needs, Djai) runs at 1 Hz, transport (line rides, taxis) and the proximity chat when configured.
  * Owner: backend
  */
 
@@ -26,8 +26,9 @@ import { DailyLife, type DailyLifeDeps, type PlayerPositions } from '../actions/
 import { type ChatPlayers, ProximityChat, type ProximityChatDeps } from '../chat/proximity-chat.ts';
 import { depthOutsideM, entityIdOf, HANDOFF_HYSTERESIS_M, leftCellTowards, stateFromHandoff, toHandoff } from '../handoff/cell-handoff.ts';
 import { GhostBoard, ghostTargets, nearBorder, toGhost } from '../handoff/cell-ghosts.ts';
-import { createCellRides, stateAtStop } from '../transport/cell-rides.ts';
-import type { RideService } from '../transport/ride-service.ts';
+import type { TaxiFare } from '@skyline/content-schema';
+import type { CityMap } from '../transport/city-map.ts';
+import { type CellTransport, createCellTransport, stateAtStop } from '../transport/cell-rides.ts';
 import type { TransitNetwork } from '../transport/transit-network.ts';
 import { InputForwarding } from '../handoff/input-forwarding.ts';
 import { entityStateCode } from './entity-state-code.ts';
@@ -54,8 +55,8 @@ export interface ZoneCellOptions {
   readonly daily?: Omit<DailyLifeDeps, 'send'>;
   /** Proximity chat (word list, moderation queue); absent = no chat. */
   readonly chat?: Pick<ProximityChatDeps, 'blockedWords' | 'reports'>;
-  /** Transit lines of the commune: rides need daily life too (fares, game clock). */
-  readonly transit?: TransitNetwork;
+  /** Transit lines and city map of the commune: transport needs daily life too (fares, game clock). */
+  readonly transport?: { readonly transit: TransitNetwork; readonly city?: CityMap; readonly taxiFare?: TaxiFare };
 }
 
 export class ZoneCell implements PlayerPositions, ChatPlayers {
@@ -69,15 +70,16 @@ export class ZoneCell implements PlayerPositions, ChatPlayers {
   private readonly ghosts = new GhostBoard();
   private readonly daily: DailyLife | null;
   private readonly chat: ProximityChat | null;
-  private readonly rides: RideService | null;
+  private readonly transport: CellTransport | null;
 
   constructor(private readonly options: ZoneCellOptions) {
     this.daily = options.daily ? new DailyLife({ ...options.daily, send: (sessionId, m) => this.send(sessionId, m) }, this) : null;
     const send = (sessionId: string, m: ServerMessage): void => this.send(sessionId, m);
     this.chat = options.chat ? new ProximityChat({ ...options.chat, cellKey: options.cellKey, send, now: () => Date.now() }, this) : null;
-    const { daily, transit, frameOrigin } = options;
+    const { daily, transport, frameOrigin } = options;
     const cluster = options.clusterCells ?? new Set([options.cellKey]);
-    this.rides = this.daily && daily && transit ? createCellRides({ network: transit, daily: this.daily, dailyDeps: daily, cluster, frameOrigin, send, positionOf: (s) => this.positionOf(s) }) : null;
+    const sources = transport ? { network: transport.transit, ...(transport.city ? { city: transport.city } : {}), ...(transport.taxiFare ? { taxiFare: transport.taxiFare } : {}) } : null;
+    this.transport = this.daily && daily && sources ? createCellTransport({ ...sources, daily: this.daily, dailyDeps: daily, cluster, frameOrigin, send, positionOf: (s) => this.positionOf(s) }) : null;
   }
 
   entityOf(sessionId: string): number | null {
@@ -116,11 +118,11 @@ export class ZoneCell implements PlayerPositions, ChatPlayers {
         this.forwarding.remove(m.sessionId);
         void this.daily?.removePlayer(m.sessionId, 'disconnected');
         this.chat?.remove(m.sessionId);
-        this.rides?.remove(m.sessionId);
+        this.transport?.remove(m.sessionId);
       }),
       bus.subscribe<CellChat>(subjects.cellChat(cellKey), (m) => void this.chat?.handle(m.sessionId, m.message)),
       bus.subscribe<CellAction>(subjects.cellAction(cellKey), (m) =>
-        void (m.message.type === 'rideRequest' ? this.rides?.request(m.sessionId, m.message.body) : this.daily?.handle(m.sessionId, m.message)),
+        void (m.message.type === 'rideRequest' || m.message.type === 'taxiRequest' ? this.transport?.handle(m.sessionId, m.message) : this.daily?.handle(m.sessionId, m.message)),
       ),
       bus.subscribe<CellHandoff>(subjects.cellHandoff(cellKey), (m) => void this.adopt(m)),
       bus.subscribe<CellGhosts>(subjects.cellGhosts(cellKey), (m) => this.ghosts.accept(m, Date.now())),
@@ -147,7 +149,7 @@ export class ZoneCell implements PlayerPositions, ChatPlayers {
   step(): void {
     const started = performance.now();
     this.tick++;
-    for (const { sessionId, destination } of this.rides?.arrivals() ?? []) {
+    for (const { sessionId, destination } of this.transport?.arrivals() ?? []) {
       const player = this.players.get(sessionId);
       if (player) player.state = stateAtStop(this.options.world, this.options.frameOrigin, destination);
     }
@@ -220,7 +222,7 @@ export class ZoneCell implements PlayerPositions, ChatPlayers {
   private simulate(player: PlayerSlot): void {
     const before = player.state;
     const inputs = player.takeForTick();
-    if (this.rides?.isRiding(player.sessionId)) {
+    if (this.transport?.isAboard(player.sessionId)) {
       // In the vehicle: movement inputs are acknowledged but ignored.
       for (const input of inputs) player.lastSeq = input.seq;
     } else {
@@ -291,7 +293,7 @@ export class ZoneCell implements PlayerPositions, ChatPlayers {
   private broadcastSnapshot(): void {
     if (this.players.size === 0) return;
     // Riders are inside a vehicle: not in the street.
-    const own: EntityState[] = [...this.players.values()].filter((p) => !this.rides?.isRiding(p.sessionId)).map((p) => ({
+    const own: EntityState[] = [...this.players.values()].filter((p) => !this.transport?.isAboard(p.sessionId)).map((p) => ({
       id: p.entityId,
       position: p.state.position,
       yawRad: p.lastInput.yawRad,

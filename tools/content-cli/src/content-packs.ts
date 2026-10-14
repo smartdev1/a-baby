@@ -22,6 +22,7 @@ export const writePacks = async (content: ValidContent, outDir: string): Promise
     ['jobs.pack.json', byId(content.jobs)],
     ['items.pack.json', byId(content.items)],
     ['transport-services.pack.json', byId(content.transportServices)],
+    ['taxi-fares.pack.json', byId(content.taxiFares)],
     ['needs.pack.json', content.needs],
   ];
   for (const [name, value] of packs) await writeFile(join(outDir, name), `${stableJson(value)}\n`);

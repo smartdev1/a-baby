@@ -1,5 +1,5 @@
 /**
- * Role: schema of transport service profiles `content/transport/services/<mode>.service.json` (ARCHITECTURE §17.2): visible speed, dwell, seats, flat fare and headway per period of the game day, one per line mode.
+ * Role: schemas of transport content (ARCHITECTURE §17.2): service profiles per line mode `content/transport/services/<mode>.service.json` (visible speed, dwell, seats, flat fare, headway per period of the game day) and the metered taxi fare `content/transport/fares/taxi.fare.json`.
  * Owner: backend
  */
 
@@ -28,3 +28,20 @@ export const TransportServiceSchema = z
   })
   .strict();
 export type TransportService = z.infer<typeof TransportServiceSchema>;
+
+/** Metered taxi (taxi compteur): pickup + distance, ETA of the virtual fleet in game minutes. */
+export const TaxiFareSchema = z
+  .object({
+    $schema: z.string().optional(),
+    id: z.literal('taxi'),
+    version: z.number().int().positive(),
+    labelKey: I18nKeySchema,
+    pickupDjai: z.number().int().nonnegative(),
+    perKmDjai: z.number().int().nonnegative(),
+    /** Speed seen by players in real time (km/h). */
+    cruiseKmh: z.number().min(5).max(90),
+    /** A taxi of the virtual fleet reaches the player after this many game minutes (deterministic per request). */
+    etaGameMin: z.object({ min: z.number().min(0).max(60), max: z.number().min(0).max(60) }).strict().refine((e) => e.min <= e.max, 'min ≤ max'),
+  })
+  .strict();
+export type TaxiFare = z.infer<typeof TaxiFareSchema>;

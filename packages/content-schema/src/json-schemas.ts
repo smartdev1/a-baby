@@ -8,7 +8,7 @@ import { ActionSchema } from './action-schema.ts';
 import { ItemSchema, JobSchema } from './job-item-schemas.ts';
 import { NeedsConfigSchema } from './needs-schema.ts';
 import { PlaceTypeSchema } from './place-type-schema.ts';
-import { TransportServiceSchema } from './transport-schemas.ts';
+import { TaxiFareSchema, TransportServiceSchema } from './transport-schemas.ts';
 
 export const CONTENT_SCHEMAS = {
   action: ActionSchema,
@@ -17,6 +17,7 @@ export const CONTENT_SCHEMAS = {
   item: ItemSchema,
   needs: NeedsConfigSchema,
   'transport-service': TransportServiceSchema,
+  'taxi-fare': TaxiFareSchema,
 } as const;
 
 export type ContentKind = keyof typeof CONTENT_SCHEMAS;

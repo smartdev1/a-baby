@@ -1,5 +1,5 @@
 /**
- * Role: tests the line ride messages (protocol v4): round trips of the ride request and update, refusal of malformed line or stop ids.
+ * Role: tests the line ride and taxi messages (protocol v4, v6): round trips of the requests and updates, refusal of malformed line, stop or place ids.
  * Owner: backend
  */
 
@@ -19,6 +19,15 @@ describe('ride messages', () => {
 
   it('should refuse malformed line and stop ids', () => {
     const bad = encodeClientMessage({ type: 'rideRequest', body: { requestId: 'ride-0001', lineId: 'osm:way/1', toStopId: 'osm:node/2' } });
+    expect(() => decodeClientMessage(bad)).toThrow(ProtocolDecodeError);
+  });
+
+  it('should round-trip the taxi request and update', () => {
+    const request: ClientMessage = { type: 'taxiRequest', body: { requestId: 'taxi-0001', destinationPlaceId: 'osm:way/42' } };
+    expect(decodeClientMessage(encodeClientMessage(request))).toEqual(request);
+    const update: ServerMessage = { type: 'taxiUpdate', body: { requestId: 'taxi-0001', destinationPlaceId: 'osm:way/42', state: 'assigned', etaMs: 15_000, fareDjai: 1050, distanceM: 3000, refusals: [] } };
+    expect(decodeServerMessage(encodeServerMessage(update))).toEqual(update);
+    const bad = encodeClientMessage({ type: 'taxiRequest', body: { requestId: 'taxi-0001', destinationPlaceId: 'home' } });
     expect(() => decodeClientMessage(bad)).toThrow(ProtocolDecodeError);
   });
 });

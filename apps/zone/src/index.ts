@@ -11,3 +11,4 @@ export { grantStarterMoney, InMemoryEconomy } from './adapters/in-memory-economy
 export { InMemoryChatReports } from './adapters/in-memory-chat-reports.ts';
 export { loadBlockedWords } from './chat/chat-setup.ts';
 export { loadTransitNetwork, type TransitNetwork } from './transport/transit-network.ts';
+export { loadTransport, type TransportSetup } from './transport/transport-setup.ts';

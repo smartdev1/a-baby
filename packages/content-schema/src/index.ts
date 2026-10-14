@@ -9,5 +9,5 @@ export { EFFECT_TYPES, EffectSchema, type Effect, type EffectType } from './effe
 export { ACTOR_STATES, ActionSchema, INTERRUPT_SETTLEMENTS, type Action, type ActionInput, type InterruptSettlement } from './action-schema.ts';
 export { PlaceTypeSchema, SITE_PLACEMENTS, type PlaceType, type SitePlacement } from './place-type-schema.ts';
 export { ItemSchema, JobSchema, type Item, type Job } from './job-item-schemas.ts';
-export { TRANSIT_MODES, TransitModeSchema, TransportServiceSchema, type TransitMode, type TransportService } from './transport-schemas.ts';
+export { TaxiFareSchema, TRANSIT_MODES, TransitModeSchema, TransportServiceSchema, type TaxiFare, type TransitMode, type TransportService } from './transport-schemas.ts';
 export { CONTENT_SCHEMAS, jsonSchemaOf, type ContentKind } from './json-schemas.ts';

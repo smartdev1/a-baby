@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "cruiseKmh": {
+      "maximum": 90,
+      "minimum": 5,
+      "type": "number"
+    },
+    "etaGameMin": {
+      "additionalProperties": false,
+      "properties": {
+        "max": {
+          "maximum": 60,
+          "minimum": 0,
+          "type": "number"
+        },
+        "min": {
+          "maximum": 60,
+          "minimum": 0,
+          "type": "number"
+        }
+      },
+      "required": [
+        "min",
+        "max"
+      ],
+      "type": "object"
+    },
+    "id": {
+      "const": "taxi",
+      "type": "string"
+    },
+    "labelKey": {
+      "pattern": "^[a-z][a-z0-9_]*(\\.[a-z0-9_]+)+$",
+      "type": "string"
+    },
+    "perKmDjai": {
+      "maximum": 9007199254740991,
+      "minimum": 0,
+      "type": "integer"
+    },
+    "pickupDjai": {
+      "maximum": 9007199254740991,
+      "minimum": 0,
+      "type": "integer"
+    },
+    "version": {
+      "exclusiveMinimum": 0,
+      "maximum": 9007199254740991,
+      "type": "integer"
+    }
+  },
+  "required": [
+    "id",
+    "version",
+    "labelKey",
+    "pickupDjai",
+    "perKmDjai",
+    "cruiseKmh",
+    "etaGameMin"
+  ],
+  "type": "object"
+}
