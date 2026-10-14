@@ -86,12 +86,16 @@ export class ZoneCell implements PlayerPositions, ChatPlayers {
     return this.players.get(sessionId)?.entityId ?? null;
   }
 
-  sessionsWithin(sessionId: string, radiusM: number): string[] {
+  sessionsWithin(sessionId: string, radiusM: number, limit: number): string[] {
     const me = this.positionOf(sessionId);
     if (!me) return [];
-    const out: string[] = [];
-    for (const [id, other] of this.players) if (Math.hypot(other.state.position.x - me.x, other.state.position.z - me.z) <= radiusM) out.push(id);
-    return out;
+    const near: { id: string; d: number }[] = [];
+    for (const [id, other] of this.players) {
+      const d = Math.hypot(other.state.position.x - me.x, other.state.position.z - me.z);
+      if (d <= radiusM) near.push({ id, d });
+    }
+    if (near.length > limit) near.sort((a, b) => a.d - b.d);
+    return near.slice(0, limit).map((n) => n.id);
   }
 
   positionOf(sessionId: string): { x: number; z: number } | null {

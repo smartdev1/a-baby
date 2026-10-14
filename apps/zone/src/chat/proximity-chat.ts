@@ -1,5 +1,5 @@
 /**
- * Role: proximity chat of one cell (ARCHITECTURE §14.2, §20.2): filtered text delivered to the players within 30 m (sender included), 1 message/s with a burst of 5, server-side blocks both ways, reports with a short excerpt kept only in memory until reported.
+ * Role: proximity chat of one cell (ARCHITECTURE §14.2, §20.2): filtered text delivered to the players within 30 m (sender included, at most the 64 nearest: a crowd does not multiply every line by hundreds), 1 message/s with a burst of 5, server-side blocks both ways, reports with a short excerpt kept only in memory until reported.
  * Owner: backend
  */
 
@@ -9,6 +9,8 @@ import { filterChatText } from './chat-filter.ts';
 import { TokenBucket } from './token-bucket.ts';
 
 export const CHAT_RADIUS_M = 30;
+/** Same as the full-rate interest set: the players one sees best are the ones one hears. */
+export const CHAT_MAX_LISTENERS = 64;
 const EXCERPT_WINDOW_MS = 5 * 60_000;
 const HEARD_LIMIT = 500;
 const MAX_BLOCKS = 200;
@@ -16,8 +18,8 @@ const MAX_BLOCKS = 200;
 /** What the chat needs from the cell. */
 export interface ChatPlayers {
   entityOf(sessionId: string): number | null;
-  /** Sessions within `radiusM` of the player, the player included. */
-  sessionsWithin(sessionId: string, radiusM: number): readonly string[];
+  /** Sessions within `radiusM` of the player, the player included, nearest first, at most `limit`. */
+  sessionsWithin(sessionId: string, radiusM: number, limit: number): readonly string[];
 }
 
 export interface ProximityChatDeps {
@@ -81,7 +83,7 @@ export class ProximityChat {
     if (!bucket.take(now)) return this.deps.send(sessionId, { type: 'chatRejected', body: { reason: 'rate_limited' } });
     const text = filterChatText(raw, this.deps.blockedWords);
     if (text === null) return this.deps.send(sessionId, { type: 'chatRejected', body: { reason: 'empty' } });
-    const listeners = this.players.sessionsWithin(sessionId, CHAT_RADIUS_M).filter((other) => other === sessionId || !this.eitherBlocks(sessionId, from, other));
+    const listeners = this.players.sessionsWithin(sessionId, CHAT_RADIUS_M, CHAT_MAX_LISTENERS).filter((other) => other === sessionId || !this.eitherBlocks(sessionId, from, other));
     for (const other of listeners) this.deps.send(other, { type: 'chatMessage', body: { channel: 'proximity', fromEntityId: from, text } });
     this.remember({ atMs: now, fromEntityId: from, text, listeners: new Set(listeners) });
   }

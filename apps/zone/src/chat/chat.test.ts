@@ -34,7 +34,7 @@ describe('chat filter', () => {
 const line = new Map([['s1', 0], ['s2', 20], ['s3', 100]]);
 const players: ChatPlayers = {
   entityOf: (s) => (line.has(s) ? Number(s.slice(1)) : null),
-  sessionsWithin: (s, r) => [...line].filter(([, x]) => Math.abs(x - (line.get(s) ?? 1e9)) <= r).map(([id]) => id),
+  sessionsWithin: (s, r, limit) => [...line].filter(([, x]) => Math.abs(x - (line.get(s) ?? 1e9)) <= r).map(([id]) => id).slice(0, limit),
 };
 
 const setup = () => {
