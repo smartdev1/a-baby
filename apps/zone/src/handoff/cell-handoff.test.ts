@@ -1,14 +1,14 @@
 /**
- * Role: tests cell border crossing: a player walking east is handed to the neighbour cell of the cluster with its absolute state, inputs still sent to the old cell are forwarded, and players are stopped at the edge of an unowned cell.
+ * Role: tests cell border crossing: a player walking east is handed to the neighbour cell of the cluster only 20 m past the border (hysteresis) with its absolute state, inputs still sent to the old cell are forwarded, players are stopped at the edge of an unowned cell, and players near a border appear as ghosts in the neighbour's snapshot.
  * Owner: backend
  */
 
-import { type CellHandoff, InMemoryBus, subjects } from '@skyline/bus';
+import { type CellHandoff, type CellSnapshot, InMemoryBus, subjects } from '@skyline/bus';
 import { createLogger } from '@skyline/observability';
 import { CollisionWorld } from '@skyline/physics';
 import type { InputMessage, ServerMessage } from '@skyline/protocol';
 import { describe, expect, it } from 'vitest';
-import { entityIdOf, leftCellTowards } from './cell-handoff.ts';
+import { depthOutsideM, entityIdOf, leftCellTowards } from './cell-handoff.ts';
 import { ZoneCell } from '../cell/zone-cell.ts';
 
 const WEST = 'C_81_49';
@@ -39,6 +39,7 @@ describe('cell handoff', () => {
     expect(leftCellTowards(at(999.9), origin)).toBeNull();
     expect(leftCellTowards(at(1000.1), origin)).toBe(EAST);
     expect(leftCellTowards(at(-0.1), origin)).toBe('C_80_49');
+    expect([depthOutsideM(at(500)), depthOutsideM(at(1012)), depthOutsideM(at(-3))]).toEqual([0, 12, 3]);
   });
 
   it('should hand a player over to the neighbour cell with the same entity and sequence', async () => {
@@ -53,7 +54,7 @@ describe('cell handoff', () => {
     eastCell.start({ ticking: false });
     bus.publish(subjects.cellJoin(WEST), { sessionId: 's1' });
     await settle();
-    for (let seq = 1; seq <= 10 && handoffs.length === 0; seq++) {
+    for (let seq = 1; seq <= 200 && handoffs.length === 0; seq++) {
       bus.publish(subjects.cellInput(WEST), { sessionId: 's1', input: east(seq) });
       west.step();
     }
@@ -61,7 +62,7 @@ describe('cell handoff', () => {
     west.stop();
     eastCell.stop();
     expect(handoffs).toHaveLength(1);
-    expect(handoffs[0]?.eastingM).toBeGreaterThanOrEqual(382_000);
+    expect(handoffs[0]?.eastingM).toBeGreaterThan(382_020);
     expect(handoffs[0]?.entityId).toBe(entityIdOf('s1'));
     const welcomes = out.filter((m) => m.type === 'welcome');
     expect(welcomes.at(-1)).toMatchObject({ body: { cellKey: EAST, playerEntityId: entityIdOf('s1'), frameOrigin: { eastingM: 382_000 } } });
@@ -80,7 +81,7 @@ describe('cell handoff', () => {
     bus.publish(subjects.cellJoin(WEST), { sessionId: 's1' });
     await settle();
     let seq = 0;
-    while (west.tickStats().players === 1 && seq < 10) {
+    while (west.tickStats().players === 1 && seq < 200) {
       bus.publish(subjects.cellInput(WEST), { sessionId: 's1', input: east(++seq) });
       west.step();
     }
@@ -111,5 +112,28 @@ describe('cell handoff', () => {
     const last = acks.at(-1);
     expect(last?.type === 'inputAck' && last.body.position.x).toBeLessThan(1000);
     expect(west.tickStats()).toMatchObject({ players: 1 });
+  });
+
+  it('should show a player near the border as a ghost in the neighbour cell snapshot', async () => {
+    const bus = new InMemoryBus();
+    const west = cellOf(bus, WEST, 381_000, [WEST, EAST]);
+    const eastCell = cellOf(bus, EAST, 382_000, [WEST, EAST]);
+    const eastSnapshots: CellSnapshot[] = [];
+    bus.subscribe<CellSnapshot>(subjects.cellSnapshot(EAST), (m) => eastSnapshots.push(m));
+    west.start({ ticking: false });
+    eastCell.start({ ticking: false });
+    bus.publish(subjects.cellJoin(WEST), { sessionId: 'w' }); // spawns at x = 998 in the west cell
+    bus.publish(subjects.cellJoin(EAST), { sessionId: 'e' }); // spawns at x = 998 in the east cell, 1 km away
+    await settle();
+    west.step();
+    west.step(); // west publishes its snapshot and its ghosts
+    eastCell.step();
+    eastCell.step();
+    west.stop();
+    eastCell.stop();
+    const entities = eastSnapshots.at(-1)?.body.entities ?? [];
+    expect(entities.map((e) => e.id).sort()).toEqual([entityIdOf('e'), entityIdOf('w')].sort());
+    // The ghost is expressed in the east cell's frame: 2 m west of its origin.
+    expect(entities.find((e) => e.id === entityIdOf('w'))?.position.x).toBeCloseTo(-2, 0);
   });
 });

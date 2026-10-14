@@ -1,13 +1,15 @@
 /**
- * Role: authoritative runtime of one cell: players join through the bus or a border handoff, inputs are simulated with @skyline/physics at 20 Hz, acks go back on each session subject and one snapshot per cell on the cell subject; daily life (actions, needs, Djai) runs at 1 Hz and the proximity chat when configured.
+ * Role: authoritative runtime of one cell: players join through the bus or a border handoff (20 m hysteresis), inputs are simulated with @skyline/physics at 20 Hz, acks go back on each session subject and one snapshot per cell (own players + neighbours' border ghosts) on the cell subject; daily life (actions, needs, Djai) runs at 1 Hz and the proximity chat when configured.
  * Owner: backend
  */
 
 import {
   type CellAction,
   type CellChat,
+  type CellGhosts,
   type CellHandoff,
   type CellSnapshot,
+  type GhostEntity,
   type CellInput,
   type CellJoin,
   type MessageBus,
@@ -22,7 +24,8 @@ import { type EntityState, MAX_SNAPSHOT_ENTITIES, PROTOCOL_VERSION, type ServerM
 import type { ClockSegment } from '@skyline/sim-clock';
 import { DailyLife, type DailyLifeDeps, type PlayerPositions } from '../actions/daily-life.ts';
 import { type ChatPlayers, ProximityChat, type ProximityChatDeps } from '../chat/proximity-chat.ts';
-import { entityIdOf, leftCellTowards, stateFromHandoff, toHandoff } from '../handoff/cell-handoff.ts';
+import { depthOutsideM, entityIdOf, HANDOFF_HYSTERESIS_M, leftCellTowards, stateFromHandoff, toHandoff } from '../handoff/cell-handoff.ts';
+import { GhostBoard, ghostTargets, nearBorder, toGhost } from '../handoff/cell-ghosts.ts';
 import { InputForwarding } from '../handoff/input-forwarding.ts';
 import { entityStateCode } from './entity-state-code.ts';
 import { PlayerSlot } from './player-slot.ts';
@@ -58,6 +61,7 @@ export class ZoneCell implements PlayerPositions, ChatPlayers {
   private tick = 0;
   private readonly handoffMs: number[] = [];
   private readonly forwarding = new InputForwarding();
+  private readonly ghosts = new GhostBoard();
   private readonly daily: DailyLife | null;
   private readonly chat: ProximityChat | null;
 
@@ -107,6 +111,7 @@ export class ZoneCell implements PlayerPositions, ChatPlayers {
       bus.subscribe<CellChat>(subjects.cellChat(cellKey), (m) => void this.chat?.handle(m.sessionId, m.message)),
       bus.subscribe<CellAction>(subjects.cellAction(cellKey), (m) => void this.daily?.handle(m.sessionId, m.message)),
       bus.subscribe<CellHandoff>(subjects.cellHandoff(cellKey), (m) => void this.adopt(m)),
+      bus.subscribe<CellGhosts>(subjects.cellGhosts(cellKey), (m) => this.ghosts.accept(m, Date.now())),
     );
     if (ticking) this.timer = setInterval(() => this.step(), 1000 / TICK_RATE_HZ);
   }
@@ -244,6 +249,7 @@ export class ZoneCell implements PlayerPositions, ChatPlayers {
       player.state = { ...before, velocity: { x: 0, y: before.velocity.y, z: 0 } };
       return false;
     }
+    if (depthOutsideM(player.state) <= HANDOFF_HYSTERESIS_M) return false;
     this.options.bus.publish(subjects.cellHandoff(target), this.handoffOf(player));
     void this.daily?.removePlayer(player.sessionId, 'left_cell');
     this.chat?.remove(player.sessionId);
@@ -262,16 +268,35 @@ export class ZoneCell implements PlayerPositions, ChatPlayers {
 
   private broadcastSnapshot(): void {
     if (this.players.size === 0) return;
-    const entities: EntityState[] = [...this.players.values()]
-      .slice(0, MAX_SNAPSHOT_ENTITIES)
-      .map((p) => ({
-        id: p.entityId,
-        position: p.state.position,
-        yawRad: p.lastInput.yawRad,
-        state: entityStateCode(p.state),
-      }));
+    const own: EntityState[] = [...this.players.values()].map((p) => ({
+      id: p.entityId,
+      position: p.state.position,
+      yawRad: p.lastInput.yawRad,
+      state: entityStateCode(p.state),
+    }));
+    this.publishGhosts(own);
+    const ghosts = this.ghosts.entitiesIn(this.options.frameOrigin, Date.now(), new Set(own.map((e) => e.id)));
+    const entities = [...own, ...ghosts].slice(0, MAX_SNAPSHOT_ENTITIES);
     const snapshot: CellSnapshot = { type: 'snapshot', body: { tick: this.tick, entities } };
     this.options.bus.publish(subjects.cellSnapshot(this.options.cellKey), snapshot);
+  }
+
+  /** Players near a border, sent read-only to the neighbour cells of the cluster that can see them. */
+  private publishGhosts(own: readonly EntityState[]): void {
+    const { clusterCells, cellKey, frameOrigin, bus } = this.options;
+    if (!clusterCells || clusterCells.size < 2) return;
+    const byTarget = new Map<string, GhostEntity[]>();
+    for (const e of own) {
+      if (!nearBorder(e.position.x, e.position.z)) continue;
+      const ghost = toGhost(e, frameOrigin);
+      for (const target of ghostTargets(cellKey, ghost)) {
+        if (!clusterCells.has(target)) continue;
+        const list = byTarget.get(target) ?? [];
+        list.push(ghost);
+        byTarget.set(target, list);
+      }
+    }
+    for (const [target, entities] of byTarget) bus.publish(subjects.cellGhosts(target), { fromCell: cellKey, entities } satisfies CellGhosts);
   }
 
   private send(sessionId: string, message: ServerMessage): void {
