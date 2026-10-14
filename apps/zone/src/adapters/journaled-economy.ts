@@ -6,7 +6,7 @@
 import { existsSync } from 'node:fs';
 import { appendFile, mkdir, readFile } from 'node:fs/promises';
 import { dirname } from 'node:path';
-import type { EconomyCommitRequest, EconomyCommitResult, EconomyPort, LedgerAccountRef } from '@skyline/economy-rules';
+import type { EconomyCommitRequest, EconomyCommitResult, EconomyPort, LedgerAccountRef, LedgerSummary } from '@skyline/economy-rules';
 import { z } from 'zod';
 import { InMemoryEconomy } from './in-memory-economy.ts';
 
@@ -58,6 +58,10 @@ export class JournaledEconomy implements EconomyPort {
 
   balanceOf(account: LedgerAccountRef): Promise<bigint> {
     return this.ledger.balanceOf(account);
+  }
+
+  summary(): LedgerSummary & { commits: number } {
+    return this.ledger.summary();
   }
 
   totalBalance(): bigint {

@@ -3,7 +3,7 @@
  * Owner: backend
  */
 
-import { type EconomyCommitRequest, type EconomyCommitResult, type EconomyPort, type LedgerAccountRef, legsProblem, mustStayPositive } from '@skyline/economy-rules';
+import { type EconomyCommitRequest, type EconomyCommitResult, type EconomyPort, type LedgerAccountRef, ledgerSummary, type LedgerSummary, legsProblem, mustStayPositive } from '@skyline/economy-rules';
 
 export class InMemoryEconomy implements EconomyPort {
   private readonly balances = new Map<LedgerAccountRef, bigint>();
@@ -29,6 +29,11 @@ export class InMemoryEconomy implements EconomyPort {
     let sum = 0n;
     for (const v of this.balances.values()) sum += v;
     return sum;
+  }
+
+  /** Money supply, sources and sinks (dashboard). */
+  summary(): LedgerSummary & { commits: number } {
+    return { ...ledgerSummary(this.balances), commits: this.byKey.size };
   }
 
   get commits(): number {

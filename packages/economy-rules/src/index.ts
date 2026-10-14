@@ -5,3 +5,4 @@
 
 export type { EconomyCommitKind, EconomyCommitRequest, EconomyCommitResult, EconomyErrorCode, EconomyPort, LedgerAccountRef, LedgerLeg } from './economy-port.ts';
 export { accountKind, characterAccount, legsFromTransfers, legsProblem, mustStayPositive } from './ledger-legs.ts';
+export { ledgerSummary, type LedgerSummary } from './ledger-summary.ts';

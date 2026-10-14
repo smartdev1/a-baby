@@ -44,7 +44,7 @@ const cells = await Promise.all(
     return { cellKey, cell };
   }),
 );
-const stats = config.statsPort > 0 ? startStatsServer(config.statsPort, () => cells.map(({ cellKey, cell }) => ({ cellKey, ...cell.tickStats() }))) : null;
+const stats = config.statsPort > 0 ? startStatsServer(config.statsPort, { '/stats': () => cells.map(({ cellKey, cell }) => ({ cellKey, ...cell.tickStats() })), '/economy': () => economy.summary() }) : null;
 
 const shutdown = async (signal: string): Promise<void> => {
   logger.info({ signal }, 'shutting down');

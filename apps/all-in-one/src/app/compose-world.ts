@@ -33,19 +33,22 @@ export const composeWorld = async (
   if (tilesLoaded === 0)
     logger.warn({ worldDir: config.worldDir }, 'no world tiles found: flat empty cell (run pnpm map:build first)');
 
+  const economy = await JournaledEconomy.open(join(servicesConfig.runtimeDir, 'ledger.ndjson'), (line) => logger.warn({ line }, 'ledger journal line skipped'));
   let cell: ZoneCell | null = null;
   const services = await buildServices({
     config: servicesConfig,
     logger: logger.child({ module: 'services' }),
-    extraRoutes: (server) =>
-      server.get('/api/v1/dev/zone-stats', (_req, reply) => reply.send({ cellKey, tilesLoaded, ...cell?.tickStats() })),
+    extraRoutes: (server) => {
+      server.get('/api/v1/dev/zone-stats', (_req, reply) => reply.send({ cellKey, tilesLoaded, ...cell?.tickStats() }));
+      server.get('/api/v1/dev/economy', (_req, reply) => reply.send(economy.summary()));
+    },
   });
   const daily = await setUpDailyLife({
     contentDir: servicesConfig.contentDir,
     worldDir: config.worldDir,
     cellKey,
     clock: () => services.worldClock.current(),
-    economy: await JournaledEconomy.open(join(servicesConfig.runtimeDir, 'ledger.ndjson'), (line) => logger.warn({ line }, 'ledger journal line skipped')),
+    economy,
     starterDjai: config.starterDjai,
   });
   const transport = await loadTransport(config.worldDir, servicesConfig.contentDir);
