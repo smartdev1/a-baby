@@ -1,5 +1,5 @@
 /**
- * Role: composes the all-in-one world: services (HTTP), one zone cell around the spawn point with its real collision tiles and daily life (content, places, in-memory economy), and the WebSocket gateway, linked by an in-memory bus.
+ * Role: composes the all-in-one world: services (HTTP), one zone cell around the spawn point with its real collision tiles and daily life (content, places, journaled economy), and the WebSocket gateway, linked by an in-memory bus.
  * Owner: backend
  */
 
@@ -9,7 +9,7 @@ import { startGateway, type Gateway } from '@skyline/gateway';
 import { cellKeyOf, toUtm30n } from '@skyline/geo';
 import type { Logger } from '@skyline/observability';
 import { buildServices, type Services, type ServicesConfig } from '@skyline/services';
-import { FileCharacterStore, InMemoryChatReports, InMemoryEconomy, loadBlockedWords, loadCellCollision, loadTransport, setUpDailyLife, ZoneCell } from '@skyline/zone';
+import { FileCharacterStore, InMemoryChatReports, JournaledEconomy, loadBlockedWords, loadCellCollision, loadTransport, setUpDailyLife, ZoneCell } from '@skyline/zone';
 import type { AllInOneConfig } from './all-in-one-config.ts';
 
 export interface World {
@@ -45,7 +45,7 @@ export const composeWorld = async (
     worldDir: config.worldDir,
     cellKey,
     clock: () => services.worldClock.current(),
-    economy: new InMemoryEconomy(),
+    economy: await JournaledEconomy.open(join(servicesConfig.runtimeDir, 'ledger.ndjson'), (line) => logger.warn({ line }, 'ledger journal line skipped')),
     starterDjai: config.starterDjai,
   });
   const transport = await loadTransport(config.worldDir, servicesConfig.contentDir);

@@ -8,6 +8,7 @@ export type { TickStatsSnapshot } from './cell/tick-stats.ts';
 export { loadCellCollision, type CellWorld } from './world-data/cell-collision-loader.ts';
 export { setUpDailyLife, type DailyLifeSetup, type DailyLifeSources } from './actions/daily-life-setup.ts';
 export { grantStarterMoney, InMemoryEconomy } from './adapters/in-memory-economy.ts';
+export { JournaledEconomy } from './adapters/journaled-economy.ts';
 export { InMemoryChatReports } from './adapters/in-memory-chat-reports.ts';
 export { FileCharacterStore, InMemoryCharacterStore } from './adapters/file-character-store.ts';
 export { loadBlockedWords } from './chat/chat-setup.ts';

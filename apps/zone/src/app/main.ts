@@ -8,7 +8,7 @@ import { NatsBus } from '@skyline/bus';
 import { cellBounds, cellKeyOf, CELL_SIZE_M } from '@skyline/geo';
 import { createLogger } from '@skyline/observability';
 import { setUpDailyLife } from '../actions/daily-life-setup.ts';
-import { InMemoryEconomy } from '../adapters/in-memory-economy.ts';
+import { JournaledEconomy } from '../adapters/journaled-economy.ts';
 import { InMemoryChatReports } from '../adapters/in-memory-chat-reports.ts';
 import { FileCharacterStore } from '../adapters/file-character-store.ts';
 import { ZoneCell } from '../cell/zone-cell.ts';
@@ -23,8 +23,8 @@ const config = readZoneConfig(process.env);
 const logger = createLogger({ service: 'zone' });
 const bus = await NatsBus.connect(config.natsUrl, (subject, error) => logger.error({ subject, err: error }, 'bus handler failed'));
 const clock = httpClockSource(config.servicesUrl);
-// One in-memory ledger per process until the PostgreSQL economy (J6): balances are not shared between zone processes.
-const economy = new InMemoryEconomy();
+// One journaled ledger per process until the PostgreSQL economy (J6-05): balances are not shared between zone processes.
+const economy = await JournaledEconomy.open(join(config.runtimeDir, `ledger.${config.cells.join('-')}.ndjson`), (line) => logger.warn({ line }, 'ledger journal line skipped'));
 // Shared by every cell of the process; zones on one machine share the folder until the characters service (J6-04).
 const characters = new FileCharacterStore(join(config.runtimeDir, 'characters'));
 const transport = await loadTransport(config.worldDir, config.contentDir);
