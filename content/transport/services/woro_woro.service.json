@@ -1,0 +1,16 @@
+{
+  "$schema": "../../../tools/content-cli/schemas/transport-service.schema.json",
+  "id": "woro_woro",
+  "version": 1,
+  "labelKey": "transport.woro_woro.label",
+  "cruiseKmh": 32,
+  "dwellGameMin": 3,
+  "seats": 4,
+  "fareDjai": 150,
+  "periods": [
+    { "from": "05:00", "to": "10:00", "headwayGameMin": 8 },
+    { "from": "10:00", "to": "16:00", "headwayGameMin": 15 },
+    { "from": "16:00", "to": "21:00", "headwayGameMin": 8 },
+    { "from": "21:00", "to": "01:00", "headwayGameMin": 25 }
+  ]
+}

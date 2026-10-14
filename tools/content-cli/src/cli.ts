@@ -33,7 +33,7 @@ const main = async (): Promise<number> => {
   const report = validateContent(files, await readI18nKeys(contentDir), { strict: values.strict });
   show('warning', report.warnings);
   show('error', report.errors);
-  const counts = `${report.content.actions.length} actions, ${report.content.placeTypes.length} place types, ${report.content.jobs.length} jobs, ${report.content.items.length} items`;
+  const counts = `${report.content.actions.length} actions, ${report.content.placeTypes.length} place types, ${report.content.jobs.length} jobs, ${report.content.items.length} items, ${report.content.transportServices.length} transport services`;
   process.stdout.write(`${files.length} files (${counts}): ${report.errors.length} error(s), ${report.warnings.length} warning(s)\n`);
   if (report.errors.length > 0) return 1;
   if (command === 'compile') {

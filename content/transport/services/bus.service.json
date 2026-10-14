@@ -1,0 +1,13 @@
+{
+  "$schema": "../../../tools/content-cli/schemas/transport-service.schema.json",
+  "id": "bus",
+  "version": 1,
+  "labelKey": "transport.bus.label",
+  "cruiseKmh": 26,
+  "dwellGameMin": 3,
+  "seats": 50,
+  "fareDjai": 200,
+  "periods": [
+    { "from": "06:00", "to": "21:00", "headwayGameMin": 30 }
+  ]
+}

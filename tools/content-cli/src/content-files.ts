@@ -1,5 +1,5 @@
 /**
- * Role: finds and reads the content files of a content folder by kind (actions, place types, jobs, items, needs config, i18n catalogues), as raw JSON with their repository-relative paths.
+ * Role: finds and reads the content files of a content folder by kind (actions, place types, jobs, items, transport services, needs config, i18n catalogues), as raw JSON with their repository-relative paths.
  * Owner: backend
  */
 
@@ -19,6 +19,7 @@ const KIND_BY_SUFFIX: readonly (readonly [string, ContentKind])[] = [
   ['.place.json', 'place-type'],
   ['.job.json', 'job'],
   ['.item.json', 'item'],
+  ['.service.json', 'transport-service'],
 ];
 
 const walk = async (dir: string): Promise<string[]> => {

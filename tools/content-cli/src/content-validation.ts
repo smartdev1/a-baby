@@ -3,7 +3,7 @@
  * Owner: backend
  */
 
-import { type Action, CONTENT_SCHEMAS, type ContentKind, type Item, type Job, type PlaceType } from '@skyline/content-schema';
+import { type Action, CONTENT_SCHEMAS, type ContentKind, type Item, type Job, type PlaceType, type TransportService } from '@skyline/content-schema';
 import { inWindows } from '@skyline/sim-actions';
 import type { ContentFile } from './content-files.ts';
 
@@ -18,6 +18,7 @@ export interface ValidContent {
   readonly placeTypes: PlaceType[];
   readonly jobs: Job[];
   readonly items: Item[];
+  readonly transportServices: TransportService[];
   readonly needs: unknown;
 }
 
@@ -50,7 +51,7 @@ const parseAll = (files: readonly ContentFile[], report: ValidationReport): void
     const twin = report.fileOf.get(key);
     if (twin) report.errors.push({ file: f.path, path: 'id', message: `duplicate ${f.kind} id "${value.id}" (also in ${twin})` });
     (report.fileOf as Map<string, string>).set(key, f.path);
-    const lists: Record<Exclude<ContentKind, 'needs'>, unknown[]> = { action: report.content.actions, 'place-type': report.content.placeTypes, job: report.content.jobs, item: report.content.items };
+    const lists: Record<Exclude<ContentKind, 'needs'>, unknown[]> = { action: report.content.actions, 'place-type': report.content.placeTypes, job: report.content.jobs, item: report.content.items, 'transport-service': report.content.transportServices };
     lists[f.kind].push(value);
   }
 };
@@ -84,6 +85,7 @@ const i18nKeysOf = (c: ValidContent): { kind: ContentKind; id: string; path: str
   ...c.placeTypes.map((p) => ({ kind: 'place-type' as const, id: p.id, path: 'labelKey', key: p.labelKey })),
   ...c.jobs.map((j) => ({ kind: 'job' as const, id: j.id, path: 'labelKey', key: j.labelKey })),
   ...c.items.map((i) => ({ kind: 'item' as const, id: i.id, path: 'labelKey', key: i.labelKey })),
+  ...c.transportServices.map((t) => ({ kind: 'transport-service' as const, id: t.id, path: 'labelKey', key: t.labelKey })),
 ];
 
 /** Missing keys are warnings until the frontend catalogue exists; `strict` makes them errors. */
@@ -111,7 +113,7 @@ export const categoriesWithoutNight = (content: ValidContent): string[] => {
 };
 
 export const validateContent = (files: readonly ContentFile[], i18n: ReadonlyMap<string, ReadonlySet<string>>, options: { strict: boolean; locale?: string }): ValidationReport => {
-  const report: ValidationReport = { errors: [], warnings: [], content: { actions: [], placeTypes: [], jobs: [], items: [], needs: null }, fileOf: new Map() };
+  const report: ValidationReport = { errors: [], warnings: [], content: { actions: [], placeTypes: [], jobs: [], items: [], transportServices: [], needs: null }, fileOf: new Map() };
   parseAll(files, report);
   checkReferences(report);
   checkI18n(report, i18n, options.locale ?? 'fr-CI', options.strict);

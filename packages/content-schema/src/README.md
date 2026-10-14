@@ -13,6 +13,7 @@
 | `action-schema.ts` | Action file (ARCHITECTURE §15.3): where, when, requires, cost, duration + ellipse, phases, effects, outcomes, participants, provider |
 | `place-type-schema.ts` | Place types: OSM game categories, action sites (kind, capacity, placement), opening hours, NPC roles, sanctuary |
 | `job-item-schemas.ts` | NPC jobs and items |
+| `transport-schemas.ts` | Transport service profiles per line mode (`content/transport/services/`) |
 | `json-schemas.ts` | JSON Schemas generated from Zod (`io: input`) |
 
 Needs are **satisfaction** values: 100 = satisfied, 0 = empty (penalties). Eating adds to `hunger`.
