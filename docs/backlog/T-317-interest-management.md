@@ -40,7 +40,7 @@ Règles : `docs/rules/BACKEND.md`, ARCHITECTURE.md.
 - Viewers of the same 32 m mesh share one interest set (anchored on the mesh centre) and one encoded frame: a first version with one set and one frame per session pushed the all-in-one tick p95 to 88 ms (gateway and zone share the event loop there).
 - `CellFanout.entitiesPerFrame()` for bandwidth monitoring.
 - Measured (500 bots, random walk in one cell, all-in-one, same machine as SP3), without → with interest: down **753 → 199 kbit/s per bot**, acks 19.9 → 20.0 per bot per s, tick p95 34.7 → 28.4 ms. Remaining bytes: 64–192 entities × 19 B; quantisation and deltas (J5-05) are the next step.
-- Note: the zone tick p95 without interest (34.7 ms at 500 players) is far above SP3 (6.5–9 ms) since daily life (T-308 onwards) runs in the tick; to profile before the J5 load tests.
+- Note: in the all-in-one the in-memory bus delivers synchronously, so the measured "tick" includes the gateway's socket writes of the acks and snapshots (CPU profile under 500 bots: process 79 % idle, `writev` 8 %, the cell simulation < 2 %). It is not a zone regression against SP3 (separate processes over NATS) and it varies from run to run (p95 18 to 35 ms).
 
 ## Review
 
