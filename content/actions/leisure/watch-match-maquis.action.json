@@ -1,0 +1,83 @@
+{
+  "$schema": "../../../tools/content-cli/schemas/action.schema.json",
+  "id": "leisure.watch_match_maquis",
+  "version": 1,
+  "category": "leisure",
+  "labelKey": "action.leisure.watch_match_maquis.label",
+  "tags": [
+    "leisure",
+    "night"
+  ],
+  "where": {
+    "placeTypes": [
+      "maquis"
+    ],
+    "site": "seat_or_counter",
+    "interactionRadiusM": 2.5
+  },
+  "when": {
+    "openingHoursFrom": "place",
+    "windows": [
+      {
+        "from": "15:00",
+        "to": "23:59"
+      }
+    ]
+  },
+  "requires": {
+    "state": [
+      "on_foot",
+      "not_in_action"
+    ],
+    "cooldown": {
+      "gameMinutes": 720,
+      "scope": "character"
+    },
+    "money": {
+      "minDjai": 500
+    }
+  },
+  "duration": {
+    "gameMinutes": 105,
+    "real": {
+      "maxSeconds": 120
+    },
+    "interruptible": true,
+    "onInterrupt": "refund_none_partial_effects"
+  },
+  "effects": {
+    "onComplete": [
+      {
+        "type": "need",
+        "need": "fun",
+        "delta": 20
+      },
+      {
+        "type": "need",
+        "need": "social",
+        "delta": 12
+      }
+    ]
+  },
+  "cost": {
+    "djai": {
+      "base": 500,
+      "priceSource": "business_price_list_or_base"
+    },
+    "payee": "provider"
+  },
+  "provider": {
+    "kind": "place",
+    "allowPlayerBusiness": true,
+    "employeeRole": "waiter"
+  },
+  "participants": {
+    "mode": "solo",
+    "npcRoles": [
+      {
+        "role": "waiter",
+        "required": true
+      }
+    ]
+  }
+}

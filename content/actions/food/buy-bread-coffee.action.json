@@ -1,0 +1,84 @@
+{
+  "$schema": "../../../tools/content-cli/schemas/action.schema.json",
+  "id": "food.buy_bread_coffee",
+  "version": 1,
+  "category": "food",
+  "labelKey": "action.food.buy_bread_coffee.label",
+  "tags": [
+    "food",
+    "breakfast"
+  ],
+  "where": {
+    "placeTypes": [
+      "cafe_bakery",
+      "boutique"
+    ],
+    "site": "counter",
+    "interactionRadiusM": 2.5
+  },
+  "when": {
+    "openingHoursFrom": "place",
+    "windows": []
+  },
+  "requires": {
+    "state": [
+      "on_foot",
+      "not_in_action"
+    ],
+    "needs": {
+      "hunger": {
+        "max": 90
+      }
+    },
+    "cooldown": {
+      "gameMinutes": 240,
+      "scope": "character"
+    },
+    "money": {
+      "minDjai": 350
+    }
+  },
+  "duration": {
+    "gameMinutes": 15,
+    "real": {
+      "maxSeconds": 20
+    },
+    "interruptible": true,
+    "onInterrupt": "refund_none_partial_effects"
+  },
+  "effects": {
+    "onComplete": [
+      {
+        "type": "need",
+        "need": "hunger",
+        "delta": 30
+      },
+      {
+        "type": "need",
+        "need": "energy",
+        "delta": 8
+      }
+    ]
+  },
+  "cost": {
+    "djai": {
+      "base": 350,
+      "priceSource": "business_price_list_or_base"
+    },
+    "payee": "provider"
+  },
+  "provider": {
+    "kind": "place",
+    "allowPlayerBusiness": true,
+    "employeeRole": "vendor"
+  },
+  "participants": {
+    "mode": "solo",
+    "npcRoles": [
+      {
+        "role": "vendor",
+        "required": true
+      }
+    ]
+  }
+}

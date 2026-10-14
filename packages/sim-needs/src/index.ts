@@ -1,7 +1,7 @@
 /**
- * Role: public API of @skyline/sim-needs. Needs simulation rules (hunger, energy, hygiene, social, fun): decay over game time and action effects.
+ * Role: public API of @skyline/sim-needs. Needs simulation (hunger, energy, hygiene, social, fun): decay over game time while connected, frozen offline, action deltas, penalties and derived morale.
  * Owner: backend
  */
 
-// Implemented in J3 (docs/roadmap.md). Only re-export from here.
-export {};
+export { advanceNeeds, applyNeedDeltas, initialNeeds, resumeNeeds, type NeedValues, type NeedsSnapshot } from './needs-state.ts';
+export { hoursUntilEmpty, morale, needPenalties, needWarnings } from './needs-effects.ts';

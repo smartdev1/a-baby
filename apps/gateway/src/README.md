@@ -1,11 +1,11 @@
 # `apps/gateway/src/`
 
 - **Owner:** backend developer
-- **Status:** Skeleton
+- **Status:** Active
 
 ## Role
 
-Gateway source code.
+Gateway source code: `app/` (config, entry point), `auth/` (session tickets), `transport/` (WebSocket server), `session/` (one client connection), `routing/` (cell snapshot fan-out), `interest/` (per-client interest sets), `backpressure/` (planned).
 
 ## Rules
 

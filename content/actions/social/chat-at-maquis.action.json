@@ -1,0 +1,48 @@
+{
+  "$schema": "../../../tools/content-cli/schemas/action.schema.json",
+  "id": "social.chat_at_maquis",
+  "version": 1,
+  "category": "social",
+  "labelKey": "action.social.chat_at_maquis.label",
+  "tags": [
+    "social",
+    "night"
+  ],
+  "where": {
+    "placeTypes": [
+      "maquis"
+    ],
+    "site": "seat_or_counter",
+    "interactionRadiusM": 2.5
+  },
+  "when": {
+    "openingHoursFrom": "place",
+    "windows": []
+  },
+  "requires": {
+    "state": [
+      "on_foot",
+      "not_in_action"
+    ],
+    "nearbyCharacters": {
+      "min": 1
+    }
+  },
+  "duration": {
+    "gameMinutes": 30,
+    "real": {
+      "maxSeconds": 45
+    },
+    "interruptible": true,
+    "onInterrupt": "refund_none_partial_effects"
+  },
+  "effects": {
+    "onComplete": [
+      {
+        "type": "need",
+        "need": "social",
+        "delta": 15
+      }
+    ]
+  }
+}

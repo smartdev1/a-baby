@@ -18,3 +18,5 @@ Validated configuration of a commune build.
 
 - Every path in a config is repository-relative with `/` separators (Windows and Linux); absolute paths are rejected.
 - Every source file starts with a `Role:` header comment; keep this README up to date.
+
+`neighbourhood-profiles.ts`: schema and loader of the neighbourhood height profiles (T-205), name keys (accent- and case-insensitive), exact name then pattern resolution.

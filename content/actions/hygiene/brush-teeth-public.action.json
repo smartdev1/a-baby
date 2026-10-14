@@ -1,0 +1,72 @@
+{
+  "$schema": "../../../tools/content-cli/schemas/action.schema.json",
+  "id": "hygiene.brush_teeth_public",
+  "version": 1,
+  "category": "hygiene",
+  "labelKey": "action.hygiene.brush_teeth_public.label",
+  "tags": [
+    "hygiene"
+  ],
+  "where": {
+    "placeTypes": [
+      "public_toilets"
+    ],
+    "site": "shower_cabin",
+    "interactionRadiusM": 2.5
+  },
+  "when": {
+    "openingHoursFrom": "place",
+    "windows": []
+  },
+  "requires": {
+    "state": [
+      "on_foot",
+      "not_in_action"
+    ],
+    "cooldown": {
+      "gameMinutes": 240,
+      "scope": "character"
+    },
+    "money": {
+      "minDjai": 25
+    }
+  },
+  "duration": {
+    "gameMinutes": 5,
+    "real": {
+      "maxSeconds": 10
+    },
+    "interruptible": true,
+    "onInterrupt": "refund_none_partial_effects"
+  },
+  "effects": {
+    "onComplete": [
+      {
+        "type": "need",
+        "need": "hygiene",
+        "delta": 10
+      }
+    ]
+  },
+  "cost": {
+    "djai": {
+      "base": 25,
+      "priceSource": "business_price_list_or_base"
+    },
+    "payee": "provider"
+  },
+  "provider": {
+    "kind": "place",
+    "allowPlayerBusiness": true,
+    "employeeRole": "attendant"
+  },
+  "participants": {
+    "mode": "solo",
+    "npcRoles": [
+      {
+        "role": "attendant",
+        "required": true
+      }
+    ]
+  }
+}

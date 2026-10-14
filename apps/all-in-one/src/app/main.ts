@@ -9,7 +9,8 @@ import { readAllInOneConfig } from './all-in-one-config.ts';
 import { composeWorld } from './compose-world.ts';
 
 const logger = createLogger({ service: 'all-in-one' });
-const servicesConfig = readServicesConfig(process.env);
+// Local dev: anonymous tickets unless the environment says otherwise (the preview client and the bots use them).
+const servicesConfig = readServicesConfig({ SKYLINE_ANONYMOUS_TICKETS: 'true', ...process.env });
 const world = await composeWorld(readAllInOneConfig(process.env), servicesConfig, logger);
 await world.services.server.listen({ host: servicesConfig.host, port: servicesConfig.port });
 logger.info({ cellKey: world.cellKey, tiles: world.tilesLoaded }, 'all-in-one world running');

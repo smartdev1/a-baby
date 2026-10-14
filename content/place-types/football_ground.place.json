@@ -1,0 +1,1 @@
+{ "$schema": "../../tools/content-cli/schemas/place-type.schema.json", "id": "football_ground", "version": 1, "labelKey": "place.football_ground.label", "osmCategories": ["sport.pitch", "sport.stadium"], "sites": [{ "kind": "pitch_slot", "capacity": 10, "placement": "around" }], "openingHours": [{ "from": "06:00", "to": "20:00" }] }

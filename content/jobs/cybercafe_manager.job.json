@@ -1,0 +1,39 @@
+{
+  "$schema": "../../tools/content-cli/schemas/job.schema.json",
+  "id": "cybercafe_manager",
+  "version": 1,
+  "labelKey": "job.cybercafe_manager.label",
+  "employerPlaceTypes": [
+    "cybercafe"
+  ],
+  "shifts": [
+    {
+      "from": "08:00",
+      "to": "16:00"
+    },
+    {
+      "from": "16:00",
+      "to": "24:00"
+    }
+  ],
+  "workAction": "work.run_cybercafe",
+  "wagePerShiftDjai": 3000,
+  "maxPaidShiftsPerGameDay": 1,
+  "levels": [
+    {
+      "level": 1,
+      "minShifts": 0,
+      "wageBonusPercent": 0
+    },
+    {
+      "level": 2,
+      "minShifts": 10,
+      "wageBonusPercent": 15
+    },
+    {
+      "level": 3,
+      "minShifts": 30,
+      "wageBonusPercent": 35
+    }
+  ]
+}

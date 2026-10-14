@@ -99,7 +99,15 @@ const metaOf = (tile: TileContent, existing: ReadonlySet<string>): TileMeta =>
     formatVersion: TILE_FORMAT_VERSION,
     tileKey: tile.key,
     buildings: tile.buildingMeta.map((b) => ({ id: b.id, type: b.type, levels: b.levels, heightM: b.heightM, heightSource: b.heightSource })),
-    places: tile.places.map((p) => ({ id: p.id, category: p.category, displayName: p.displayName, position: { x: p.position[0], z: p.position[1] }, buildingId: p.buildingId })),
+    places: tile.places.map((p) => ({
+      id: p.id,
+      category: p.category,
+      displayName: p.displayName,
+      position: { x: p.position[0], z: p.position[1] },
+      buildingId: p.buildingId,
+      ...(p.placeType ? { placeType: p.placeType } : {}),
+      ...(p.sites ? { sites: p.sites.map((s) => ({ kind: s.kind, capacity: s.capacity, position: { x: s.position[0], z: s.position[1] }, yawRad: s.yawRad })) } : {}),
+    })),
     neighbours: neighbourKeys(tile.key).filter((k) => existing.has(k)),
   });
 

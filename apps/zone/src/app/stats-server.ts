@@ -1,15 +1,16 @@
 /**
- * Role: tiny loopback HTTP endpoint GET /stats with the tick and handoff statistics of every cell of the process (load tests, spike SP3).
+ * Role: tiny loopback HTTP endpoint of a zone process: GET /stats (tick and handoff statistics of every cell, load tests) and GET /economy (money supply, sources, sinks of the process ledger).
  * Owner: backend
  */
 
 import { createServer, type Server } from 'node:http';
 
-export const startStatsServer = (port: number, stats: () => unknown): Server =>
+export const startStatsServer = (port: number, routes: Readonly<Record<string, () => unknown>>): Server =>
   createServer((request, response) => {
-    if (request.method !== 'GET' || request.url !== '/stats') {
+    const route = request.method === 'GET' && request.url ? routes[request.url] : undefined;
+    if (!route) {
       response.writeHead(404).end();
       return;
     }
-    response.writeHead(200, { 'content-type': 'application/json', 'cache-control': 'no-store' }).end(JSON.stringify(stats()));
+    response.writeHead(200, { 'content-type': 'application/json', 'cache-control': 'no-store' }).end(JSON.stringify(route()));
   }).listen(port, '127.0.0.1');

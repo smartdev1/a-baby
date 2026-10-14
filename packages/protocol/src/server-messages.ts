@@ -1,13 +1,26 @@
 /**
- * Role: everything the server may send (welcome, input_ack, snapshot, world_clock, pong, error): one encoder and one decoder, used by the gateway and the web client.
+ * Role: everything the server may send (welcome, input_ack, snapshot, world_clock, pong, error, action / needs / wallet updates, chat message and refusal, ride update, resume info, taxi update): one encoder and one decoder, used by the gateway and the web client.
  * Owner: backend
  */
 
 import { FrameReader } from './binary/frame-reader.ts';
 import { SERVER_MESSAGE } from './message-types.ts';
 import { decodePong, encodePong, type PongMessage } from './messages/clock-messages.ts';
-import { decodeControl, encodeControl } from './messages/control-codec.ts';
 import {
+  type ActionUpdateMessage,
+  ActionUpdateSchema,
+  type NeedsUpdateMessage,
+  NeedsUpdateSchema,
+  type WalletUpdateMessage,
+  WalletUpdateSchema,
+} from './messages/action-schemas.ts';
+import { type ChatMessageBody, ChatMessageSchema, type ChatRejectedMessage, ChatRejectedSchema } from './messages/chat-schemas.ts';
+import { decodeControl, encodeControl } from './messages/control-codec.ts';
+import { type RideUpdateMessage, RideUpdateSchema } from './messages/ride-schemas.ts';
+import { type TaxiUpdateMessage, TaxiUpdateSchema } from './messages/taxi-schemas.ts';
+import {
+  type ResumeInfoMessage,
+  ResumeInfoSchema,
   type ServerErrorMessage,
   ServerErrorSchema,
   type WelcomeMessage,
@@ -31,23 +44,22 @@ export type ServerMessage =
   | { readonly type: 'snapshot'; readonly body: SnapshotMessage }
   | { readonly type: 'worldClock'; readonly body: WorldClockMessage }
   | { readonly type: 'pong'; readonly body: PongMessage }
-  | { readonly type: 'error'; readonly body: ServerErrorMessage };
+  | { readonly type: 'error'; readonly body: ServerErrorMessage }
+  | { readonly type: 'actionUpdate'; readonly body: ActionUpdateMessage }
+  | { readonly type: 'needsUpdate'; readonly body: NeedsUpdateMessage }
+  | { readonly type: 'walletUpdate'; readonly body: WalletUpdateMessage }
+  | { readonly type: 'chatMessage'; readonly body: ChatMessageBody }
+  | { readonly type: 'chatRejected'; readonly body: ChatRejectedMessage }
+  | { readonly type: 'rideUpdate'; readonly body: RideUpdateMessage }
+  | { readonly type: 'resumeInfo'; readonly body: ResumeInfoMessage }
+  | { readonly type: 'taxiUpdate'; readonly body: TaxiUpdateMessage };
 
+/** Binary messages have their own codec; every other message is a validated control message under its type byte. */
 export const encodeServerMessage = (m: ServerMessage): Uint8Array => {
-  switch (m.type) {
-    case 'welcome':
-      return encodeControl(SERVER_MESSAGE.welcome, m.body);
-    case 'inputAck':
-      return encodeInputAck(m.body);
-    case 'snapshot':
-      return encodeSnapshot(m.body);
-    case 'worldClock':
-      return encodeControl(SERVER_MESSAGE.worldClock, m.body);
-    case 'pong':
-      return encodePong(m.body);
-    case 'error':
-      return encodeControl(SERVER_MESSAGE.error, m.body);
-  }
+  if (m.type === 'inputAck') return encodeInputAck(m.body);
+  if (m.type === 'snapshot') return encodeSnapshot(m.body);
+  if (m.type === 'pong') return encodePong(m.body);
+  return encodeControl(SERVER_MESSAGE[m.type], m.body);
 };
 
 const DECODERS: Record<number, (r: FrameReader) => ServerMessage> = {
@@ -60,6 +72,14 @@ const DECODERS: Record<number, (r: FrameReader) => ServerMessage> = {
   }),
   [SERVER_MESSAGE.pong]: (r) => ({ type: 'pong', body: decodePong(r) }),
   [SERVER_MESSAGE.error]: (r) => ({ type: 'error', body: decodeControl(r.rest(), ServerErrorSchema, 'error') }),
+  [SERVER_MESSAGE.actionUpdate]: (r) => ({ type: 'actionUpdate', body: decodeControl(r.rest(), ActionUpdateSchema, 'action_update') }),
+  [SERVER_MESSAGE.needsUpdate]: (r) => ({ type: 'needsUpdate', body: decodeControl(r.rest(), NeedsUpdateSchema, 'needs_update') }),
+  [SERVER_MESSAGE.walletUpdate]: (r) => ({ type: 'walletUpdate', body: decodeControl(r.rest(), WalletUpdateSchema, 'wallet_update') }),
+  [SERVER_MESSAGE.chatMessage]: (r) => ({ type: 'chatMessage', body: decodeControl(r.rest(), ChatMessageSchema, 'chat_message') }),
+  [SERVER_MESSAGE.chatRejected]: (r) => ({ type: 'chatRejected', body: decodeControl(r.rest(), ChatRejectedSchema, 'chat_rejected') }),
+  [SERVER_MESSAGE.rideUpdate]: (r) => ({ type: 'rideUpdate', body: decodeControl(r.rest(), RideUpdateSchema, 'ride_update') }),
+  [SERVER_MESSAGE.resumeInfo]: (r) => ({ type: 'resumeInfo', body: decodeControl(r.rest(), ResumeInfoSchema, 'resume_info') }),
+  [SERVER_MESSAGE.taxiUpdate]: (r) => ({ type: 'taxiUpdate', body: decodeControl(r.rest(), TaxiUpdateSchema, 'taxi_update') }),
 };
 
 /** Throws only ProtocolDecodeError. */

@@ -1,0 +1,89 @@
+{
+  "$schema": "../../../tools/content-cli/schemas/action.schema.json",
+  "id": "food.eat_braised_fish",
+  "version": 1,
+  "category": "food",
+  "labelKey": "action.food.eat_braised_fish.label",
+  "tags": [
+    "food",
+    "maquis",
+    "night"
+  ],
+  "where": {
+    "placeTypes": [
+      "maquis"
+    ],
+    "site": "seat_or_counter",
+    "interactionRadiusM": 2.5
+  },
+  "when": {
+    "openingHoursFrom": "place",
+    "windows": [
+      {
+        "from": "17:00",
+        "to": "03:00"
+      }
+    ]
+  },
+  "requires": {
+    "state": [
+      "on_foot",
+      "not_in_action"
+    ],
+    "needs": {
+      "hunger": {
+        "max": 85
+      }
+    },
+    "cooldown": {
+      "gameMinutes": 240,
+      "scope": "character"
+    },
+    "money": {
+      "minDjai": 2500
+    }
+  },
+  "duration": {
+    "gameMinutes": 45,
+    "real": {
+      "maxSeconds": 55
+    },
+    "interruptible": true,
+    "onInterrupt": "refund_none_partial_effects"
+  },
+  "effects": {
+    "onComplete": [
+      {
+        "type": "need",
+        "need": "hunger",
+        "delta": 65
+      },
+      {
+        "type": "need",
+        "need": "social",
+        "delta": 6
+      }
+    ]
+  },
+  "cost": {
+    "djai": {
+      "base": 2500,
+      "priceSource": "business_price_list_or_base"
+    },
+    "payee": "provider"
+  },
+  "provider": {
+    "kind": "place",
+    "allowPlayerBusiness": true,
+    "employeeRole": "waiter"
+  },
+  "participants": {
+    "mode": "solo",
+    "npcRoles": [
+      {
+        "role": "waiter",
+        "required": true
+      }
+    ]
+  }
+}

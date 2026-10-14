@@ -12,12 +12,12 @@ import { findRepoRoot } from './find-repo-root.ts';
 import { parseCliArgs } from './parse-cli-args.ts';
 
 const main = async (): Promise<void> => {
-  const { configPath, force } = parseCliArgs(process.argv.slice(2));
+  const { configPath, force, forceFrom } = parseCliArgs(process.argv.slice(2));
   const repoRoot = findRepoRoot(process.cwd());
   const config = await loadPipelineConfig(resolve(repoRoot, configPath));
   const logger = createLogger({ service: 'map-pipeline' }).child({ commune: config.commune });
 
-  const reports = await runPipeline({ repoRoot, config, stages: stagesFor(config), logger, force });
+  const reports = await runPipeline({ repoRoot, config, stages: stagesFor(config), logger, force, ...(forceFrom ? { forceFrom } : {}) });
   for (const r of reports)
     process.stdout.write(`${r.id.padEnd(24)} ${r.status.padEnd(7)} ${r.durationMs.toFixed(0)} ms\n`);
 };

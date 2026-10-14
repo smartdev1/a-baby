@@ -98,4 +98,33 @@ describe('ZoneCell', () => {
     expect(ack?.type === 'inputAck' && ack.body.lastSeq).toBe(2);
     expect(ack?.type === 'inputAck' && ack.body.position.z).toBeCloseTo(10 + 1.6 * 0.1, 5); // two 50 ms steps, not 40
   });
+
+  it('should welcome a resumed session again without resetting its player', async () => {
+    const bus = new InMemoryBus();
+    const cell = new ZoneCell({
+      cellKey: CELL,
+      bus,
+      world: new CollisionWorld(),
+      frameOrigin: { eastingM: 381_000, northingM: 589_000 },
+      spawn: { x: 500, z: 500 },
+      clock: () => Promise.resolve({ realStartMs: 0, gameStartMin: 360, ratio: 12, paused: false }),
+      logger: createLogger({ service: 'test', level: 'silent' }),
+    });
+    const got: ServerMessage[] = [];
+    bus.subscribe<ServerMessage>(subjects.sessionOut('s1'), (m) => got.push(m));
+    cell.start({ ticking: false });
+    bus.publish(subjects.cellJoin(CELL), { sessionId: 's1' });
+    await new Promise((r) => setTimeout(r, 0));
+    for (let seq = 1; seq <= 10; seq++) {
+      bus.publish(subjects.cellInput(CELL), { sessionId: 's1', input: forward(seq) });
+      cell.step();
+    }
+    const moved = cell.positionOf('s1');
+    bus.publish(subjects.cellJoin(CELL), { sessionId: 's1' }); // resume
+    await new Promise((r) => setTimeout(r, 0));
+    cell.stop();
+    expect(got.filter((m) => m.type === 'welcome')).toHaveLength(2);
+    expect(cell.positionOf('s1')).toEqual(moved);
+    expect(moved?.z).toBeGreaterThan(500);
+  });
 });

@@ -1,14 +1,15 @@
 /**
- * Role: composes the all-in-one world: services (HTTP), one zone cell around the spawn point with its real collision tiles, and the WebSocket gateway, linked by an in-memory bus.
+ * Role: composes the all-in-one world: services (HTTP), one zone cell around the spawn point with its real collision tiles and daily life (content, places, journaled economy), and the WebSocket gateway, linked by an in-memory bus.
  * Owner: backend
  */
 
+import { join } from 'node:path';
 import { InMemoryBus } from '@skyline/bus';
 import { startGateway, type Gateway } from '@skyline/gateway';
 import { cellKeyOf, toUtm30n } from '@skyline/geo';
 import type { Logger } from '@skyline/observability';
 import { buildServices, type Services, type ServicesConfig } from '@skyline/services';
-import { loadCellCollision, ZoneCell } from '@skyline/zone';
+import { FileCharacterStore, InMemoryChatReports, JournaledEconomy, loadBlockedWords, loadCellCollision, loadTransport, setUpDailyLife, ZoneCell } from '@skyline/zone';
 import type { AllInOneConfig } from './all-in-one-config.ts';
 
 export interface World {
@@ -32,13 +33,26 @@ export const composeWorld = async (
   if (tilesLoaded === 0)
     logger.warn({ worldDir: config.worldDir }, 'no world tiles found: flat empty cell (run pnpm map:build first)');
 
+  const economy = await JournaledEconomy.open(join(servicesConfig.runtimeDir, 'ledger.ndjson'), (line) => logger.warn({ line }, 'ledger journal line skipped'));
   let cell: ZoneCell | null = null;
   const services = await buildServices({
     config: servicesConfig,
     logger: logger.child({ module: 'services' }),
-    extraRoutes: (server) =>
-      server.get('/api/v1/dev/zone-stats', (_req, reply) => reply.send({ cellKey, tilesLoaded, ...cell?.tickStats() })),
+    extraRoutes: (server) => {
+      server.get('/api/v1/dev/zone-stats', (_req, reply) => reply.send({ cellKey, tilesLoaded, ...cell?.tickStats() }));
+      server.get('/api/v1/dev/economy', (_req, reply) => reply.send(economy.summary()));
+    },
   });
+  const daily = await setUpDailyLife({
+    contentDir: servicesConfig.contentDir,
+    worldDir: config.worldDir,
+    cellKey,
+    clock: () => services.worldClock.current(),
+    economy,
+    starterDjai: config.starterDjai,
+  });
+  const transport = await loadTransport(config.worldDir, servicesConfig.contentDir);
+  logger.info({ cellKey, places: daily.places, transitLines: transport.transit.size, taxis: transport.taxiFare !== undefined }, 'daily life ready');
   cell = new ZoneCell({
     cellKey,
     bus,
@@ -47,6 +61,10 @@ export const composeWorld = async (
     spawn: { x: spawnUtm.eastingM - frameOrigin.eastingM, z: spawnUtm.northingM - frameOrigin.northingM },
     clock: () => services.worldClock.current(),
     logger: logger.child({ module: 'zone', cellKey }),
+    daily: daily.deps,
+    transport,
+    characters: new FileCharacterStore(join(servicesConfig.runtimeDir, 'characters')),
+    chat: { blockedWords: await loadBlockedWords(servicesConfig.contentDir), reports: new InMemoryChatReports(logger.child({ module: 'chat' })) },
   });
   cell.start();
   const gateway = startGateway({
@@ -65,7 +83,9 @@ export const composeWorld = async (
     cellKey,
     tilesLoaded,
     close: async () => {
+      await activeCell.flush();
       activeCell.stop();
+      daily.stop();
       await gateway.close();
       await services.server.close();
     },

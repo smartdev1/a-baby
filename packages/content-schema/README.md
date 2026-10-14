@@ -1,7 +1,7 @@
 # `packages/content-schema/`
 
 - **Owner:** backend developer
-- **Status:** Skeleton — J3
+- **Status:** Active — T-301 (actions, needs, place types, jobs, items)
 
 ## Role
 
@@ -9,7 +9,7 @@ Zod schemas of all game content (actions, jobs, items, place types, transport li
 
 ## How it works
 
-Public API is exported from `src/index.ts` only. Profile: `pure`. First implementation: J3.
+Public API is exported from `src/index.ts` only. Profile: `pure` (Zod only). The Zod schemas are the source of truth; JSON Schemas are generated from them (`jsonSchemaOf`) by `tools/content-cli` for editor autocompletion.
 
 ## Rules
 

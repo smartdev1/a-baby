@@ -1,0 +1,1 @@
+{ "$schema": "../../tools/content-cli/schemas/place-type.schema.json", "id": "public_toilets", "version": 1, "labelKey": "place.public_toilets.label", "osmCategories": ["services.toilets", "services.water_point"], "sites": [{ "kind": "shower_cabin", "capacity": 3, "placement": "front" }], "openingHours": [{ "from": "05:00", "to": "22:00" }], "npcRoles": ["attendant"] }

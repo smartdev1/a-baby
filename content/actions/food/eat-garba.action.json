@@ -1,0 +1,38 @@
+{
+  "$schema": "../../../tools/content-cli/schemas/action.schema.json",
+  "id": "food.eat_garba",
+  "version": 1,
+  "category": "food",
+  "labelKey": "action.food.eat_garba.label",
+  "descriptionKey": "action.food.eat_garba.desc",
+  "icon": "ui_icon_garba",
+  "tags": ["food", "street_food", "social_light"],
+  "where": { "placeTypes": ["garba_stand", "maquis"], "site": "seat_or_counter", "interactionRadiusM": 2.5 },
+  "when": { "openingHoursFrom": "place", "windows": [{ "from": "06:00", "to": "23:30" }] },
+  "requires": {
+    "needs": { "hunger": { "max": 90 } },
+    "money": { "minDjai": 500 },
+    "state": ["on_foot", "not_in_action"],
+    "cooldown": { "gameMinutes": 180, "scope": "character" }
+  },
+  "cost": { "djai": { "base": 500, "priceSource": "business_price_list_or_base" }, "payee": "provider" },
+  "duration": { "gameMinutes": 30, "real": { "maxSeconds": 45 }, "interruptible": true, "onInterrupt": "refund_none_partial_effects" },
+  "phases": [
+    { "id": "order", "animation": "anm_order_counter", "realSeconds": 4 },
+    { "id": "eat", "animation": "anm_eat_seated_plate", "loop": true, "props": [{ "id": "prop_plate_garba", "attach": "hand_l" }] },
+    { "id": "finish", "animation": "anm_wipe_mouth", "realSeconds": 2 }
+  ],
+  "effects": {
+    "onComplete": [
+      { "type": "need", "need": "hunger", "delta": 55 },
+      { "type": "need", "need": "social", "delta": 5, "if": { "nearbyCharacters": { "min": 1 } } },
+      { "type": "buff", "buff": "well_fed", "gameMinutes": 240 }
+    ]
+  },
+  "outcomes": [
+    { "weight": 95, "effects": [] },
+    { "weight": 5, "effects": [{ "type": "notification", "key": "action.food.eat_garba.extra_piment", "register": "nouchi" }, { "type": "need", "need": "fun", "delta": 3 }] }
+  ],
+  "participants": { "mode": "solo", "npcRoles": [{ "role": "vendor", "required": true }] },
+  "provider": { "kind": "place", "allowPlayerBusiness": true, "employeeRole": "vendor" }
+}

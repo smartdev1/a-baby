@@ -1,15 +1,17 @@
 /**
- * Role: stage 17-manifest: writes world-manifest.{release}.json (tile key → hashes, UTM bbox, source snapshot, ODbL licence), validated by @skyline/tile-format — no local path, no machine name.
+ * Role: stage 17-manifest: writes world-manifest.{release}.json (tile key → hashes, UTM bbox, source snapshot, ODbL licence), ATTRIBUTION.md and the ODbL archive of the OSM-derived layer, validated by @skyline/tile-format — no local path, no machine name.
  * Owner: backend
  */
 
-import { readFile, writeFile } from 'node:fs/promises';
+import { readFile, stat, writeFile } from 'node:fs/promises';
 import { basename, join } from 'node:path';
 import { tileBounds } from '@skyline/geo';
 import { parseWorldManifest, TILE_FORMAT_VERSION, worldManifestFileName } from '@skyline/tile-format';
 import { sha256OfFile } from '../../runner/content-hash.ts';
 import type { PipelineStage, StageContext } from '../../runner/stage-contract.ts';
 import { loadSourcesLockSync } from '../../sources/sources-lock.ts';
+import { writeTarGz } from '../../writers/deterministic-tar-gz.ts';
+import { archiveEntries, attributionMarkdown, OSM_DERIVED_FILES, osmDerivedArchiveName, type ReleaseFacts } from './release-attribution.ts';
 import { ENCODE_INDEX_FILE, ENCODE_STAGE_ID, type EncodeIndex } from '../16-encode/encode-stage.ts';
 import { LOD_INDEX_FILE, LOD_STAGE_ID, type LodIndex } from '../15-lod-build/lod-build-stage.ts';
 
@@ -43,6 +45,9 @@ const snapshotDateOf = (ctx: StageContext): string => {
     : source.snapshotDate;
 };
 
+const demOf = (ctx: StageContext): ReleaseFacts['dem'] =>
+  ctx.config.source.kind === 'osm-snapshot' ? (loadSourcesLockSync(ctx.fromRepo(ctx.config.source.lockFile)).dem ?? null) : null;
+
 export const releaseName = (ctx: StageContext): string => `${ctx.config.commune}-${snapshotDateOf(ctx)}`;
 
 const bboxOfTiles = (keys: string[]) => {
@@ -65,15 +70,25 @@ const tileEntries = (index: EncodeIndex, lod: LodIndex): Record<string, Record<s
 
 export const manifestStage: PipelineStage = {
   id: MANIFEST_STAGE_ID,
-  // v2: L1 tiles listed (15-lod-build).
-  version: 2,
-  outputs: (ctx) => [worldManifestFileName(releaseName(ctx))],
-  inputFiles: (ctx) => [ctx.outputOf(ENCODE_STAGE_ID, ENCODE_INDEX_FILE), ctx.outputOf(LOD_STAGE_ID, LOD_INDEX_FILE)],
+  // v2: L1 tiles listed (15-lod-build). v3: ATTRIBUTION.md and ODbL archive of the OSM-derived layer (T-203).
+  version: 3,
+  outputs: (ctx) => [worldManifestFileName(releaseName(ctx)), 'ATTRIBUTION.md', osmDerivedArchiveName(releaseName(ctx))],
+  inputFiles: (ctx) => [
+    ctx.outputOf(ENCODE_STAGE_ID, ENCODE_INDEX_FILE),
+    ctx.outputOf(LOD_STAGE_ID, LOD_INDEX_FILE),
+    ...OSM_DERIVED_FILES.map(([stage, file]) => ctx.outputOf(stage, file)),
+  ],
   params: (ctx) => ({ release: releaseName(ctx), commune: ctx.config.displayName, source: ctx.config.source }),
   run: async (ctx, outDir) => {
     const index = JSON.parse(await readFile(ctx.outputOf(ENCODE_STAGE_ID, ENCODE_INDEX_FILE), 'utf8')) as EncodeIndex;
     const lod = JSON.parse(await readFile(ctx.outputOf(LOD_STAGE_ID, LOD_INDEX_FILE), 'utf8')) as LodIndex;
     const keys = Object.keys(index);
+    const release = releaseName(ctx);
+    const facts: ReleaseFacts = { release, commune: ctx.config.displayName, osm: await snapshotInfo(ctx), dem: demOf(ctx) };
+    await writeFile(join(outDir, 'ATTRIBUTION.md'), attributionMarkdown(facts));
+    const archive = join(outDir, osmDerivedArchiveName(release));
+    // Fixed mtime (snapshot day) so the archive bytes depend only on its content.
+    await writeTarGz(archive, archiveEntries(facts, (stage, file) => ctx.outputOf(stage, file)), Date.parse(`${facts.osm.snapshotDate}T00:00:00Z`) / 1000);
     const manifest = parseWorldManifest({
       formatVersion: TILE_FORMAT_VERSION,
       release: releaseName(ctx),
@@ -82,6 +97,8 @@ export const manifestStage: PipelineStage = {
       sourceSnapshot: await snapshotInfo(ctx),
       licence: 'ODbL-1.0',
       attribution: '© OpenStreetMap contributors',
+      osmDerived: { fileName: osmDerivedArchiveName(release), sha256: await sha256OfFile(archive), bytes: (await stat(archive)).size },
+      attributionFile: 'ATTRIBUTION.md',
       tiles: tileEntries(index, lod),
     });
     await writeFile(join(outDir, worldManifestFileName(manifest.release)), `${JSON.stringify(manifest, null, 2)}\n`);

@@ -1,11 +1,11 @@
 # `tools/map-pipeline/src/stages/18-report/`
 
 - **Owner:** backend developer
-- **Status:** Active — T-018 (spike SP2)
+- **Status:** Active — T-018 (spike SP2), T-204
 
 ## Role
 
-Measures the OSM coverage of the commune and writes `coverage-report.json`, `coverage-report.md` and `building-density.svg`.
+Measures the OSM coverage of the commune and writes `coverage-report.json`, `coverage-report.md` and `building-density.svg`; reports the generated world (tiles per level, budgets, tiles above 80 % of a maximum, content) in `world-report.json` and `world-report.md` (logic in `src/world-stats/`).
 
 | File                           | Role                                                                                                      |
 | ------------------------------ | --------------------------------------------------------------------------------------------------------- |

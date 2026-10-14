@@ -1,0 +1,77 @@
+{
+  "$schema": "../../../tools/content-cli/schemas/action.schema.json",
+  "id": "leisure.browse_cybercafe",
+  "version": 1,
+  "category": "leisure",
+  "labelKey": "action.leisure.browse_cybercafe.label",
+  "tags": [
+    "leisure"
+  ],
+  "where": {
+    "placeTypes": [
+      "cybercafe"
+    ],
+    "site": "computer_desk",
+    "interactionRadiusM": 2.5
+  },
+  "when": {
+    "openingHoursFrom": "place",
+    "windows": []
+  },
+  "requires": {
+    "state": [
+      "on_foot",
+      "not_in_action"
+    ],
+    "cooldown": {
+      "gameMinutes": 60,
+      "scope": "character"
+    },
+    "money": {
+      "minDjai": 200
+    }
+  },
+  "duration": {
+    "gameMinutes": 60,
+    "real": {
+      "maxSeconds": 60
+    },
+    "interruptible": true,
+    "onInterrupt": "refund_none_partial_effects"
+  },
+  "effects": {
+    "onComplete": [
+      {
+        "type": "need",
+        "need": "fun",
+        "delta": 15
+      },
+      {
+        "type": "need",
+        "need": "social",
+        "delta": 5
+      }
+    ]
+  },
+  "cost": {
+    "djai": {
+      "base": 200,
+      "priceSource": "business_price_list_or_base"
+    },
+    "payee": "provider"
+  },
+  "provider": {
+    "kind": "place",
+    "allowPlayerBusiness": true,
+    "employeeRole": "manager"
+  },
+  "participants": {
+    "mode": "solo",
+    "npcRoles": [
+      {
+        "role": "manager",
+        "required": true
+      }
+    ]
+  }
+}

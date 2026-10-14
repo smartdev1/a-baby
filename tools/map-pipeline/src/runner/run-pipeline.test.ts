@@ -1,5 +1,5 @@
 /**
- * Role: tests the incremental runner: first run, cache hit, invalidation on input / params / version / missing output, forced run.
+ * Role: tests the incremental runner: first run, cache hit, invalidation on input / params / version / missing output, forced run, forced run from a stage.
  * Owner: backend
  */
 
@@ -86,6 +86,15 @@ describe('runPipeline', () => {
     const counter = { runs: 0 };
     await statuses([sourceStage, countingStage(counter)]);
     expect(await statuses([sourceStage, countingStage(counter)], 'v1', true)).toEqual(['ran', 'ran']);
+  });
+
+  it('should re-run only from the given stage with forceFrom, and refuse an unknown stage', async () => {
+    const counter = { runs: 0 };
+    const stages = [sourceStage, countingStage(counter)];
+    await statuses(stages);
+    const reports = await runPipeline({ repoRoot, config: config(), stages, logger, forceFrom: '02-count' });
+    expect(reports.map((r) => r.status)).toEqual(['cached', 'ran']);
+    await expect(runPipeline({ repoRoot, config: config(), stages, logger, forceFrom: '99-nope' })).rejects.toThrow(/unknown stage/);
   });
 
   it('should fail when a stage does not write a declared output', async () => {

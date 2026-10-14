@@ -1,0 +1,1 @@
+{ "$schema": "../../tools/content-cli/schemas/place-type.schema.json", "id": "bench", "version": 1, "labelKey": "place.bench.label", "osmCategories": ["leisure.park", "leisure.playground"], "sites": [{ "kind": "bench_seat", "capacity": 4, "placement": "around" }], "openingHours": [] }

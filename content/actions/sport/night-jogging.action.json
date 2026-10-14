@@ -1,0 +1,65 @@
+{
+  "$schema": "../../../tools/content-cli/schemas/action.schema.json",
+  "id": "sport.night_jogging",
+  "version": 1,
+  "category": "sport",
+  "labelKey": "action.sport.night_jogging.label",
+  "tags": [
+    "sport",
+    "free",
+    "night"
+  ],
+  "where": {
+    "placeTypes": [
+      "bench"
+    ],
+    "site": "bench_seat",
+    "interactionRadiusM": 10
+  },
+  "when": {
+    "openingHoursFrom": "none",
+    "windows": []
+  },
+  "requires": {
+    "state": [
+      "on_foot",
+      "not_in_action"
+    ],
+    "needs": {
+      "energy": {
+        "min": 25
+      }
+    },
+    "cooldown": {
+      "gameMinutes": 720,
+      "scope": "character"
+    }
+  },
+  "duration": {
+    "gameMinutes": 45,
+    "real": {
+      "maxSeconds": 60
+    },
+    "interruptible": true,
+    "onInterrupt": "refund_none_partial_effects"
+  },
+  "effects": {
+    "onComplete": [
+      {
+        "type": "need",
+        "need": "fun",
+        "delta": 10
+      },
+      {
+        "type": "need",
+        "need": "energy",
+        "delta": -15
+      },
+      {
+        "type": "need",
+        "need": "hygiene",
+        "delta": -15
+      }
+    ]
+  }
+}

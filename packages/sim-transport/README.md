@@ -1,7 +1,7 @@
 # `packages/sim-transport/`
 
 - **Owner:** backend developer
-- **Status:** Skeleton — J4
+- **Status:** Active — routing (T-314); line vehicles and fares in J4
 
 ## Role
 

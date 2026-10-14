@@ -1,0 +1,50 @@
+{
+  "$schema": "../../../tools/content-cli/schemas/action.schema.json",
+  "id": "hygiene.ablutions_mosque",
+  "version": 1,
+  "category": "hygiene",
+  "labelKey": "action.hygiene.ablutions_mosque.label",
+  "tags": [
+    "hygiene",
+    "worship",
+    "night"
+  ],
+  "where": {
+    "placeTypes": [
+      "mosque"
+    ],
+    "site": "prayer_mat",
+    "interactionRadiusM": 3
+  },
+  "when": {
+    "openingHoursFrom": "place",
+    "windows": []
+  },
+  "requires": {
+    "state": [
+      "on_foot",
+      "not_in_action"
+    ],
+    "cooldown": {
+      "gameMinutes": 120,
+      "scope": "character"
+    }
+  },
+  "duration": {
+    "gameMinutes": 10,
+    "real": {
+      "maxSeconds": 15
+    },
+    "interruptible": true,
+    "onInterrupt": "refund_none_partial_effects"
+  },
+  "effects": {
+    "onComplete": [
+      {
+        "type": "need",
+        "need": "hygiene",
+        "delta": 25
+      }
+    ]
+  }
+}

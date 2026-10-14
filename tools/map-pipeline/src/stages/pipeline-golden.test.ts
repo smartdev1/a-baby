@@ -29,12 +29,17 @@ const CHECKED_OUTPUTS = [
   '11-facades-roofs/facades.ndjson',
   '11-facades-roofs/roofs.ndjson',
   '12-props/props.ndjson',
+  '13-places-sites/places-sites.ndjson',
   '14-tile-cut/tiles.ndjson',
   '15-lod-build/lod-index.json',
   '16-encode/encode-index.json',
   '17-manifest/world-manifest.pigeons-fixture-2026-10-13.json',
+  '17-manifest/ATTRIBUTION.md',
+  '17-manifest/osm-derived.pigeons-fixture-2026-10-13.tar.gz',
 ];
 const logger = createLogger({ service: 'golden', level: 'silent' });
+// Two workers: the parallel path is exercised (its output must match the golden hashes) without starting one worker per core.
+process.env['SKYLINE_PIPELINE_WORKERS'] ??= '2';
 
 const roots: string[] = [];
 
@@ -44,6 +49,7 @@ const buildFixtureIn = async (): Promise<Record<string, string>> => {
   await mkdir(join(root, dirname(FIXTURE)), { recursive: true });
   await copyFile(join(packageDir, 'test/fixtures/pigeons-sample.geojson'), join(root, FIXTURE));
   await cp(join(packageDir, '../../content/place-names'), join(root, 'content/place-names'), { recursive: true });
+  await cp(join(packageDir, '../../content/place-types'), join(root, 'content/place-types'), { recursive: true });
   const config = await loadPipelineConfig(join(packageDir, 'config/fixture.pipeline.json'));
   await runPipeline({ repoRoot: root, config, stages: stagesFor(config), logger });
   const hashes: Record<string, string> = {};

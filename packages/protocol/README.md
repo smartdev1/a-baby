@@ -30,6 +30,8 @@ import { decodeClientMessage, encodeServerMessage, checkHello } from '@skyline/p
 const message = decodeClientMessage(frame); // untrusted: throws only ProtocolDecodeError
 ```
 
+Protocol **v2** (T-307) adds the daily-life control messages: client `action_request {requestId, actionId, placeId}` (4), `action_cancel {requestId}` (5); server `action_update {requestId, actionId, state, progress, refusals}` (107), `needs_update {values}` (108), `wallet_update {djai, txId}` (109).
+
 ## Rules
 
 - Decoding untrusted frames never throws anything but `ProtocolDecodeError` (fuzzed with 10 000 frames per direction); MessagePack decoding is bounded (strings, arrays, maps, depth).

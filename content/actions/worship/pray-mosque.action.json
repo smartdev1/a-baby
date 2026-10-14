@@ -1,0 +1,54 @@
+{
+  "$schema": "../../../tools/content-cli/schemas/action.schema.json",
+  "id": "worship.pray_mosque",
+  "version": 1,
+  "category": "worship",
+  "labelKey": "action.worship.pray_mosque.label",
+  "tags": [
+    "worship",
+    "night"
+  ],
+  "where": {
+    "placeTypes": [
+      "mosque"
+    ],
+    "site": "prayer_mat",
+    "interactionRadiusM": 3
+  },
+  "when": {
+    "openingHoursFrom": "place",
+    "windows": []
+  },
+  "requires": {
+    "state": [
+      "on_foot",
+      "not_in_action"
+    ],
+    "cooldown": {
+      "gameMinutes": 240,
+      "scope": "character"
+    }
+  },
+  "duration": {
+    "gameMinutes": 30,
+    "real": {
+      "maxSeconds": 45
+    },
+    "interruptible": true,
+    "onInterrupt": "refund_none_partial_effects"
+  },
+  "effects": {
+    "onComplete": [
+      {
+        "type": "need",
+        "need": "social",
+        "delta": 12
+      },
+      {
+        "type": "need",
+        "need": "fun",
+        "delta": 4
+      }
+    ]
+  }
+}

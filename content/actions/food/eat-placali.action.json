@@ -1,0 +1,83 @@
+{
+  "$schema": "../../../tools/content-cli/schemas/action.schema.json",
+  "id": "food.eat_placali",
+  "version": 1,
+  "category": "food",
+  "labelKey": "action.food.eat_placali.label",
+  "tags": [
+    "food",
+    "maquis"
+  ],
+  "where": {
+    "placeTypes": [
+      "maquis"
+    ],
+    "site": "seat_or_counter",
+    "interactionRadiusM": 2.5
+  },
+  "when": {
+    "openingHoursFrom": "place",
+    "windows": []
+  },
+  "requires": {
+    "state": [
+      "on_foot",
+      "not_in_action"
+    ],
+    "needs": {
+      "hunger": {
+        "max": 90
+      }
+    },
+    "cooldown": {
+      "gameMinutes": 180,
+      "scope": "character"
+    },
+    "money": {
+      "minDjai": 800
+    }
+  },
+  "duration": {
+    "gameMinutes": 40,
+    "real": {
+      "maxSeconds": 50
+    },
+    "interruptible": true,
+    "onInterrupt": "refund_none_partial_effects"
+  },
+  "effects": {
+    "onComplete": [
+      {
+        "type": "need",
+        "need": "hunger",
+        "delta": 60
+      },
+      {
+        "type": "need",
+        "need": "social",
+        "delta": 4
+      }
+    ]
+  },
+  "cost": {
+    "djai": {
+      "base": 800,
+      "priceSource": "business_price_list_or_base"
+    },
+    "payee": "provider"
+  },
+  "provider": {
+    "kind": "place",
+    "allowPlayerBusiness": true,
+    "employeeRole": "vendor"
+  },
+  "participants": {
+    "mode": "solo",
+    "npcRoles": [
+      {
+        "role": "vendor",
+        "required": true
+      }
+    ]
+  }
+}

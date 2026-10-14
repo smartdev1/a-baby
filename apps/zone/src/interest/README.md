@@ -1,7 +1,7 @@
 # `apps/zone/src/interest/`
 
 - **Owner:** backend developer
-- **Status:** Planned — J5
+- **Status:** Moved — interest management runs in the gateway (`apps/gateway/src/interest/`, T-317)
 
 ## Role
 

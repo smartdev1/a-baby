@@ -10,6 +10,8 @@ const repoPath = (relative: string): string => fileURLToPath(new URL(`../../../.
 
 const Schema = z.object({
   GATEWAY_PORT: z.coerce.number().int().min(0).max(65_535).default(2567),
+  /** Starting money of a new guest character (Djai, J3 in-memory economy). */
+  SKYLINE_STARTER_DJAI: z.coerce.number().int().min(0).max(1_000_000).default(5000),
   /** Folder holding `16-encode/` and `17-manifest/` of a pipeline release. */
   SKYLINE_WORLD_DIR: z.string().default(repoPath('data/build/yopougon/stages')),
   /** "lon,lat" of the spawn point; default = Pigeons area, Yopougon. */
@@ -30,9 +32,10 @@ export interface AllInOneConfig {
   readonly gatewayPort: number;
   readonly worldDir: string;
   readonly spawn: { readonly lonDeg: number; readonly latDeg: number };
+  readonly starterDjai: number;
 }
 
 export const readAllInOneConfig = (env: Record<string, string | undefined>): AllInOneConfig => {
   const parsed = Schema.parse(env);
-  return { gatewayPort: parsed.GATEWAY_PORT, worldDir: parsed.SKYLINE_WORLD_DIR, spawn: parsed.SKYLINE_SPAWN_LONLAT };
+  return { gatewayPort: parsed.GATEWAY_PORT, worldDir: parsed.SKYLINE_WORLD_DIR, spawn: parsed.SKYLINE_SPAWN_LONLAT, starterDjai: parsed.SKYLINE_STARTER_DJAI };
 };

@@ -1,11 +1,18 @@
 # `tools/content-cli/`
 
 - **Owner:** backend developer
-- **Status:** Skeleton
+- **Status:** Active — T-304
 
 ## Role
 
 Content validation and compilation CLI.
+
+```bash
+pnpm content:validate          # schemas + cross references; missing texts are warnings
+pnpm content:validate --strict # missing texts are errors (CI once the fr-CI catalogue exists)
+pnpm content:compile           # packs in data/build/content/
+pnpm content:schemas           # regenerate tools/content-cli/schemas/*.schema.json from Zod
+```
 
 ## Rules
 

@@ -54,6 +54,8 @@ export const PipelineConfigSchema = z
     marginM: z.number().min(0).max(5_000),
     /** Repository-relative build folder (git-ignored under data/build/). */
     outputDir: RepoRelativePath,
+    /** Neighbourhood height profiles (T-205), e.g. `tools/map-pipeline/config/yopougon.neighbourhoods.json`. */
+    neighbourhoodProfiles: RepoRelativePath.optional(),
     facades: z
       .object({
         /** Leave the walls covered by facade bays out of geom.glb. Keep false until the client renders the facade kit (frontend J1-06). */

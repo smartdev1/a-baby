@@ -19,6 +19,8 @@ const ServicesConfigSchema = z.object({
   SESSION_TICKETS_PER_MIN: z.coerce.number().int().min(1).max(100_000).default(10),
   /** Internal routes for gateways in other processes (multi-process mode); loopback callers only. */
   SERVICES_INTERNAL_ROUTES: z.enum(['true', 'false']).default('false'),
+  /** Session tickets without a guest account (local dev, load tests only; never in production). */
+  SKYLINE_ANONYMOUS_TICKETS: z.enum(['true', 'false']).default('false'),
 });
 
 export interface ServicesConfig {
@@ -31,6 +33,7 @@ export interface ServicesConfig {
   runtimeDir: string;
   ticketsPerMin: number;
   internalRoutes: boolean;
+  anonymousTickets: boolean;
 }
 
 export const readServicesConfig = (env: Record<string, string | undefined>): ServicesConfig => {
@@ -43,5 +46,6 @@ export const readServicesConfig = (env: Record<string, string | undefined>): Ser
     runtimeDir: parsed.SKYLINE_RUNTIME_DIR,
     ticketsPerMin: parsed.SESSION_TICKETS_PER_MIN,
     internalRoutes: parsed.SERVICES_INTERNAL_ROUTES === 'true',
+    anonymousTickets: parsed.SKYLINE_ANONYMOUS_TICKETS === 'true',
   };
 };

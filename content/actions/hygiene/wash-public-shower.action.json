@@ -1,0 +1,17 @@
+{
+  "$schema": "../../../tools/content-cli/schemas/action.schema.json",
+  "id": "hygiene.wash_public_shower",
+  "version": 1,
+  "category": "hygiene",
+  "labelKey": "action.hygiene.wash_public_shower.label",
+  "icon": "ui_icon_shower",
+  "tags": ["hygiene"],
+  "where": { "placeTypes": ["public_toilets"], "site": "shower_cabin", "interactionRadiusM": 2 },
+  "when": { "openingHoursFrom": "place", "windows": [] },
+  "requires": { "needs": { "hygiene": { "max": 85 } }, "money": { "minDjai": 100 }, "state": ["on_foot", "not_in_action"] },
+  "cost": { "djai": { "base": 100 }, "payee": "provider" },
+  "duration": { "gameMinutes": 20, "real": { "maxSeconds": 30 }, "interruptible": false, "onInterrupt": "refund_full_no_effects" },
+  "phases": [{ "id": "wash", "animation": "anm_wash_bucket", "loop": true }],
+  "effects": { "onComplete": [{ "type": "need", "need": "hygiene", "delta": 70 }] },
+  "provider": { "kind": "place" }
+}

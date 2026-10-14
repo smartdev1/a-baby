@@ -1,11 +1,11 @@
 # `content/transport/`
 
 - **Owner:** backend developer
-- **Status:** Planned — J4
+- **Status:** Active — J4
 
 ## Role
 
-Transport data.
+Transport data: `services/` (service profile per line mode, T-316), `lines/` (per-line overrides, planned), `fares/` (planned). The lines themselves come from OSM (pipeline stage `08b-transit`).
 
 ## Rules
 

@@ -1,0 +1,81 @@
+{
+  "$schema": "../../../tools/content-cli/schemas/action.schema.json",
+  "id": "social.offer_a_drink",
+  "version": 1,
+  "category": "social",
+  "labelKey": "action.social.offer_a_drink.label",
+  "tags": [
+    "social",
+    "night"
+  ],
+  "where": {
+    "placeTypes": [
+      "maquis"
+    ],
+    "site": "seat_or_counter",
+    "interactionRadiusM": 2.5
+  },
+  "when": {
+    "openingHoursFrom": "place",
+    "windows": []
+  },
+  "requires": {
+    "state": [
+      "on_foot",
+      "not_in_action"
+    ],
+    "nearbyCharacters": {
+      "min": 1
+    },
+    "cooldown": {
+      "gameMinutes": 120,
+      "scope": "character"
+    },
+    "money": {
+      "minDjai": 1000
+    }
+  },
+  "duration": {
+    "gameMinutes": 20,
+    "real": {
+      "maxSeconds": 30
+    },
+    "interruptible": true,
+    "onInterrupt": "refund_none_partial_effects"
+  },
+  "effects": {
+    "onComplete": [
+      {
+        "type": "need",
+        "need": "social",
+        "delta": 20
+      },
+      {
+        "type": "need",
+        "need": "fun",
+        "delta": 5
+      }
+    ]
+  },
+  "cost": {
+    "djai": {
+      "base": 1000,
+      "priceSource": "business_price_list_or_base"
+    },
+    "payee": "provider"
+  },
+  "provider": {
+    "kind": "place",
+    "allowPlayerBusiness": true,
+    "employeeRole": "waiter"
+  },
+  "participants": {
+    "mode": "solo",
+    "npcRoles": [
+      {
+        "role": "waiter",
+        "required": true
+      }
+    ]
+  }
+}

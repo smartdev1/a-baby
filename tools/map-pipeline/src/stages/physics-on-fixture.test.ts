@@ -35,6 +35,7 @@ beforeAll(async () => {
   await mkdir(join(root, dirname(FIXTURE)), { recursive: true });
   await copyFile(join(packageDir, 'test/fixtures/pigeons-sample.geojson'), join(root, FIXTURE));
   await cp(join(packageDir, '../../content/place-names'), join(root, 'content/place-names'), { recursive: true });
+  await cp(join(packageDir, '../../content/place-types'), join(root, 'content/place-types'), { recursive: true });
   const config = await loadPipelineConfig(join(packageDir, 'config/fixture.pipeline.json'));
   await runPipeline({
     repoRoot: root,

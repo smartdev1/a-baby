@@ -17,6 +17,8 @@ export interface RunPipelineOptions {
   readonly logger: Logger;
   /** Re-run every stage even when its cache is valid. */
   readonly force?: boolean;
+  /** Re-run this stage and every later one (earlier stages still use their cache). */
+  readonly forceFrom?: string;
 }
 
 const stagesRoot = (repoRoot: string, config: PipelineConfig): string => resolve(repoRoot, config.outputDir, 'stages');
@@ -35,17 +37,20 @@ export const runPipeline = async ({
   stages,
   logger,
   force = false,
+  forceFrom,
 }: RunPipelineOptions): Promise<StageReport[]> => {
   const ctx = createStageContext(repoRoot, config, logger);
   const reports: StageReport[] = [];
+  const forcedFrom = forceFrom === undefined ? stages.length : stages.findIndex((s) => s.id === forceFrom);
+  if (forcedFrom === -1) throw new Error(`unknown stage "${forceFrom ?? ''}" (stages: ${stages.map((s) => s.id).join(', ')})`);
 
-  for (const stage of stages) {
+  for (const [index, stage] of stages.entries()) {
     const startedAt = performance.now();
     const outDir = join(stagesRoot(repoRoot, config), stage.id);
     await mkdir(outDir, { recursive: true });
     const inputHash = await computeInputHash(stage, ctx);
 
-    if (!force && (await isUpToDate(stage, ctx, outDir, inputHash))) {
+    if (!force && index < forcedFrom && (await isUpToDate(stage, ctx, outDir, inputHash))) {
       reports.push({ id: stage.id, status: 'cached', durationMs: performance.now() - startedAt });
       logger.info({ stage: stage.id }, 'stage up to date, skipped');
       continue;

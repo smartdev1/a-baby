@@ -1,0 +1,94 @@
+{
+  "$schema": "../../../tools/content-cli/schemas/action.schema.json",
+  "id": "work.serve_maquis",
+  "version": 1,
+  "category": "work",
+  "labelKey": "action.work.serve_maquis.label",
+  "icon": "ui_icon_work",
+  "tags": [
+    "work",
+    "job",
+    "night"
+  ],
+  "where": {
+    "placeTypes": [
+      "maquis"
+    ],
+    "site": "staff_post",
+    "interactionRadiusM": 3
+  },
+  "when": {
+    "openingHoursFrom": "none",
+    "windows": [
+      {
+        "from": "11:00",
+        "to": "17:00"
+      },
+      {
+        "from": "18:00",
+        "to": "02:00"
+      }
+    ]
+  },
+  "requires": {
+    "needs": {
+      "energy": {
+        "min": 20
+      },
+      "hunger": {
+        "min": 10
+      }
+    },
+    "state": [
+      "on_foot",
+      "not_in_action"
+    ],
+    "cooldown": {
+      "gameMinutes": 1440,
+      "scope": "character"
+    }
+  },
+  "duration": {
+    "gameMinutes": 360,
+    "real": {
+      "maxSeconds": 600
+    },
+    "interruptible": true,
+    "onInterrupt": "refund_none_no_effects"
+  },
+  "phases": [
+    {
+      "id": "work",
+      "animation": "anm_serve_tray",
+      "loop": true
+    }
+  ],
+  "effects": {
+    "onComplete": [
+      {
+        "type": "money",
+        "djai": 3000,
+        "direction": "actor_earns",
+        "counterparty": "system:wages"
+      },
+      {
+        "type": "need",
+        "need": "energy",
+        "delta": -25
+      },
+      {
+        "type": "need",
+        "need": "social",
+        "delta": 10
+      },
+      {
+        "type": "skill_xp",
+        "skill": "job.maquis_waiter",
+        "xp": 10
+      }
+    ]
+  },
+  "provider": {
+    "kind": "job"
+  }
+}
