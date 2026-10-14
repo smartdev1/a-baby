@@ -14,6 +14,8 @@ One pipeline configuration per commune, validated by `src/config/pipeline-config
 
 Adding a commune (e.g. Attécoubé) = adding a config file.
 
+`yopougon.neighbourhoods.json` (T-205, referenced by `neighbourhoodProfiles`): height profiles of the quartiers (level distributions or height ranges), the OSM neighbourhood name → profile table and name patterns. **To be reviewed by the owner** (`reviewedBy: null`); `06-heights/heights-report.json` lists the buildings per profile and the neighbourhoods still without profile.
+
 Optional `facades.stripBayWalls` (default `false`): leaves the walls covered by facade bays out of `geom.glb`. Switch it to `true` once the client renders the facade kit (frontend J1-06); until then the walls stay so that buildings remain closed in the preview.
 
 ## Rules

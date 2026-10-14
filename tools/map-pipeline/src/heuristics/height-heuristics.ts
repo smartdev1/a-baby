@@ -1,5 +1,5 @@
 /**
- * Role: building height and level count v0: OSM `height` > `building:levels` > seeded heuristic by building type and footprint area (default profile, before neighbourhood profiles of J2).
+ * Role: building height and level count: OSM `height` > `building:levels` > seeded heuristic — neighbourhood profile for generic buildings (T-205), else by building type and footprint area.
  * Owner: backend
  */
 
@@ -137,12 +137,23 @@ const BY_AREA: readonly { maxAreaM2: number; levels: LevelDistribution }[] = [
   },
 ];
 
+/** Neighbourhood profile applied to generic buildings: a level distribution or a single-volume height range. */
+export interface HeightProfile {
+  readonly levels?: LevelDistribution;
+  readonly heightM?: readonly [number, number];
+}
+
 export interface HeightInput {
   readonly type: string;
   readonly footprintAreaM2: number;
   readonly osmLevels?: number;
   readonly osmHeightM?: number;
+  /** Profile of the building's neighbourhood, when it has one and the building is large enough. */
+  readonly profile?: HeightProfile;
 }
+
+/** Tags that say nothing about the building's height: the neighbourhood decides. */
+const GENERIC_TYPES = new Set(['yes', 'residential', 'house', 'detached', 'semidetached_house', 'terrace']);
 
 export interface HeightResult {
   readonly levels: number;
@@ -166,7 +177,14 @@ const drawLevels = (distribution: LevelDistribution, rng: SeededRng): number => 
   return distribution[distribution.length - 1]?.[0] ?? 1;
 };
 
-const heuristic = ({ type, footprintAreaM2 }: HeightInput, rng: SeededRng): HeightResult => {
+const fromProfile = (profile: HeightProfile, rng: SeededRng): HeightResult => {
+  if (profile.heightM) return { levels: 1, heightM: round2(profile.heightM[0] + rng.next() * (profile.heightM[1] - profile.heightM[0])), heightSource: 'heuristic' };
+  const levels = drawLevels(profile.levels ?? [[1, 1]], rng);
+  return { levels, heightM: heightFromLevels(levels), heightSource: 'heuristic' };
+};
+
+const heuristic = ({ type, footprintAreaM2, profile }: HeightInput, rng: SeededRng): HeightResult => {
+  if (profile && GENERIC_TYPES.has(type)) return fromProfile(profile, rng);
   const fixed = FIXED_HEIGHT_M[type];
   if (fixed)
     return { levels: 1, heightM: round2(fixed[0] + rng.next() * (fixed[1] - fixed[0])), heightSource: 'heuristic' };

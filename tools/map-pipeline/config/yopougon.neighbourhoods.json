@@ -1,0 +1,164 @@
+{
+  "//": "Neighbourhood height profiles of Yopougon (ARCHITECTURE §11.3, T-205). Levels drawn per building (seeded by OSM id) for generic buildings without OSM height. TO BE REVIEWED by the owner: set reviewedBy once the mapping and the distributions are validated. `patterns` (regular expressions on the accent-free lower-case name) apply when a name is not in `neighbourhoods`.",
+  "reviewedBy": null,
+  "maxPointDistanceM": 1200,
+  "minFootprintM2": 40,
+  "profiles": {
+    "sicogi": {
+      "note": "SICOGI / SOGEFIHA / SIDECI estates: walk-up blocks R+2 to R+4",
+      "levels": [
+        [
+          1,
+          2
+        ],
+        [
+          2,
+          2
+        ],
+        [
+          3,
+          3
+        ],
+        [
+          4,
+          3
+        ],
+        [
+          5,
+          1
+        ]
+      ]
+    },
+    "planned-houses": {
+      "note": "Lotissements and cités: villas and duplexes",
+      "levels": [
+        [
+          1,
+          5
+        ],
+        [
+          2,
+          4
+        ],
+        [
+          3,
+          1
+        ]
+      ]
+    },
+    "courtyard": {
+      "note": "Dense popular courtyard housing (cours communes), mostly ground floor",
+      "levels": [
+        [
+          1,
+          8
+        ],
+        [
+          2,
+          2
+        ]
+      ]
+    },
+    "village": {
+      "note": "Ebrié villages and hamlets absorbed by the city",
+      "levels": [
+        [
+          1,
+          9
+        ],
+        [
+          2,
+          1
+        ]
+      ]
+    },
+    "industrial": {
+      "note": "Zone industrielle: single tall volumes",
+      "heightM": [
+        6,
+        11
+      ]
+    }
+  },
+  "neighbourhoods": {
+    "Sicogi": "sicogi",
+    "Niangon Sud - Sicogi": "sicogi",
+    "Sogefiha Solic 1 & 2": "sicogi",
+    "Sideci": "sicogi",
+    "Selmer": "sicogi",
+    "Toits-Rouges": "planned-houses",
+    "Cité Verte": "planned-houses",
+    "GFCI": "planned-houses",
+    "Sopim": "planned-houses",
+    "Cité Nawa": "planned-houses",
+    "Cité Ngouan 1": "planned-houses",
+    "Quartier Résidentiel": "planned-houses",
+    "Académie": "planned-houses",
+    "Yopougon-Santé": "planned-houses",
+    "Santé III": "planned-houses",
+    "Les Pays-Bas": "planned-houses",
+    "Niangon nord": "planned-houses",
+    "Niangon sud": "planned-houses",
+    "Niangon Lokoa": "planned-houses",
+    "Siporex": "planned-houses",
+    "Keneya": "planned-houses",
+    "Wassakara": "courtyard",
+    "Port-Bouët II": "courtyard",
+    "Andokoi": "courtyard",
+    "Quartier Maroc": "courtyard",
+    "Mamie Adjoua": "courtyard",
+    "Gesco": "courtyard",
+    "Lièvre rouge": "courtyard",
+    "Quartier Espoir": "courtyard",
+    "Nouveau quartier": "courtyard",
+    "Banco nord": "courtyard",
+    "Banco Sud": "courtyard",
+    "Béago": "courtyard",
+    "Quartier Chicane": "courtyard",
+    "Bonikro": "courtyard",
+    "Sable": "courtyard",
+    "Macaci": "courtyard",
+    "Ananeraie": "courtyard",
+    "Deuxième tranche": "courtyard",
+    "Djéné": "courtyard",
+    "Pedéko": "courtyard",
+    "Quartier LEM": "courtyard",
+    "Gabriel Gare": "courtyard",
+    "Indénié": "courtyard",
+    "Azito Village": "village",
+    "Kouté village": "village",
+    "Agban-village": "village",
+    "Adiopodoumé": "village",
+    "Johnykro": "village",
+    "Sicor": "village",
+    "Niangon Adjamé": "village",
+    "Locodjro": "village",
+    "Abobo Doumé": "village",
+    "Vridi Ako": "village",
+    "Niaba": "village",
+    "Zone Industrielle": "industrial",
+    "Yao Séhi": "courtyard"
+  },
+  "patterns": [
+    [
+      "sicogi|sogefiha|sideci|selmer",
+      "sicogi"
+    ],
+    [
+      "village|^quartier [a-z ]*village|kro$",
+      "village"
+    ],
+    [
+      "^cite |coprim|batim|lauriers|residentiel|^les ",
+      "planned-houses"
+    ],
+    [
+      "niangon|lokoa",
+      "planned-houses"
+    ],
+    [
+      "^quartier |banco|bidjante|jerusalem|corridor|fin goudron|toit vert|judee",
+      "courtyard"
+    ]
+  ]
+}

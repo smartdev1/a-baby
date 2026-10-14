@@ -1,9 +1,9 @@
 ---
 id: T-205
 title: Height heuristics by neighbourhood profile (quartiers of Yopougon)
-status: todo
+status: review
 owner: backend
-author_of_code:
+author_of_code: backend-dev (Claude, for Ky-Wilson)
 priority: P2
 size: M
 ---
@@ -19,9 +19,9 @@ Jalon : **J2** (`docs/roadmap.md`, J2-03).
 As a player, I want each quartier to have its own skyline so that Yopougon looks like itself.
 
 ## Acceptance criteria
-- [ ] Given `content/` neighbourhood profiles (name, polygon source, level distribution), When `06-heights` runs, Then buildings without height or levels draw their levels in the profile of the neighbourhood containing them (seeded per OSM id).
-- [ ] Given OSM `place=suburb|quarter|neighbourhood` areas, Then they provide the default polygons; missing ones are listed for the owner.
-- [ ] Given the owner has not validated the profiles, Then they are marked `reviewedBy: null` like the brand table.
+- [x] Given neighbourhood profiles (in the pipeline config, as ARCHITECTURE §11.3 says, not `content/`) (name, polygon source, level distribution), When `06-heights` runs, Then buildings without height or levels draw their levels in the profile of the neighbourhood containing them (seeded per OSM id).
+- [x] Given OSM `place=suburb|quarter|neighbourhood` areas, Then they provide the default polygons; missing ones are listed for the owner.
+- [x] Given the owner has not validated the profiles, Then they are marked `reviewedBy: null` like the brand table.
 
 ## Out of scope
 
@@ -35,7 +35,8 @@ Règles : `docs/rules/BACKEND.md`, ARCHITECTURE.md §9 et §11. Toute nouvelle d
 
 ## Implementation log
 
-(filled by the implementer)
+- 2026-10-14 — `config/yopougon.neighbourhoods.json` (5 profiles: `sicogi`, `planned-houses`, `courtyard`, `village`, `industrial`; 57 OSM names + 5 name patterns; `reviewedBy: null`); `src/config/neighbourhood-profiles.ts` (schema, accent-free name keys, exact name then pattern); `src/heuristics/neighbourhood-index.ts` (containing neighbourhood polygon > nearest neighbourhood/village point > nearest suburb point, 1.2 km; commune-wide suburb polygons ignored); `06-heights` v2 applies the profile to generic buildings without OSM height (≥ 40 m²) and writes `heights-report.json`.
+- Yopougon: 47 539 buildings from profiles; 10 359 buildings in 50 neighbourhoods without profile (Gbamnan Djidan 2 Franceville, Kilomètre 17, Camp militaire, Nouveau bureau, Micao…) — **owner: complete or correct the table, then set `reviewedBy`**. All tiles stay within budget (L0 max 331 KB).
 
 ## Review
 

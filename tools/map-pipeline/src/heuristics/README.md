@@ -18,3 +18,9 @@ Yopougon result (snapshot 2026-10-01): 74 702 buildings, 1 240 from OSM, 73 462 
 ## Rules
 
 - Changing a distribution changes outputs: bump `06-heights` version and update the golden hashes.
+
+## Neighbourhood profiles (T-205)
+
+- `neighbourhood-index.ts`: neighbourhood of a point from OSM `place=*`: containing `neighbourhood`/`quarter` polygon, else nearest `neighbourhood`/`quarter`/`village`/`hamlet`/`locality` point, else nearest `suburb` point, within `maxPointDistanceM` (suburb polygons are commune-sized and ignored).
+- `height-heuristics.ts`: generic buildings (`yes`, `residential`, `house`, `detached`, `semidetached_house`, `terrace`) without OSM height, ≥ `minFootprintM2`, draw their levels (or height) in their neighbourhood's profile; other types keep the type / area heuristics.
+- Profiles and the name table: `tools/map-pipeline/config/yopougon.neighbourhoods.json` (`src/config/neighbourhood-profiles.ts`).
