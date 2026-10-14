@@ -419,7 +419,11 @@ importers:
         specifier: ^4.6.6
         version: 4.6.6
 
-  packages/sim-needs: {}
+  packages/sim-needs:
+    dependencies:
+      '@skyline/content-schema':
+        specifier: workspace:*
+        version: link:../content-schema
 
   packages/sim-transport: {}
 
