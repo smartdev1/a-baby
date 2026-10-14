@@ -1,0 +1,104 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "id": {
+      "pattern": "^[a-z][a-z0-9_]*(\\.[a-z][a-z0-9_]*)*$",
+      "type": "string"
+    },
+    "labelKey": {
+      "pattern": "^[a-z][a-z0-9_]*(\\.[a-z0-9_]+)+$",
+      "type": "string"
+    },
+    "npcRoles": {
+      "default": [],
+      "items": {
+        "pattern": "^[a-z][a-z0-9_]*(\\.[a-z][a-z0-9_]*)*$",
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "openingHours": {
+      "default": [],
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "from": {
+            "pattern": "^([01]\\d|2[0-3]):[0-5]\\d$|^24:00$",
+            "type": "string"
+          },
+          "to": {
+            "pattern": "^([01]\\d|2[0-3]):[0-5]\\d$|^24:00$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "from",
+          "to"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "osmCategories": {
+      "items": {
+        "pattern": "^[a-z_]+\\.[a-z_]+$",
+        "type": "string"
+      },
+      "minItems": 1,
+      "type": "array"
+    },
+    "sanctuary": {
+      "default": false,
+      "type": "boolean"
+    },
+    "sites": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "capacity": {
+            "maximum": 50,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "kind": {
+            "pattern": "^[a-z][a-z0-9_]*(\\.[a-z][a-z0-9_]*)*$",
+            "type": "string"
+          },
+          "placement": {
+            "enum": [
+              "inside",
+              "front",
+              "around"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "kind",
+          "capacity",
+          "placement"
+        ],
+        "type": "object"
+      },
+      "minItems": 1,
+      "type": "array"
+    },
+    "version": {
+      "exclusiveMinimum": 0,
+      "maximum": 9007199254740991,
+      "type": "integer"
+    }
+  },
+  "required": [
+    "id",
+    "version",
+    "labelKey",
+    "osmCategories",
+    "sites"
+  ],
+  "type": "object"
+}
