@@ -11,6 +11,9 @@
     "typecheck": "tsc -p tsconfig.json"
   },
   "dependencies": {
+    "@skyline/content-schema": "workspace:*",
+    "@skyline/sim-clock": "workspace:*",
+    "@skyline/sim-needs": "workspace:*",
     "zod": "^4.6.6"
   }
 }

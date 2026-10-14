@@ -409,6 +409,15 @@ importers:
 
   packages/sim-actions:
     dependencies:
+      '@skyline/content-schema':
+        specifier: workspace:*
+        version: link:../content-schema
+      '@skyline/sim-clock':
+        specifier: workspace:*
+        version: link:../sim-clock
+      '@skyline/sim-needs':
+        specifier: workspace:*
+        version: link:../sim-needs
       zod:
         specifier: ^4.6.6
         version: 4.6.6
