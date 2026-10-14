@@ -1,11 +1,14 @@
 /**
- * Role: builds the services process (HTTP server, world clock, session tickets) without listening, so the standalone main and the all-in-one composition share it.
+ * Role: builds the services process (HTTP server, world clock, guest accounts, session tickets) without listening, so the standalone main and the all-in-one composition share it.
  * Owner: backend
  */
 
 import { join } from 'node:path';
 import type { FastifyInstance } from 'fastify';
 import type { Logger } from '@skyline/observability';
+import { registerAccountRoutes } from '../modules/accounts/api/account-routes.ts';
+import { AccountService } from '../modules/accounts/application/account-service.ts';
+import { FileGuestAccountStore } from '../modules/accounts/infra/guest-account-stores.ts';
 import { registerInternalTicketRoutes } from '../modules/session-tickets/api/internal-ticket-routes.ts';
 import { registerSessionTicketRoutes } from '../modules/session-tickets/api/session-ticket-routes.ts';
 import { TicketService } from '../modules/session-tickets/application/ticket-service.ts';
@@ -20,6 +23,7 @@ export interface Services {
   readonly server: Awaited<ReturnType<typeof buildHttpServer>>;
   readonly worldClock: WorldClockService;
   readonly tickets: TicketService;
+  readonly accounts: AccountService;
 }
 
 export interface BuildServicesOptions {
@@ -37,15 +41,17 @@ export const buildServices = async ({ config, logger, extraRoutes }: BuildServic
     now,
   );
   const tickets = new TicketService(now);
+  const accounts = new AccountService(new FileGuestAccountStore(join(config.runtimeDir, 'guest-accounts.json')), now);
   const server = await buildHttpServer({
     logger,
     corsOrigin: config.corsOrigin,
     registerRoutes: (app) => {
       registerWorldClockRoutes(app, worldClock, now);
-      registerSessionTicketRoutes(app, tickets, config.ticketsPerMin);
+      registerAccountRoutes(app, accounts);
+      registerSessionTicketRoutes(app, tickets, { accounts, perMinute: config.ticketsPerMin, anonymous: config.anonymousTickets });
       if (config.internalRoutes) registerInternalTicketRoutes(app, tickets);
       extraRoutes?.(app);
     },
   });
-  return { server, worldClock, tickets };
+  return { server, worldClock, tickets, accounts };
 };

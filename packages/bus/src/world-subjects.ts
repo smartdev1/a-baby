@@ -7,6 +7,8 @@ import type { ActionCancelMessage, ActionRequestMessage, RideRequestMessage, Tax
 
 export interface CellJoin {
   readonly sessionId: string;
+  /** Guest account of the player (its character); absent for an anonymous dev session. */
+  readonly characterId?: string;
 }
 export interface CellInput {
   readonly sessionId: string;
@@ -68,6 +70,8 @@ export interface CellHandoff {
   readonly yawRad: number;
   /** Needs carried to the next cell (daily life); absent when the cell runs without it. */
   readonly needs?: { readonly hunger: number; readonly energy: number; readonly hygiene: number; readonly social: number; readonly fun: number };
+  /** Character (guest account) of the player, when not anonymous. */
+  readonly characterId?: string;
   /** Entity ids the player blocked in the chat. */
   readonly chatBlocked?: readonly number[];
   /** Sender clock, to measure handoff latency (same host in the spike). */

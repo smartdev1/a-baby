@@ -63,6 +63,7 @@ export class ClientSession implements SessionHandle {
   private unsubscribe: Unsubscribe | null = null;
   private leaveSnapshots: (() => void) | null = null;
   private entityId: number | null = null;
+  private characterId: string | null = null;
   private violations = 0;
   private readonly limiter: RateLimiter;
 
@@ -139,16 +140,21 @@ export class ClientSession implements SessionHandle {
     if (versionError) return this.reject(versionError.code, versionError.message);
     if (hello.resumeToken !== undefined) return this.resume(hello.resumeToken);
     this.phase = 'checking-ticket';
-    const valid = await Promise.resolve(this.deps.tickets.consume(hello.ticket ?? '')).catch(() => false);
+    const check = await Promise.resolve(this.deps.tickets.consume(hello.ticket ?? '')).catch(() => null);
     if (this.phase !== 'checking-ticket') return; // closed while the ticket was checked
-    if (!valid) return this.reject('invalid_ticket', 'invalid or expired session ticket');
-    this.play(this.deps.spawnCell);
+    if (!check) return this.reject('invalid_ticket', 'invalid or expired session ticket');
+    this.characterId = check.accountId;
+    // One avatar per character: logging in again takes the existing session over (the older connection is replaced).
+    const existing = check.accountId === null ? null : this.deps.resumes.sessionOfCharacter(check.accountId);
+    if (existing) this.id = existing.sessionId;
+    this.play(existing?.cellKey ?? this.deps.spawnCell);
   }
 
   private resume(token: string): void {
     const session = this.deps.resumes.take(token);
     if (!session) return this.reject('invalid_ticket', 'invalid or expired resume token');
     this.id = session.sessionId;
+    this.characterId = session.characterId;
     this.play(session.cellKey);
   }
 
@@ -158,9 +164,9 @@ export class ClientSession implements SessionHandle {
     this.cellKey = cellKey;
     this.unsubscribe = this.deps.bus.subscribe<ServerMessage>(subjects.sessionOut(this.id), (m) => this.fromCell(m));
     this.followCell(cellKey);
-    const resumeToken = this.deps.resumes.attach(this.id, cellKey, this);
+    const resumeToken = this.deps.resumes.attach(this.id, cellKey, this, this.characterId);
     this.send({ type: 'resumeInfo', body: { resumeToken, windowS: RESUME_WINDOW_S } });
-    this.deps.bus.publish(subjects.cellJoin(cellKey), { sessionId: this.id });
+    this.deps.bus.publish(subjects.cellJoin(cellKey), this.characterId === null ? { sessionId: this.id } : { sessionId: this.id, characterId: this.characterId });
   }
 
   /** A welcome from another cell means the player was handed over: later inputs and snapshots come from that cell. */

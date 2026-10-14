@@ -1,5 +1,5 @@
 /**
- * Role: tests the gateway session: version and ticket checks, hello first, inputs routed to the cell (and to the next cell after a handoff welcome), cell messages routed back, flood and garbage disconnect, resume after a drop (same session, rotated token, expiry, older connection replaced).
+ * Role: tests the gateway session: version and ticket checks, hello first, inputs routed to the cell (and to the next cell after a handoff welcome), cell messages routed back, flood and garbage disconnect, resume after a drop (same session, rotated token, expiry, older connection replaced), one session per guest account.
  * Owner: backend
  */
 
@@ -21,7 +21,7 @@ const WINDOW_MS = 20;
 const resumeHello = (resumeToken: string) => encodeClientMessage({ type: 'hello', body: { protocolVersion: PROTOCOL_VERSION, resumeToken, clientBuild: 't' } });
 const wait = (ms: number): Promise<void> => new Promise((r) => setTimeout(r, ms));
 
-const setup = (validTicket = 'good', bus = new InMemoryBus(), resumes = new ResumeRegistry(WINDOW_MS)) => {
+const setup = (validTicket = 'good', bus = new InMemoryBus(), resumes = new ResumeRegistry(WINDOW_MS), accountId: string | null = null) => {
   const sent: ServerMessage[] = [];
   const link = {
     closed: false,
@@ -29,7 +29,7 @@ const setup = (validTicket = 'good', bus = new InMemoryBus(), resumes = new Resu
     close: () => (link.closed = true),
   };
   const used = new Set<string>();
-  const session = new ClientSession(link, { bus, fanout: new CellFanout(bus), spawnCell: 'C_1_1', logger, resumes, tickets: { consume: (t) => t === validTicket && !used.has(t) && used.add(t) !== undefined } });
+  const session = new ClientSession(link, { bus, fanout: new CellFanout(bus), spawnCell: 'C_1_1', logger, resumes, tickets: { consume: (t) => (t === validTicket && !used.has(t) && used.add(t) ? { accountId } : null) } });
   const token = (): string => {
     const info = sent.filter((m) => m.type === 'resumeInfo').at(-1);
     return info?.type === 'resumeInfo' ? info.body.resumeToken : '';
@@ -156,5 +156,22 @@ describe('ClientSession', () => {
     await wait(WINDOW_MS + 10);
     expect(closed).toEqual([]);
     expect(b.link.closed).toBe(false);
+  });
+
+  it('should give a second login of the same account its existing session and tell the cell the character', async () => {
+    const a = setup('good', new InMemoryBus(), new ResumeRegistry(WINDOW_MS), 'acc_1');
+    const joins: unknown[] = [];
+    a.bus.subscribe(subjects.cellJoin('C_1_1'), (m) => joins.push(m));
+    a.session.receive(hello('good'));
+    await settle();
+    const b = setup('again', a.bus, a.resumes, 'acc_1');
+    b.session.receive(hello('again'));
+    await settle();
+    expect(b.session.sessionId).toBe(a.session.sessionId);
+    expect(a.sent.at(-1)).toMatchObject({ type: 'error', body: { code: 'session_replaced' } });
+    expect(joins).toEqual([
+      { sessionId: a.session.sessionId, characterId: 'acc_1' },
+      { sessionId: a.session.sessionId, characterId: 'acc_1' },
+    ]);
   });
 });

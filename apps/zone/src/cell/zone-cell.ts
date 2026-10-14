@@ -115,7 +115,7 @@ export class ZoneCell implements PlayerPositions, ChatPlayers {
   start({ ticking = true }: { ticking?: boolean } = {}): void {
     const { bus, cellKey } = this.options;
     this.unsubscribes.push(
-      bus.subscribe<CellJoin>(subjects.cellJoin(cellKey), (m) => void this.join(m.sessionId)),
+      bus.subscribe<CellJoin>(subjects.cellJoin(cellKey), (m) => void this.join(m.sessionId, m.characterId)),
       bus.subscribe<CellInput>(subjects.cellInput(cellKey), (m) => this.input(m)),
       bus.subscribe<SessionClosed>(subjects.sessionClosed(), (m) => {
         this.players.delete(m.sessionId);
@@ -176,7 +176,8 @@ export class ZoneCell implements PlayerPositions, ChatPlayers {
     if (target) this.options.bus.publish(subjects.cellInput(target), m);
   }
 
-  private async join(sessionId: string): Promise<void> {
+  /** `characterId`: the guest account; an anonymous dev session plays a throw-away character named after the session. */
+  private async join(sessionId: string, characterId = sessionId): Promise<void> {
     const present = this.players.get(sessionId);
     if (present) {
       // A resumed session (its connection dropped less than 60 s ago): same player, same state, welcomed again.
@@ -192,7 +193,7 @@ export class ZoneCell implements PlayerPositions, ChatPlayers {
       grounded: true,
     };
     await this.welcome(new PlayerSlot(sessionId, entityIdOf(sessionId), state));
-    await this.daily?.addPlayer(sessionId);
+    await this.daily?.addPlayer(sessionId, undefined, characterId);
   }
 
   /** A player handed over by a neighbour cell keeps its state, sequence and entity id. */
@@ -203,7 +204,7 @@ export class ZoneCell implements PlayerPositions, ChatPlayers {
     this.handoffMs.push(Date.now() - h.sentAtMs);
     if (this.handoffMs.length > 10_000) this.handoffMs.shift();
     await this.welcome(player);
-    await this.daily?.addPlayer(h.sessionId, h.needs);
+    await this.daily?.addPlayer(h.sessionId, h.needs, h.characterId ?? h.sessionId);
     this.chat?.restoreBlocks(h.sessionId, h.chatBlocked ?? []);
   }
 
@@ -291,7 +292,8 @@ export class ZoneCell implements PlayerPositions, ChatPlayers {
     const handoff = toHandoff({ ...player, yawRad: player.lastInput.yawRad }, this.options.frameOrigin, Date.now());
     const needs = this.daily?.needsOf(player.sessionId)?.values;
     const chatBlocked = this.chat?.blocksOf(player.sessionId) ?? [];
-    return { ...handoff, ...(needs ? { needs } : {}), ...(chatBlocked.length > 0 ? { chatBlocked } : {}) };
+    const characterId = this.daily?.characterOf(player.sessionId);
+    return { ...handoff, ...(needs ? { needs } : {}), ...(chatBlocked.length > 0 ? { chatBlocked } : {}), ...(characterId && characterId !== player.sessionId ? { characterId } : {}) };
   }
 
   private broadcastSnapshot(): void {

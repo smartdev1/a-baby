@@ -1,5 +1,5 @@
 /**
- * Role: session resume (ARCHITECTURE §13.6): a dropped session stays alive 60 s; a single-use resume token (only its SHA-256 is kept, rotated at each handshake) lets a new connection take it over; one live connection per session, the newer one replaces the older.
+ * Role: session resume (ARCHITECTURE §13.6): a dropped session stays alive 60 s; a single-use resume token (only its SHA-256 is kept, rotated at each handshake) lets a new connection take it over; one live connection per session and one session per guest account, the newer connection replaces the older.
  * Owner: backend
  */
 
@@ -14,6 +14,7 @@ export interface SessionHandle {
 
 interface SessionEntry {
   cellKey: string;
+  characterId: string | null;
   tokenHash: string | null;
   live: SessionHandle | null;
   expiry: ReturnType<typeof setTimeout> | null;
@@ -24,12 +25,15 @@ const hashOf = (token: string): string => createHash('sha256').update(token).dig
 export class ResumeRegistry {
   private readonly sessions = new Map<string, SessionEntry>();
   private readonly byHash = new Map<string, string>();
+  /** Guest account → its session (a second login takes the same character over). */
+  private readonly byCharacter = new Map<string, string>();
 
   constructor(private readonly windowMs = RESUME_WINDOW_S * 1000) {}
 
   /** A connection now plays the session: cancels a pending expiry, replaces an older connection, returns a fresh token. */
-  attach(sessionId: string, cellKey: string, handle: SessionHandle): string {
-    const entry = this.sessions.get(sessionId) ?? { cellKey, tokenHash: null, live: null, expiry: null };
+  attach(sessionId: string, cellKey: string, handle: SessionHandle, characterId: string | null = null): string {
+    const entry = this.sessions.get(sessionId) ?? { cellKey, characterId, tokenHash: null, live: null, expiry: null };
+    if (entry.characterId !== null) this.byCharacter.set(entry.characterId, sessionId);
     if (entry.expiry) clearTimeout(entry.expiry);
     const older = entry.live;
     entry.expiry = null;
@@ -57,15 +61,22 @@ export class ResumeRegistry {
     }, this.windowMs);
   }
 
+  /** The session already playing this character (live or waiting for a resume), if any. */
+  sessionOfCharacter(characterId: string): { sessionId: string; cellKey: string; characterId: string } | null {
+    const sessionId = this.byCharacter.get(characterId);
+    const entry = sessionId === undefined ? undefined : this.sessions.get(sessionId);
+    return sessionId !== undefined && entry ? { sessionId, cellKey: entry.cellKey, characterId } : null;
+  }
+
   /** Consumes a token: the session to resume, or null (unknown, used or expired). */
-  take(token: string): { sessionId: string; cellKey: string } | null {
+  take(token: string): { sessionId: string; cellKey: string; characterId: string | null } | null {
     const hash = hashOf(token);
     const sessionId = this.byHash.get(hash);
     const entry = sessionId === undefined ? undefined : this.sessions.get(sessionId);
     if (sessionId === undefined || !entry) return null;
     this.byHash.delete(hash);
     entry.tokenHash = null;
-    return { sessionId, cellKey: entry.cellKey };
+    return { sessionId, cellKey: entry.cellKey, characterId: entry.characterId };
   }
 
   /** The session ends for good (kicked, expired). */
@@ -74,6 +85,7 @@ export class ResumeRegistry {
     if (!entry) return;
     if (entry.expiry) clearTimeout(entry.expiry);
     if (entry.tokenHash) this.byHash.delete(entry.tokenHash);
+    if (entry.characterId !== null && this.byCharacter.get(entry.characterId) === sessionId) this.byCharacter.delete(entry.characterId);
     this.sessions.delete(sessionId);
   }
 

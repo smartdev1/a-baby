@@ -5,7 +5,7 @@
 
 ## Role
 
-Single-use gateway tickets (128-bit, 60 s; only hashes kept) — `POST /api/v1/session-tickets`, rate-limited per IP (`SESSION_TICKETS_PER_MIN`, default 10). `POST /internal/v1/session-tickets/consume` (`{ ticket }` → `{ valid }`) serves gateways running in another process: off unless `SERVICES_INTERNAL_ROUTES=true`, loopback callers only, no per-IP limit. Guest profiles come in J6.
+Single-use gateway tickets (128-bit, 60 s; only hashes kept), bound to the guest account — `POST /api/v1/session-tickets` with `Authorization: Bearer <access token>` (401 without, unless `SKYLINE_ANONYMOUS_TICKETS=true`: local dev and load tests; the all-in-one defaults to it), rate-limited per IP (`SESSION_TICKETS_PER_MIN`, default 10). `POST /internal/v1/session-tickets/consume` (`{ ticket }` → `{ valid, accountId }`) serves gateways running in another process: off unless `SERVICES_INTERNAL_ROUTES=true`, loopback callers only, no per-IP limit.
 
 ## Rules
 
