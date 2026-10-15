@@ -19,7 +19,6 @@
     "build": "pnpm -r --if-present build",
     "typecheck": "pnpm -r --if-present typecheck",
     "lint": "eslint . && depcruise apps packages tools --config .dependency-cruiser.cjs && node tools/repo-checks/src/run-all.mjs && node scripts/check-prohibited-names.mjs",
-    "typecheck": "pnpm -r --if-present typecheck",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",

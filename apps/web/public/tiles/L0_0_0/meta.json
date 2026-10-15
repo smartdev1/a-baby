@@ -1,0 +1,30 @@
+{
+  "formatVersion": 0,
+  "tileKey": "L0_0_0",
+  "buildings": [
+    {
+      "id": "bld_0",
+      "type": "residential",
+      "levels": 2,
+      "heightM": 6,
+      "heightSource": "osm"
+    },
+    {
+      "id": "bld_1",
+      "type": "commercial",
+      "levels": 1,
+      "heightM": 4,
+      "heightSource": "dataset"
+    }
+  ],
+  "places": [
+    {
+      "id": "place_0",
+      "category": "restaurant",
+      "displayName": "Le Restaurant",
+      "position": { "x": 10, "z": 20 },
+      "buildingId": "bld_0"
+    }
+  ],
+  "neighbours": []
+}

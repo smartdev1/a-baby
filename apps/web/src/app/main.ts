@@ -85,20 +85,29 @@ const start = async (): Promise<void> => {
     // TODO : passer currentIntent à la prédiction locale / au système de personnage
     // pour que le joueur bouge sans attendre le serveur à chaque frame.
 
+    // Render the scene
+    scene.render();
+
     // Update HUD signals from game state (these would come from WebSocket messages in real gameplay)
     // For now, just overlay update
     overlay.update(camera.position, engine.getFps());
   });
   window.addEventListener('resize', () => {
     engine.resize();
-    // Re-render HUD on resize to adjust positions
+    // Re-render HUD on resize to adjust positions — remove old containers first
     if (djaiDisplayContainer) {
       const parent = djaiDisplayContainer.parentElement;
-      if (parent) renderDjaiDisplay(parent);
+      if (parent) {
+        parent.removeChild(djaiDisplayContainer);
+        renderDjaiDisplay(parent);
+      }
     }
     if (clockDisplayContainer) {
       const parent = clockDisplayContainer.parentElement;
-      if (parent) renderClockDisplay(parent);
+      if (parent) {
+        parent.removeChild(clockDisplayContainer);
+        renderClockDisplay(parent);
+      }
     }
   });
 };

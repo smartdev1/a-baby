@@ -18,7 +18,9 @@ import { h } from 'preact';
 import { render } from 'preact';
 import { notificationsSignal } from './use-hud-store.ts';
 
-/** Composant banner de notifications */
+/**
+ * Composant banner de notifications
+ */
 const NotificationBanner = (): JSX.Element => {
   const notifications = notificationsSignal.value as Array<{ key: string; duration: number }>;
 
@@ -28,6 +30,13 @@ const NotificationBanner = (): JSX.Element => {
 
   // Render first notification (FIFO)
   const first = notifications[0];
+  const duration = first.duration;
+
+  // Auto-disparition après la durée spécifiée
+  setTimeout(() => {
+    const updated = notificationsSignal.value.filter((n) => n.key !== first.key);
+    notificationsSignal.value = updated;
+  }, duration);
 
   return h('div', {
     style: {
@@ -39,7 +48,7 @@ const NotificationBanner = (): JSX.Element => {
       fontSize: '0.875rem',
       marginBottom: '8px',
     },
-    'aria-role': 'alert',
+    role: 'alert',
     'aria-live': 'polite',
     children: [
       h('span', {}, first.key),
@@ -48,9 +57,16 @@ const NotificationBanner = (): JSX.Element => {
           float: 'right',
           opacity: 0.7,
           fontSize: '0.75rem',
+          cursor: 'pointer',
         },
-        children: ['×'], // close action
-      }),
+        onClick: () => {
+          // Remove the notification from the signal when user clicks close
+          const updated = notificationsSignal.value.filter(
+            (n) => n.key !== first.key,
+          );
+          notificationsSignal.value = updated;
+        },
+      }, ['×']), // close action
     ],
   });
 };

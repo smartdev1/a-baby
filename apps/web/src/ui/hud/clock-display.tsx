@@ -50,7 +50,7 @@ const clockRatio = clockRatioSignal.value;
   const formattedServerTime = formatServerTime(serverTime);
 
   return h('div', {
-    'aria-role': 'timer',
+    role: 'timer',
     'aria-label': 'hud.game_minute',
     style: {
       fontSize: '1.25rem',

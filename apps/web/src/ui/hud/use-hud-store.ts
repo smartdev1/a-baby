@@ -18,7 +18,7 @@
  *   ou tout composant qui a besoin de l'état HUD.
  */
 
-import { signal, computed } from '@preact/signals-core';
+import { signal, computed } from '@preact/signals';
 
 // === État des 5 besoins (0-100) ===
 // Valeurs initiales : aucune pénalité au démarrage

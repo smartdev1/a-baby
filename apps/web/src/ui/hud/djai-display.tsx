@@ -31,7 +31,7 @@ const DjaiDisplay = (): JSX.Element => {
   const getColor = (): string => (value > 0n || value === 0n ? '#1e293b' : '#64748b');
 
   return h('div', {
-    'aria-role': 'status',
+    role: 'status',
     'aria-label': 'hud.djai_balance',
     style: {
       fontSize: '1.5rem',

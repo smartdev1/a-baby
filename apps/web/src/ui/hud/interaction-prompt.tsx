@@ -3,7 +3,7 @@
  * Owner: frontend
  *
  * Affichage quand une action nécessite interaction (ex. porte fermée, commerce fermé).
- * Raison extraita de l'event WebSocket `interaction_prompt`.
+ * Raison extraite de l'event WebSocket `interaction_prompt`.
  * Déterministe, pas de Math.random.
  *
  * Règles :
@@ -24,7 +24,10 @@ const InteractionPrompt = (): JSX.Element => {
 
   if (!promptText) {
     // Nothing to display
-    return h('div', { 'aria-role': 'status', 'aria-label': 'hud.interaction_prompt' });
+    return h('div', {
+      role: 'status',
+      'aria-label': 'hud.interaction_prompt',
+    });
   }
 
   // Compute greyed style based on timer if present
@@ -36,7 +39,7 @@ const InteractionPrompt = (): JSX.Element => {
   };
 
   return h('div', {
-    'aria-role': 'status',
+    role: 'status',
     'aria-label': 'hud.interaction_prompt',
     style: {
       ...baseStyle,

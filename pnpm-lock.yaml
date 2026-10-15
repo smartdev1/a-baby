@@ -306,12 +306,18 @@ importers:
       '@preact/signals':
         specifier: ^2.11.3
         version: 2.11.3(preact@11.0.1)
+      '@preact/signals-core':
+        specifier: ^1.14.4
+        version: 1.14.4
       earcut:
         specifier: ^3.2.4
         version: 3.2.4
       preact:
         specifier: ^11.0.1
         version: 11.0.1
+      zod:
+        specifier: ^4.6.6
+        version: 4.6.6
     devDependencies:
       '@preact/preset-vite':
         specifier: ^2.10.6

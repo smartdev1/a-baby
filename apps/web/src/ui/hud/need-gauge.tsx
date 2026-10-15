@@ -52,13 +52,12 @@ const NEED_COLORS = {
 
 /** Composant jauge unique – reçu `needKey` ("hunger"|"energy"|"hygiene"|"social"|"entertainment") */
 const NeedGauge = ({ needKey }: { needKey: keyof typeof NEED_SIGNALS }): JSX.Element => {
-  const signal = NEED_SIGNALS[needKey];
-  const update = signal.value; // read current value
+  const signalRef = NEED_SIGNALS[needKey];
 
-  // TODO: in a reactive context, we'd recompute on signal change.
-  // For now, read once. The parent will re-render or we'll wrap in computed.
+  // Read the signal value – Preact will track this dependency and re-render
+  // when the signal changes, making this component reactive.
+  const value = signalRef.value;
 
-  const value = update === undefined ? 0 : update;
   // Ensure value is clamped 0-100
   const clampedValue = Math.max(0, Math.min(100, value));
   const labelKey = NEED_TEXTS[needKey];
@@ -70,7 +69,7 @@ const NeedGauge = ({ needKey }: { needKey: keyof typeof NEED_SIGNALS }): JSX.Ele
   };
 
   return h('div', {
-    'aria-role': 'progressbar',
+    role: 'progressbar',
     'aria-valuenow': clampedValue,
     'aria-valuemin': 0,
     'aria-valuemax': 100,

@@ -4,10 +4,11 @@
  */
 
 import { Vector3 } from '@babylonjs/core/Maths/math.vector';
-import type { Scene } from '@babylonjs/core/scene';
-import { Mesh } from '@babylonjs/core/Meshes/mesh';
+import { Mesh, MeshBuilder } from '@babylonjs/core';
+import { StandardMaterial } from '@babylonjs/core/Materials/StandardMaterial';
+import { Color3 } from '@babylonjs/core/Maths/math.color';
+import type { Scene } from '@babylonjs/core';
 import { TileMetaSchema } from '../tile-format/src/tile-meta-schema.ts';
-import type { TileMeta } from '../tile-format/src/tile-meta-schema.ts';
 import { tileCoordOf } from '../geo/world-grid.ts';
 
 // Scale bug C1 fix: apply 0.25 factor everywhere (was only x/y in old code)
@@ -37,97 +38,8 @@ interface TileMeta {
   neighbours: string[];
 }
 
-/** Seeded RNG implementation for deterministic synthetic data */
-interface SeededRng {
-  next(): number;
-  int(minInclusive: number, maxInclusive: number): number;
-  pick<T>(items: readonly T[]): T;
-}
 
-const xmur3 = (seed: string): (() => number) => {
-  let h = 1779033703 ^ seed.length;
-  for (let i = 0; i < seed.length; i++) {
-    h = Math.imul(h ^ seed.charCodeAt(i), 3432918353);
-    h = (h << 13) | (h >>> 19);
-  }
-  return () => {
-    h = Math.imul(h ^ (h >>> 16), 2246822507);
-    h = Math.imul(h ^ (h >>> 13), 3266489909);
-    return (h ^= h >>> 16) >>> 0;
-  };
-};
 
-const sfc32 = (a0: number, b0: number, c0: number, d0: number): (() => number) => {
-  let [a, b, c, d] = [a0, b0, c0, d0];
-  return () => {
-    a >>>= 0;
-    b >>>= 0;
-    c >>>= 0;
-    d >>>= 0;
-    let t = (a + b) | 0;
-    a = b ^ (b >>> 9);
-    b = (c + (c << 3)) | 0;
-    c = (c << 21) | (c >>> 11);
-    d = (d + 1) | 0;
-    t = (t + d) | 0;
-    c = (c + t) | 0;
-    return (t >>> 0) / 4294967296;
-  };
-};
-
-const createSeededRng = (seed: string): SeededRng => {
-  const seeder = xmur3(seed);
-  const next = sfc32(seeder(), seeder(), seeder(), seeder());
-  return {
-    next,
-    int: (minInclusive: number, maxInclusive: number) => {
-      if (maxInclusive < minInclusive) throw new RangeError(`empty range [${minInclusive}, ${maxInclusive}]`);
-      return minInclusive + Math.floor(next() * (maxInclusive - minInclusive + 1));
-    },
-    pick: (items: readonly unknown[]) => {
-      const item = items[Math.floor(next() * items.length)];
-      if (item === undefined) throw new RangeError('cannot pick from an empty list');
-      return item;
-    },
-  };
-};
-
-/** Données synthétiques réalistes pour un tile L0 (secteur Yopougon approximatif) */
-const SYNTHETIC_TILE_META: TileMeta = (() => {
-  const rng = createSeededRng('synthetic-tile-L0_0_0');
-  const meta: TileMeta = {
-    formatVersion: 0,
-    tileKey: 'L0_0_0',
-    buildings: [],
-    places: [],
-    neighbours: [],
-  };
-
-  const BASE_BUILDING_COUNT = 100;
-  for (let i = 0; i < BASE_BUILDING_COUNT; i++) {
-    meta.buildings.push({
-      id: `bld_${i}`,
-      type: 'residential',
-      levels: rng.int(1, 5),
-      heightM: 3 + rng.next() * 15, // 3-18m avant C1 factor 0.25
-      heightSource: 'osm',
-    });
-  }
-
-  const PLACE_CATEGORIES = ['maquis', 'restaurant', 'salon_beaute', 'mobile_money', 'eglise', 'école'] as const;
-  const PLACE_COUNT = Math.max(1, Math.floor(BASE_BUILDING_COUNT / 10));
-  for (let i = 0; i < PLACE_COUNT; i++) {
-    meta.places.push({
-      id: `place_${i}`,
-      category: rng.pick(PLACE_CATEGORIES),
-      displayName: null,
-      position: { x: rng.next() * 1000, z: rng.next() * 1000 },
-      buildingId: null,
-    });
-  }
-
-  return meta;
-})();
 
 /**
  * Charge un manifeste tile et retourne les données normalisées.
@@ -141,17 +53,15 @@ export async function loadTileMeta(tileKey: string): Promise<TileMeta> {
     }
     const raw: unknown = await response.json();
 
-    // Validation Zod stricte — toute donnée non conforme lève une erreur lisible
-    const parsed = TileMetaSchema.safeParse(raw);
-    if (!parsed.success) {
-      const errors =
-        (parsed.error?.errors as Array<{ path: string[] }>).map((e) => e.path.join('.')).join(', ') || 'unknown error';
-      throw new Error(`Invalid tile meta for ${tileKey}: ${errors}`);
-    }
-    return parsed.data as TileMeta;
-  } catch {
-    console.warn(`[TILE LOADER] Using mock data for ${tileKey}`);
-    return SYNTHETIC_TILE_META;
+    // Validation Zod stricte — toute donnée non conforme lève une erreur structurée
+    const parsed = TileMetaSchema.parse(raw);
+    return parsed as TileMeta;
+  } catch (error) {
+    console.error(
+      `[TILE LOADER] Failed to load tile meta for ${tileKey}`,
+      error,
+    );
+    throw error;
   }
 }
 
@@ -162,18 +72,21 @@ export async function loadTileMeta(tileKey: string): Promise<TileMeta> {
  */
 export function buildBuildingMesh(scene: Scene, building: TileMeta['buildings'][0], position: Vector3): Mesh {
   // C1 fix: apply 0.25 to height too
-  void (building.heightM * SCALE_FACTOR);
+  const buildingHeight = building.heightM * SCALE_FACTOR;
 
-  // Le footprint est un tableau de Vec2[] (anneaux OSM)
-  // On suppose que building.id contient un osm:xxx qu'on peut mapper en position UTM
-  // Pour l'instant, on utilise la position fournie et on crée une forme basique
-  const mesh = new Mesh(building.id, scene);
+  // Create a box mesh for the building using MeshBuilder
+  const mesh = MeshBuilder.CreateBox(building.id, { size: buildingHeight }, scene);
 
-  // Position de départ — le centre de la tuile en mètres réels
+  // Position the building
   mesh.position = position;
 
-  // Hauteur appliquée avec le facteur de correction C1
+  // Apply the C1 scale factor
   mesh.scaling = new Vector3(SCALE_FACTOR, SCALE_FACTOR, SCALE_FACTOR);
+
+  // Assign a basic material
+  const material = new StandardMaterial(`${building.id}-material`, scene);
+  material.diffuseColor = new Color3(0.8, 0.8, 0.8);
+  mesh.material = material;
 
   return mesh;
 }
@@ -282,8 +195,7 @@ export async function loadAndRenderTile(tileKey: string, scene: Scene): Promise<
   }
 
   // 4. Arrêter le chronomètre et calculer les métriques
-  timer.stopTimer();
-  const loadTimeMs = timer.end;
+  const loadTimeMs = timer.stopTimer();
 
   // 5. Calculer le FPS median et frames > 50ms sur un court échantillon
   // On utilise le render loop existant ; on capture les 10 prochains fps
@@ -305,9 +217,14 @@ export async function loadAndRenderTile(tileKey: string, scene: Scene): Promise<
     }
   };
 
+  // Calculer la médiane des échantillons FPS
+  const fpsMedian = fpsSamples.length > 0
+    ? (fpsSamples.sort((a, b) => a - b)[Math.floor(fpsSamples.length / 2)] as number)
+    : 0;
+
   const metrics: TileLoaderMetrics = {
     loadTimeMs,
-    fpsMedian: 0,
+    fpsMedian,
     framesOver50Ms,
     buildingsRendered: meta.buildings.length,
     placesRendered: meta.places.length,
