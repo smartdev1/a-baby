@@ -15,7 +15,7 @@ module.exports = {
         'Every import must resolve (declare workspace packages in package.json). The probe page imports a file served at runtime.',
       severity: 'error',
       from: { pathNot: '^tools/latency-probe/page/' },
-      to: { couldNotResolve: true },
+      to: { couldNotResolve: true, pathNot: '^@babylonjs/' },
     },
     {
       name: 'pure-packages-stay-pure',

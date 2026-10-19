@@ -1,7 +1,7 @@
 # `apps/web/src/streaming/`
 
 - **Owner:** frontend developer
-- **Status:** Planned — T-014
+- **Status:** Implemented — T-014, T-114 (J1 streaming foundation)
 
 ## Role
 

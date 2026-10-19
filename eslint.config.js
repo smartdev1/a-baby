@@ -17,6 +17,7 @@ export default tseslint.config(
       'data/**',
       'coverage/**',
       'packages/test-rules/**',
+      'apps/web/public/meshopt_decoder.js',
     ],
   },
   js.configs.recommended,

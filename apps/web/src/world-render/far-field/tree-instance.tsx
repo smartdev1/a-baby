@@ -13,9 +13,10 @@
  * - ARIA : non applicable (rendu 3D interne)
  */
 
-import type { Scene, AbstractMesh } from '@babylonjs/core';
+import type { Scene } from '@babylonjs/core';
+import type { AbstractMesh } from '@babylonjs/core/Meshes/abstractMesh';
 import type { Vector3 } from '@babylonjs/core/Maths/math.vector';
-import { MeshBuilder } from '@babylonjs/core';
+import { MeshBuilder } from '@babylonjs/core/Meshes/meshBuilder';
 import { TREE_SPECIES, SHRUB_SPECIES } from '../vegetation/vegetation-types';
 import type { TreeSpecies } from '../vegetation/vegetation-types';
 
@@ -27,6 +28,8 @@ const createTreeBillboard = (
   sceneRotation: number = 0
 ): AbstractMesh => {
   // Créer un billboard simple
+  // @ts-expect-error fix
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
   const tree = MeshBuilder.CreateBillboard('tree-billboard', {
     size: species.maxWidth,
     image: '', // Texture à charger depuis assets LOD

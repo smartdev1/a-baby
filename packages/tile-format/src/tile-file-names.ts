@@ -5,6 +5,7 @@
 
 import { parseTileKey, type TileKey } from '@skyline/geo';
 
+export { type TileKey };
 export const TILE_FILE_KINDS = ['geom', 'instances', 'collision', 'meta', 'nav'] as const;
 export type TileFileKind = (typeof TILE_FILE_KINDS)[number];
 

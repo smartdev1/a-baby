@@ -1,0 +1,1 @@
+{"formatVersion":1,"tileKey":"L0_349_231","buildings":[],"places":[{"id":"osm:node/6474137941","category":"transport.stop","displayName":null,"position":{"x":180.14,"z":215.08},"buildingId":null},{"id":"osm:node/6474137973","category":"transport.stop","displayName":null,"position":{"x":160.42,"z":154.52},"buildingId":null}],"neighbours":["L0_348_230","L0_349_230"]}

@@ -21,6 +21,8 @@ export const TileBuildingSchema = z.object({
   levels: z.number().int().min(1).max(200),
   heightM: z.number().positive().max(500),
   heightSource: HeightSourceSchema,
+  /** Ground footprint: outer ring first, then holes (each ring closed, last point = first point). */
+  footprint: z.array(z.array(LocalPointSchema)).optional(),
 });
 
 export const TilePlaceSchema = z.object({

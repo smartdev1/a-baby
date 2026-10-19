@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "cameraPath": "camera-path.v1.json",
+  "fpsMedian": 200,
+  "fpsP5": 200,
+  "framesOver50Ms": 0,
+  "firstRenderMs": 9061,
+  "jsMemoryBeforeMB": 8.79,
+  "jsMemoryAfterMB": 8.42,
+  "drawCalls": 21600,
+  "triangles": 1440000,
+  "timestamp": "2026-10-19T15:37:07.808Z"
+}

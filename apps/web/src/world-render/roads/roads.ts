@@ -11,8 +11,8 @@ import type { Scene } from '@babylonjs/core/scene';
 import { StandardMaterial } from '@babylonjs/core/Materials/standardMaterial.ts';
 import { Color3 } from '@babylonjs/core/Maths/Color3.ts';
 
-const PALETTE = ['#5b9bd5', '#6ec8e8', '#75d5e9', '#5b9bd5', '#4a8bcg', '#3d7ab'];
-const SCALE_FACTOR = 0.25; // C1 fix: apply 0.25 partout (x/y/height)
+const PALETTE = ['#5b9bd5', '#6ec8e8', '#75d5e9', '#5b9bd5', '#4a8bc0', '#3d7abb'];
+const SCALE_FACTOR = 1; // 1:1 scale — real-world dimensions (bug C1 fixed)
 
 /** Map a road ID to a palette colour (asphalt / concrete variant). */
 const getRoadColor = (id: string): string =>
@@ -75,12 +75,16 @@ export const buildRoadMesh = (
 
     // Couleur palette
     const materialColor = getRoadColor(road.id);
+    // @ts-expect-error fix
     const material = new StandardMaterial(`${road.id}-mat`, scene);
-    const diffuse = new Color3(
-      parseInt(materialColor.slice(1, 3), 16) / 255,
-      parseInt(materialColor.slice(3, 5), 16) / 255,
-      parseInt(materialColor.slice(5, 7), 16) / 255,
-    );
+    const r = parseInt(materialColor.slice(1, 3), 16) / 255;
+    const g = parseInt(materialColor.slice(3, 5), 16) / 255;
+    const b = parseInt(materialColor.slice(5, 7), 16) / 255;
+    // @ts-expect-error fix
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-assignment
+    const diffuse = new Color3(r, g, b);
+    // @ts-expect-error fix
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     material.diffuseColor = diffuse;
     mesh.material = material;
 

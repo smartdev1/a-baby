@@ -1,0 +1,117 @@
+{
+  "spike": "SP1",
+  "date": "2026-10-19T15:16:15.189Z",
+  "simulated": true,
+  "note": "Synthetic benchmark (Node.js, no Babylon.js). Re-measure on H5 with T-020 harness.",
+  "tiles": 16,
+  "buildingsPerTile": 500,
+  "totalBuildings": 8000,
+  "avgIntegrationMsPerTile": 27.43,
+  "totalIntegrationMs": 438.87,
+  "maxChunkMs": 4.99,
+  "estimatedFpsP5": 58,
+  "pass": true,
+  "tileResults": [
+    {
+      "tileKey": "L0_0_0",
+      "buildings": 500,
+      "parseMs": 0.9388000000000147,
+      "integrationMs": 25.06970000000001
+    },
+    {
+      "tileKey": "L0_1_0",
+      "buildings": 500,
+      "parseMs": 0.6338000000000079,
+      "integrationMs": 25.49079999999981
+    },
+    {
+      "tileKey": "L0_2_0",
+      "buildings": 500,
+      "parseMs": 0.7788000000000466,
+      "integrationMs": 25.273099999999943
+    },
+    {
+      "tileKey": "L0_3_0",
+      "buildings": 500,
+      "parseMs": 1.0083999999999946,
+      "integrationMs": 28.72720000000004
+    },
+    {
+      "tileKey": "L0_4_0",
+      "buildings": 500,
+      "parseMs": 0.8728000000000407,
+      "integrationMs": 30.640600000000063
+    },
+    {
+      "tileKey": "L0_5_0",
+      "buildings": 500,
+      "parseMs": 0.9060999999999808,
+      "integrationMs": 30.421400000000062
+    },
+    {
+      "tileKey": "L0_6_0",
+      "buildings": 500,
+      "parseMs": 0.9164000000000101,
+      "integrationMs": 25.003699999999924
+    },
+    {
+      "tileKey": "L0_7_0",
+      "buildings": 500,
+      "parseMs": 9.57650000000001,
+      "integrationMs": 25.822600000000023
+    },
+    {
+      "tileKey": "L0_8_0",
+      "buildings": 500,
+      "parseMs": 0.8635999999999626,
+      "integrationMs": 34.90050000000008
+    },
+    {
+      "tileKey": "L0_9_0",
+      "buildings": 500,
+      "parseMs": 1.1387999999999465,
+      "integrationMs": 27.83859999999993
+    },
+    {
+      "tileKey": "L0_10_0",
+      "buildings": 500,
+      "parseMs": 0.8963999999999714,
+      "integrationMs": 25.18450000000007
+    },
+    {
+      "tileKey": "L0_11_0",
+      "buildings": 500,
+      "parseMs": 8.471599999999967,
+      "integrationMs": 25.007200000000125
+    },
+    {
+      "tileKey": "L0_12_0",
+      "buildings": 500,
+      "parseMs": 0.9011000000000422,
+      "integrationMs": 29.17489999999998
+    },
+    {
+      "tileKey": "L0_13_0",
+      "buildings": 500,
+      "parseMs": 0.9780999999999267,
+      "integrationMs": 27.794299999999794
+    },
+    {
+      "tileKey": "L0_14_0",
+      "buildings": 500,
+      "parseMs": 0.8926000000000158,
+      "integrationMs": 26.032400000000052
+    },
+    {
+      "tileKey": "L0_15_0",
+      "buildings": 500,
+      "parseMs": 1.0038999999999305,
+      "integrationMs": 26.48720000000003
+    }
+  ],
+  "budgets": {
+    "integrationPerFrameMs": 4,
+    "trianglesPerTileMax": 400000,
+    "drawCallsPerTileMax": 40
+  }
+}

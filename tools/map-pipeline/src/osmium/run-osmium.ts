@@ -167,7 +167,7 @@ export const runTool = async (
   } catch (dockerError) {
     const dockerMessage = dockerError instanceof Error ? dockerError.message : String(dockerError);
 
-    throw new Error(`Échec de l'exécution de ${tool}.\nWSL : ${wslError}\nDocker : ${dockerMessage}`);
+    throw new Error(`Échec de l'exécution de ${tool}.\nWSL : ${wslError}\nDocker : ${dockerMessage}`, { cause: dockerError });
   }
 };
 

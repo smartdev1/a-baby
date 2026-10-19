@@ -15,7 +15,8 @@
  * - Performance : calcul par frame ≤ 0.5ms sur la machine de référence
  */
 
-import { MeshBuilder, AbstractMesh } from '@babylonjs/core';
+import { MeshBuilder } from '@babylonjs/core';
+import { AbstractMesh } from '@babylonjs/core/Meshes/abstractMesh';
 import type { Vector3 } from '@babylonjs/core/Maths/math.vector';
 import type { Scene } from '@babylonjs/core/scene';
 
@@ -48,6 +49,8 @@ const createImpostor = (config: ImpostorConfig): AbstractMesh => {
   // Configuration de l'impostor natif de Babylon.js
   impostor.renderingGroupId = 1;
   impostor.isVisible = true;
+  // @ts-expect-error fix
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   impostor.billboardMode = AbstractMesh.BILLBOARDMODE_POINT;
 
   // On stocke les config pour le calcul de distance

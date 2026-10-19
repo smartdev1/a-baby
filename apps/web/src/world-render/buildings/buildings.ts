@@ -8,12 +8,12 @@ import { Mesh } from '@babylonjs/core/Meshes/mesh';
 import { ExtrudePolygon } from '@babylonjs/core/Meshes/Builders/polygonBuilder';
 import earcut from 'earcut';
 import type { Scene } from '@babylonjs/core/scene';
-import type { TileBuilding } from '../tile-format/src/tile-meta-schema.ts';
-import { StandardMaterial } from '@babylonjs/core/Materials/standardMaterial.ts';
-import { Color3 } from '@babylonjs/core/Maths/Color3.ts';
+import type { TileBuilding } from '@skyline/tile-format';
+import { StandardMaterial } from '@babylonjs/core/Materials/standardMaterial';
+import { Color3 } from '@babylonjs/core/Maths/math.color';
 
 const PALETTE = ['#d9b99b', '#e8d5b0', '#c9a27e', '#e3c4a8', '#b8c5a6', '#d8a48f'];
-const SCALE_FACTOR = 0.25; // C1 fix: apply 0.25 to height/width (was only x/y)
+const SCALE_FACTOR = 1; // 1:1 scale — real-world dimensions (bug C1 fixed)
 
 /** Map a building ID to a palette colour. */
 const getBuildingColor = (id: string): string =>
@@ -37,7 +37,7 @@ export const buildBuildingMesh = (
   building: TileBuilding,
   position: Vector3,
 ): Mesh => {
-  const heightM = (building.heightM ?? 0 as number) * SCALE_FACTOR; // C1 fix: height too
+  const heightM = building.heightM * SCALE_FACTOR; // C1 fix: height too
 
   // Le footprint est un tableau de Vec2[][] (anneaux OSM), on prend le premier anneau
   const ring = (building.footprint ?? [])?.[0] ?? [];
@@ -50,7 +50,7 @@ export const buildBuildingMesh = (
   }
 
   // Convertir le ring en format Vector3 pour ExtrudePolygon
-  const shape = ring.map((p: { x: number; y: number }) => new Vector3(p.x, 0, p.y));
+  const shape = ring.map((p: { x: number; z: number }) => new Vector3(p.x, 0, p.z));
 
   try {
     const mesh = ExtrudePolygon(

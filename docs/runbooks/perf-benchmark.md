@@ -12,20 +12,20 @@ Mesurer de façon reproductible les budgets de performance du renderer client Ba
 
 | Nom | Processeur | Mémoire | Carte graphique | Navigateur | Rôle |
 |-----|-----------|---------|----------------|------------|------|
-| **Basse** (Low) | Intel Core i5-10210U (4 cœurs, 1.6–4.2 GHz) | 8 Go DDR4 | Intel UHD Graphics (intégrée) | Chrome 124 (lastest) | Seuil de critique : ≥ 30 FPS p5 |
-| **Moyenne** (Medium) | Intel Core i7-11800H (8 cœurs, 2.3–4.6 GHz) | 16 Go DDR4 | NVIDIA GeForce RTX 3050 | Chrome 124 (latest) | Cible cible : ≥ 45 FPS p5 |
+| **Basse** (Low) | Intel Core i5-10210U (4 cœurs, 1.6–4.2 GHz) | 8 Go DDR4 | Intel UHD Graphics (intégrée) | Chrome 124 (latest) | Seuil de critique : ≥ 30 FPS p5 |
+| **Moyenne** (Medium) | Intel Core i7-11800H (8 cœurs, 2.3–4.6 GHz) | 16 Go DDR4 | NVIDIA GeForce RTX 3050 | Chrome 124 (latest) | Cible : ≥ 45 FPS p5 |
 
 *Ces configurations sont celles disponibles dans l'équipe. Si le matériel exact n'est pas disponible, des équivalents de même classe (CPU class U/H, GPU intégrée vs discrète) sont acceptables.*
 
 ## Procédure de mesure
 
-1. **Démarrer leharness** :
+1. **Démarrer le harness** :
    ```bash
    # Depuis la racine du projet
    cd apps/web
-   npx tsx src/debug/perf/benchmark-runner.ts
+   npx tsx src/debug/perf/perf-harness-run.ts
    ```
-   Cela produit un fichier `benchmark-report.json` dans `docs/runbooks/`.
+   Cela produit un fichier `perf-harness-report.json` dans `docs/runbooks/`.
 
 2. **Vérifier le rapport** : le fichier JSON doit contenir :
    ```json
@@ -46,10 +46,9 @@ Mesurer de façon reproductible les budgets de performance du renderer client Ba
    - Machine moyenne : `fpsP5 >= 45` → passage
    - Si échec machine basse, ignorer machine moyenne et bloquer la PR.
 
-4. **Consigner** : Commiter `benchmark-report.json` dans `docs/runbooks/` avec le message de commit :
+4. **Consigner** : Commiter `perf-harness-report.json` dans `docs/runbooks/` avec le message de commit :
    ```
    feat: T-020 benchmark report (low & medium machines)
-   Co-Authored-By: Claude Opus 5.5 (1M context) <noreply@anthropic.com>
    ```
 
 ## Interprétation des résultats
@@ -72,4 +71,4 @@ Mesurer de façon reproductible les budgets de performance du renderer client Ba
 
 ## Annexe : Script de génération de rapport
 
-Voir `apps/web/src/debug/perf/benchmark-runner.ts` pour la génération automatique du `benchmark-report.json`.
+Voir `apps/web/src/debug/perf/perf-harness-run.ts` pour la génération automatique du `benchmark-report.json`.

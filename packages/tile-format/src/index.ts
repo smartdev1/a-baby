@@ -13,6 +13,7 @@ export {
   tileFilePath,
   worldManifestFileName,
   type TileFileKind,
+  type TileKey,
 } from './tile-file-names.ts';
 export {
   HeightSourceSchema,

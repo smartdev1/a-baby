@@ -1,0 +1,25 @@
+{
+  "kit": "grey-facade-v0",
+  "modules": [
+    { "name": "bld_facade_grey_flat_lod0" },
+    { "name": "bld_facade_grey_flat_lod1" },
+    { "name": "bld_facade_grey_window_small_lod0" },
+    { "name": "bld_facade_grey_window_small_lod1" },
+    { "name": "bld_facade_grey_window_large_lod0" },
+    { "name": "bld_facade_grey_window_large_lod1" },
+    { "name": "bld_facade_grey_door_single_lod0" },
+    { "name": "bld_facade_grey_door_double_lod0" },
+    { "name": "bld_facade_grey_balcony_lod0" },
+    { "name": "bld_facade_grey_balcony_lod1" },
+    { "name": "bld_facade_grey_shopfront_lod0" },
+    { "name": "bld_facade_grey_shopfront_lod1" },
+    { "name": "bld_facade_grey_shutter_lod0" },
+    { "name": "bld_facade_grey_shutter_lod1" },
+    { "name": "bld_facade_grey_corner_lod0" },
+    { "name": "bld_facade_grey_corner_lod1" },
+    { "name": "bld_facade_grey_roof_flat_lod0" },
+    { "name": "bld_facade_grey_roof_pitched_lod0" },
+    { "name": "bld_facade_grey_stairs_lod0" },
+    { "name": "bld_facade_grey_ac_unit_lod0" }
+  ]
+}

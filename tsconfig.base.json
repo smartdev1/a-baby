@@ -1,5 +1,6 @@
 {
   "//": "Role: shared strict TypeScript settings; no lib here, each profile (browser/node/pure) adds its own.",
+  "include": ["src/**/*.ts", "packages/**/*.ts"],
   "compilerOptions": {
     "target": "ES2023",
     "module": "ESNext",
@@ -12,7 +13,6 @@
     "verbatimModuleSyntax": true,
     "resolveJsonModule": true,
     "allowImportingTsExtensions": true,
-    "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "useUnknownInCatchVariables": true,
     "noImplicitAny": true,
@@ -24,6 +24,10 @@
     "noUncheckedIndexedAccess": true,
     "exactOptionalPropertyTypes": true,
     "allowUnreachableCode": false,
-    "allowUnusedLabels": false
+    "allowUnusedLabels": false,
+    "baseUrl": ".",
+    "paths": {
+      "@skyline/*": ["packages/*/src"]
+    }
   }
 }

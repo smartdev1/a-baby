@@ -309,6 +309,12 @@ importers:
       '@preact/signals-core':
         specifier: ^1.14.4
         version: 1.14.4
+      '@skyline/geo':
+        specifier: workspace:*
+        version: link:../../packages/geo
+      '@skyline/tile-format':
+        specifier: workspace:*
+        version: link:../../packages/tile-format
       earcut:
         specifier: ^3.2.4
         version: 3.2.4

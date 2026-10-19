@@ -1,0 +1,25 @@
+{
+  "name": "grey-facade-v0-sample",
+  "version": 1,
+  "extensions": ["EXT_meshopt_compression", "KHR_texture_basisu"],
+  "assets": [
+    {
+      "name": "bld_facade_grey_flat_lod0",
+      "scale": 1.0,
+      "meshopt": true,
+      "ktx2": true
+    },
+    {
+      "name": "bld_facade_grey_window_small_lod0",
+      "scale": 1.0,
+      "meshopt": true,
+      "ktx2": true
+    }
+  ],
+  "validation": {
+    "naming": "all module names must match /^[a-z][a-z0-9]*(?:_[a-z0-9]+)+_lod[0-9]+$/",
+    "scale": "scale must be 1.0 (1:1 real-world units, no downscaling)",
+    "meshopt": "extensions must include EXT_meshopt_compression",
+    "ktx2": "extensions must include KHR_texture_basisu"
+  }
+}
